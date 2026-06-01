@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>스마트 컨트랙트 & 토큰 표준 — 블록체인 가이드</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site">
+  <h1>PART 3 · 스마트 컨트랙트 & 토큰 표준</h1>
+  <p>트랜잭션 생명주기, EVM, ERC 표준 9종 심층, 컨트랙트 패턴, 보안 함정</p>
+  <div class="breadcrumb"><a href="index.html">홈</a> › 스마트 컨트랙트 & 토큰 표준</div>
+</header>
+
+<nav class="top">
+  <ul>
+    <li><a href="index.html">홈</a></li>
+    <li><a href="basics.html">기초</a></li>
+    <li><a href="chains.html">체인별 특징</a></li>
+    <li><a href="contracts.html" class="active">스마트 컨트랙트</a></li>
+    <li><a href="bridges.html">브릿지</a></li>
+    <li><a href="cbdc.html">CBDC</a></li>
+    <li><a href="x402.html">x402</a></li>
+    <li><a href="limits.html">한계와 비교</a></li>
+    <li><a href="references.html">참고자료</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section id="tx">
+  <h2>1. 트랜잭션 생명주기</h2>
+  <ol>
+    <li><strong>생성</strong>: 클라이언트가 트랜잭션 구성 → <code>privKey</code>로 ECDSA/EdDSA 서명</li>
+    <li><strong>전파</strong>: P2P gossip 프로토콜로 메모리풀(Mempool)에 진입</li>
+    <li><strong>검증</strong>: 노드들이 서명·잔액·논스 검증</li>
+    <li><strong>블록 포함</strong>: 채굴자/검증자가 수수료 기준 우선순위로 선택</li>
+    <li><strong>합의</strong>: 합의 알고리즘에 따라 블록 확정</li>
+    <li><strong>최종성 도달</strong>: 비트코인 6 confirm (≈ 1시간), 이더리움 finality gadget</li>
+  </ol>
+
+  <h3>UTXO vs Account 모델</h3>
+  <table>
+    <thead><tr><th>비교</th><th>UTXO (Bitcoin)</th><th>Account (Ethereum)</th></tr></thead>
+    <tbody>
+      <tr><td>상태 표현</td><td>미사용 출력 집합</td><td>주소 → 잔액 매핑</td></tr>
+      <tr><td>병렬성</td><td>높음 (독립 UTXO)</td><td>낮음 (순차 논스)</td></tr>
+      <tr><td>프라이버시</td><td>주소 재사용 안 하면 유리</td><td>주소 단위 추적 용이</td></tr>
+      <tr><td>스마트 컨트랙트</td><td>제한적 (Script)</td><td>튜링 완전 (EVM)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="contract-basics">
+  <h2>2. 스마트 컨트랙트 개요</h2>
+  <p>
+    블록체인 위에서 실행되는 결정론적 프로그램. 이더리움의 EVM(Ethereum Virtual Machine)이 대표적이며,
+    Solidity로 작성된 코드는 바이트코드로 컴파일되어 모든 노드에서 동일하게 실행된다.
+  </p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://soliditylang.org/">Solidity</a> ·
+    <a href="https://ethereum.org/en/developers/docs/evm/">Ethereum: EVM</a> ·
+    <a href="https://docs.openzeppelin.com/contracts/">OpenZeppelin</a> ·
+    <a href="https://swcregistry.io/">SWC Registry</a> ·
+    <a href="https://book.getfoundry.sh/">Foundry Book</a>
+  </p>
+
+  <h3>EVM의 핵심 개념</h3>
+  <ul>
+    <li><strong>Stack-based VM</strong>: 1024 깊이 스택, 256-bit 워드 (Big Number 친화)</li>
+    <li><strong>Storage</strong>: 영구 저장, 슬롯(256-bit) 단위, 가장 비싼 자원</li>
+    <li><strong>Memory</strong>: 트랜잭션 동안만 유지, 선형 메모리</li>
+    <li><strong>Gas</strong>: 모든 연산에 비용 부과 → DoS 방지, 우선순위 시장</li>
+    <li><strong>Determinism</strong>: 동일 입력 → 동일 출력 (블록 hash, gaslimit 등 환경 변수 제외)</li>
+  </ul>
+
+  <h3>기본 Solidity 컨트랙트 예시</h3>
+<pre><code>// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+contract Counter {
+    uint256 public count;
+    address public immutable owner;
+
+    event Incremented(address indexed by, uint256 newCount);
+
+    error NotOwner();
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+        if (msg.sender != owner) revert NotOwner();
+        _;
+    }
+
+    function increment() external onlyOwner {
+        unchecked { count++; }   // 0.8.x: 명시적 unchecked로 가스 절약
+        emit Incremented(msg.sender, count);
+    }
+}</code></pre>
+</section>
+
+<section id="erc">
+  <h2>3. 주요 토큰 표준 (ERC Standards)</h2>
+  <p>
+    ERC(Ethereum Request for Comments)는 이더리움 생태계의 합의된 인터페이스 표준이다.
+    토큰의 동작 방식을 표준화하여 지갑·DEX·NFT 마켓플레이스 등이 호환되게 한다.
+    아래는 가장 중요한 9개 표준을 심층 분석한다.
+  </p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://eips.ethereum.org/erc">EIPs Index (ERC 전체 목록)</a> ·
+    <a href="https://docs.openzeppelin.com/contracts/5.x/erc20">OpenZeppelin 구현</a>
+  </p>
+
+  <!-- ERC-20 -->
+  <div class="erc-card" id="erc-20">
+    <div class="erc-header">
+      <span class="erc-id">ERC-20</span>
+      <span class="erc-title">Fungible Token Standard</span>
+      <span class="erc-status final">Final (2015.11)</span>
+    </div>
+    <p>
+      <strong>대체 가능 토큰</strong>의 사실상 표준. USDC, USDT, DAI, UNI 등 거의 모든 메인 토큰이 ERC-20.
+      각 토큰 1개가 다른 1개와 완벽히 동일한 가치를 가진다는 가정 위에 동작한다.
+    </p>
+
+    <h4>핵심 인터페이스</h4>
+<pre><code>interface IERC20 {
+    function totalSupply() external view returns (uint256);
+    function balanceOf(address account) external view returns (uint256);
+    function transfer(address to, uint256 amount) external returns (bool);
+    function allowance(address owner, address spender) external view returns (uint256);
+    function approve(address spender, uint256 amount) external returns (bool);
+    function transferFrom(address from, address to, uint256 amount) external returns (bool);
+
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+}</code></pre>
+
+    <h4>실제 사용 사례</h4>
+    <ul>
+      <li><strong>스테이블코인</strong>: USDC, USDT, DAI</li>
+      <li><strong>거버넌스 토큰</strong>: UNI, COMP, AAVE</li>
+      <li><strong>유틸리티 토큰</strong>: LINK, GRT</li>
+      <li><strong>WETH</strong>: ETH를 ERC-20으로 래핑 (DeFi 호환용)</li>
+    </ul>
+
+    <div class="note warn">
+      <strong>유명한 함정 — Approve Race Condition:</strong>
+      <code>approve(spender, X)</code>를 <code>approve(spender, Y)</code>로 변경할 때,
+      공격자가 그 사이에 <code>transferFrom</code>으로 <code>X</code>를 빼간 뒤 <code>Y</code>도 빼갈 수 있다.
+      해결: <code>increaseAllowance/decreaseAllowance</code> 사용 또는 ERC-2612 Permit으로 대체.
+    </div>
+
+    <p style="font-size:0.85rem; color:var(--fg-dim);">
+      📚 <a href="https://eips.ethereum.org/EIPS/eip-20">EIP-20 원문</a> ·
+      <a href="https://docs.openzeppelin.com/contracts/5.x/erc20">OpenZeppelin ERC20</a>
+    </p>
+  </div>
+
+  <!-- ERC-721 -->
+  <div class="erc-card" id="erc-721">
+    <div class="erc-header">
+      <span class="erc-id">ERC-721</span>
+      <span class="erc-title">Non-Fungible Token (NFT)</span>
+      <span class="erc-status final">Final (2018.01)</span>
+    </div>
+    <p>
+      <strong>대체 불가능 토큰</strong> 표준. 각 토큰은 고유한 <code>tokenId</code>를 가지며, 1:1로만 소유된다.
+      디지털 아트(CryptoPunks, BAYC), 도메인(ENS), 게임 아이템, 부동산 등 <em>유일성</em>이 중요한 자산에 적합.
+    </p>
+
+    <h4>핵심 인터페이스</h4>
+<pre><code>interface IERC721 {
+    function balanceOf(address owner) external view returns (uint256);
+    function ownerOf(uint256 tokenId) external view returns (address);
+    function safeTransferFrom(address from, address to, uint256 tokenId) external;
+    function transferFrom(address from, address to, uint256 tokenId) external;
+    function approve(address to, uint256 tokenId) external;
+    function setApprovalForAll(address operator, bool approved) external;
+    function getApproved(uint256 tokenId) external view returns (address);
+    function isApprovedForAll(address owner, address operator) external view returns (bool);
+}
+
+interface IERC721Metadata {
+    function name() external view returns (string memory);
+    function symbol() external view returns (string memory);
+    function tokenURI(uint256 tokenId) external view returns (string memory);  // 메타데이터 JSON URL
+}</code></pre>
+
+    <h4>메타데이터 JSON 표준</h4>
+<pre><code>{
+  "name": "CryptoPunk #1234",
+  "description": "Hoodie wearing alien punk",
+  "image": "ipfs://Qm.../1234.png",
+  "attributes": [
+    { "trait_type": "Type", "value": "Alien" },
+    { "trait_type": "Accessory", "value": "Hoodie" }
+  ]
+}</code></pre>
+
+    <p style="font-size:0.85rem; color:var(--fg-dim);">
+      📚 <a href="https://eips.ethereum.org/EIPS/eip-721">EIP-721 원문</a> ·
+      <a href="https://docs.opensea.io/docs/metadata-standards">OpenSea 메타데이터 가이드</a>
+    </p>
+  </div>
+
+  <!-- ERC-1155 -->
+  <div class="erc-card" id="erc-1155">
+    <div class="erc-header">
+      <span class="erc-id">ERC-1155</span>
+      <span class="erc-title">Multi-Token Standard</span>
+      <span class="erc-status final">Final (2019.06)</span>
+    </div>
+    <p>
+      Enjin이 게임 아이템을 위해 제안한 <strong>다중 토큰 표준</strong>.
+      단일 컨트랙트로 <em>대체 가능 토큰과 NFT를 동시에</em> 관리할 수 있어, 게임처럼 수천 종의 아이템을 다루는 데 최적.
+      배치(batch) 전송으로 가스를 크게 절약한다.
+    </p>
+
+    <h4>핵심 인터페이스</h4>
+<pre><code>interface IERC1155 {
+    function balanceOf(address account, uint256 id) external view returns (uint256);
+
+    function balanceOfBatch(
+        address[] calldata accounts,
+        uint256[] calldata ids
+    ) external view returns (uint256[] memory);
+
+    function setApprovalForAll(address operator, bool approved) external;
+    function isApprovedForAll(address account, address operator) external view returns (bool);
+
+    function safeTransferFrom(
+        address from, address to,
+        uint256 id, uint256 amount,
+        bytes calldata data
+    ) external;
+
+    function safeBatchTransferFrom(    // ← 한 트랜잭션으로 여러 토큰 전송
+        address from, address to,
+        uint256[] calldata ids,
+        uint256[] calldata amounts,
+        bytes calldata data
+    ) external;
+}</code></pre>
+
+    <h4>ERC-20 vs ERC-721 vs ERC-1155 비교</h4>
+    <table>
+      <thead>
+        <tr><th>특성</th><th>ERC-20</th><th>ERC-721</th><th>ERC-1155</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>대체 가능성</td><td>✓ 항상</td><td>✗ 절대 안 됨</td><td>혼합 가능</td></tr>
+        <tr><td>한 컨트랙트 토큰 종류</td><td>1종</td><td>N종 (각 tokenId 고유)</td><td>임의 N종</td></tr>
+        <tr><td>배치 전송</td><td>✗</td><td>✗</td><td>✓ (가스 절감)</td></tr>
+        <tr><td>대표 용례</td><td>화폐</td><td>예술품, 도메인</td><td>게임 아이템, 컬렉션</td></tr>
+        <tr><td>가스 효율</td><td>중간</td><td>낮음 (mint당 비쌈)</td><td>높음</td></tr>
+      </tbody>
+    </table>
+
+    <p style="font-size:0.85rem; color:var(--fg-dim);">
+      📚 <a href="https://eips.ethereum.org/EIPS/eip-1155">EIP-1155 원문</a> ·
+      <a href="https://enjin.io/technology/erc-1155">Enjin: ERC-1155 가이드</a>
+    </p>
+  </div>
+
+  <!-- ERC-3525 -->
+  <div class="erc-card" id="erc-3525">
+    <div class="erc-header">
+      <span class="erc-id">ERC-3525</span>
+      <span class="erc-title">Semi-Fungible Token (SFT)</span>
+      <span class="erc-status final">Final (2022.09)</span>
+    </div>
+    <p>
+      <strong>금융 자산 토큰화를 위해 설계된 차세대 표준.</strong>
+      ERC-721처럼 <em>고유 tokenId</em>를 가지지만, ERC-20처럼 <em>quantitative value</em>를 함께 갖는다.
+      여기에 <strong>slot</strong>이라는 그룹 개념을 추가해, 같은 slot의 토큰끼리는 가치 단위가 호환된다.
+    </p>
+
+    <h4>3차원 데이터 구조</h4>
+<pre><code>┌─────────────────────────────────────────────┐
+│  ERC-721:    [ tokenId ]                    │  유일성만
+│  ERC-20:     [ value ]                      │  수량만
+│  ERC-3525:   [ tokenId, slot, value ]       │  ← 셋 다
+└─────────────────────────────────────────────┘
+
+예시: 채권 토큰화
+  tokenId = 1   slot = "2030년 만기 회사채 A"   value = 1,000,000원
+  tokenId = 2   slot = "2030년 만기 회사채 A"   value = 500,000원
+  tokenId = 3   slot = "2026년 만기 국채 B"     value = 3,000,000원
+
+  → tokenId 1과 2는 같은 slot이므로 가치 합산·분할·전송 가능
+  → tokenId 3은 다른 slot이므로 1·2와 직접 호환 안 됨</code></pre>
+
+    <h4>핵심 인터페이스</h4>
+<pre><code>interface IERC3525 {
+    // slot 조회
+    function slotOf(uint256 tokenId) external view returns (uint256);
+
+    // 토큰의 잔액(가치)
+    function balanceOf(uint256 tokenId) external view returns (uint256);
+
+    // 같은 slot 토큰 간 가치 일부 전송 (분할 가능)
+    function transferFrom(
+        uint256 fromTokenId,
+        uint256 toTokenId,
+        uint256 value
+    ) external;
+
+    // 새 tokenId로 가치 분리 (NFT를 쪼개기)
+    function transferFrom(
+        uint256 fromTokenId,
+        address to,
+        uint256 value
+    ) external returns (uint256 newTokenId);
+}</code></pre>
+
+    <h4>적용 사례 — 금융권 관점에서 중요</h4>
+    <ul>
+      <li><strong>채권 토큰화</strong>: 만기·이자율 같은 slot, 액면금액은 value로 → 부분 양도 가능</li>
+      <li><strong>옵션·선물</strong>: 만기·행사가 동일 slot, 계약 수량 value</li>
+      <li><strong>베스팅 스케줄</strong>: 미수령분의 분할·이전</li>
+      <li><strong>탄소배출권</strong>: 발행연도·기준 slot, 톤 수 value</li>
+      <li><strong>STO(Security Token Offering)</strong>: 일물일가 + 분할 거래</li>
+      <li><strong>CBDC 예금토큰 응용 가능성</strong>: 발행기관·만기를 slot으로, 액면을 value로 — 차등 통화 정책 도구 실험</li>
+    </ul>
+
+    <div class="note">
+      <strong>왜 중요한가:</strong> 기존 표준은 금융상품의 <em>"같은 종류이지만 액면금액이 다른"</em> 자산을 표현하지 못했다.
+      ERC-3525는 1개 컨트랙트로 동일 상품군의 다양한 액면 단위를 자연스럽게 다룬다.
+      한국의 토큰증권(STO) 가이드라인과도 친화적이다.
+    </div>
+
+    <p style="font-size:0.85rem; color:var(--fg-dim);">
+      📚 <a href="https://eips.ethereum.org/EIPS/eip-3525">EIP-3525 원문</a> ·
+      <a href="https://docs.solv.finance/">Solv Protocol (3525 활용 예시)</a>
+    </p>
+  </div>
+
+  <!-- ERC-2612 -->
+  <div class="erc-card" id="erc-2612">
+    <div class="erc-header">
+      <span class="erc-id">ERC-2612</span>
+      <span class="erc-title">Permit Extension for ERC-20</span>
+      <span class="erc-status final">Final (2020.04)</span>
+    </div>
+    <p>
+      ERC-20의 <code>approve()</code> 트랜잭션을 <strong>오프체인 서명</strong>으로 대체.
+      사용자가 가스를 내지 않고 승인 의사를 표현할 수 있어 DeFi UX 혁신의 핵심.
+      DAI가 처음 도입했고 현재 USDC도 지원.
+    </p>
+
+<pre><code>function permit(
+    address owner,
+    address spender,
+    uint256 value,
+    uint256 deadline,
+    uint8 v, bytes32 r, bytes32 s
+) external;
+
+// 사용자는 EIP-712 서명만 만들고, 누구든 그 서명을 들고 permit 호출 가능
+// → 사용자가 ETH(가스) 없이도 approve + transferFrom 가능</code></pre>
+
+    <p style="font-size:0.85rem; color:var(--fg-dim);">
+      📚 <a href="https://eips.ethereum.org/EIPS/eip-2612">EIP-2612</a>
+    </p>
+  </div>
+
+  <!-- ERC-4337 -->
+  <div class="erc-card" id="erc-4337">
+    <div class="erc-header">
+      <span class="erc-id">ERC-4337</span>
+      <span class="erc-title">Account Abstraction</span>
+      <span class="erc-status final">Final (2023.03)</span>
+    </div>
+    <p>
+      <strong>지갑 자체를 스마트 컨트랙트로 만든다.</strong> 기존 EOA(외부 소유 계정)와 달리,
+      서명 방식·복구·결제 자산을 자유롭게 정의 가능. 프로토콜 변경 없이 별도 mempool로 구현.
+    </p>
+
+    <h4>주요 구성 요소</h4>
+    <table>
+      <thead><tr><th>컴포넌트</th><th>역할</th></tr></thead>
+      <tbody>
+        <tr><td><strong>UserOperation</strong></td><td>일반 트랜잭션과 분리된, AA 전용 트랜잭션 객체</td></tr>
+        <tr><td><strong>EntryPoint</strong></td><td>온체인 검증·실행 엔진 (싱글톤 컨트랙트)</td></tr>
+        <tr><td><strong>Bundler</strong></td><td>UserOp를 모아 일반 트랜잭션으로 묶어 EntryPoint에 제출</td></tr>
+        <tr><td><strong>Paymaster</strong></td><td>가스비 대납 (스폰서십, USDC로 가스 결제 등)</td></tr>
+        <tr><td><strong>Smart Account</strong></td><td>사용자 지갑 자체가 컨트랙트</td></tr>
+      </tbody>
+    </table>
+
+    <h4>가능해지는 것들</h4>
+    <ul>
+      <li><strong>소셜 로그인</strong>: 이메일·Google OAuth로 지갑 생성</li>
+      <li><strong>키 분실 복구</strong>: 사회적 복구, 멀티시그</li>
+      <li><strong>일괄 트랜잭션</strong>: approve + swap을 한 번에</li>
+      <li><strong>대납 결제</strong>: 사용자가 USDC만 갖고도 가스 없이 거래</li>
+      <li><strong>세션 키</strong>: 게임에서 매번 서명 없이 일정 시간 자동 거래</li>
+    </ul>
+
+    <p style="font-size:0.85rem; color:var(--fg-dim);">
+      📚 <a href="https://eips.ethereum.org/EIPS/eip-4337">EIP-4337</a> ·
+      <a href="https://www.alchemy.com/account-abstraction">Alchemy AA 가이드</a> ·
+      <a href="https://stackup.sh/">Stackup (Bundler)</a>
+    </p>
+  </div>
+
+  <!-- ERC-4626 -->
+  <div class="erc-card" id="erc-4626">
+    <div class="erc-header">
+      <span class="erc-id">ERC-4626</span>
+      <span class="erc-title">Tokenized Vault Standard</span>
+      <span class="erc-status final">Final (2022.04)</span>
+    </div>
+    <p>
+      DeFi의 <strong>수익 발생 볼트(yield vault)</strong>를 표준화. Yearn, Aave 등에서 사용하는
+      "예금하면 다른 토큰을 받고, 수익률에 따라 환산 비율이 변하는" 모델을 단일 인터페이스로 정의.
+    </p>
+
+<pre><code>interface IERC4626 is IERC20 {
+    function asset() external view returns (address);            // 예금 자산
+    function totalAssets() external view returns (uint256);
+
+    function convertToShares(uint256 assets) external view returns (uint256);
+    function convertToAssets(uint256 shares) external view returns (uint256);
+
+    function deposit(uint256 assets, address receiver) external returns (uint256 shares);
+    function mint(uint256 shares, address receiver) external returns (uint256 assets);
+    function withdraw(uint256 assets, address receiver, address owner) external returns (uint256);
+    function redeem(uint256 shares, address receiver, address owner) external returns (uint256);
+}</code></pre>
+
+    <p>활용: 유동성 풀, lending 프로토콜, MEV 보호 볼트, 인덱스 펀드 등.</p>
+    <p style="font-size:0.85rem; color:var(--fg-dim);">
+      📚 <a href="https://eips.ethereum.org/EIPS/eip-4626">EIP-4626</a>
+    </p>
+  </div>
+
+  <!-- ERC-6551 -->
+  <div class="erc-card" id="erc-6551">
+    <div class="erc-header">
+      <span class="erc-id">ERC-6551</span>
+      <span class="erc-title">Token Bound Accounts (TBA)</span>
+      <span class="erc-status final">Final (2023.05)</span>
+    </div>
+    <p>
+      <strong>NFT 자체가 지갑 주소를 갖는다.</strong> 모든 ERC-721 NFT에 결정론적으로 매핑되는
+      스마트 컨트랙트 계정을 부여해, NFT가 다른 토큰·NFT를 보유하거나 트랜잭션을 발신할 수 있게 한다.
+    </p>
+
+    <h4>활용 시나리오</h4>
+    <ul>
+      <li>게임 캐릭터 NFT가 무기·아이템(다른 NFT)을 인벤토리에 보유</li>
+      <li>아바타 NFT가 자체 잔액·이력을 누적 (소셜 그래프)</li>
+      <li>NFT를 양도하면 그 안의 자산까지 통째로 이전</li>
+      <li>부동산 NFT가 임대료 USDC를 자동 수령</li>
+    </ul>
+
+<pre><code>// 결정론적 주소 생성
+function account(
+    address implementation,
+    bytes32 salt,
+    uint256 chainId,
+    address tokenContract,
+    uint256 tokenId
+) external view returns (address);
+// → 같은 NFT는 항상 같은 주소를 가짐</code></pre>
+
+    <p style="font-size:0.85rem; color:var(--fg-dim);">
+      📚 <a href="https://eips.ethereum.org/EIPS/eip-6551">EIP-6551</a> ·
+      <a href="https://tokenbound.org/">tokenbound.org</a>
+    </p>
+  </div>
+
+  <!-- ERC-1400 -->
+  <div class="erc-card" id="erc-1400">
+    <div class="erc-header">
+      <span class="erc-id">ERC-1400</span>
+      <span class="erc-title">Security Token Standard</span>
+      <span class="erc-status draft">Draft</span>
+    </div>
+    <p>
+      <strong>규제 친화적 증권형 토큰</strong> 표준. 발행자가 KYC·AML 요건에 따라 이전을 제어할 수 있고,
+      문서 첨부, 강제 이전(법원 명령 등), 부분(partition) 단위 발행 등을 지원.
+      STO(Security Token Offering) 인프라의 기반.
+    </p>
+    <ul>
+      <li><strong>canTransfer()</strong>: 이전 사전 검증 (KYC 통과 여부, 락업 등)</li>
+      <li><strong>operatorRedeemByPartition()</strong>: 규제 당국의 강제 회수</li>
+      <li><strong>setDocument()</strong>: 발행 약관·정관 첨부</li>
+    </ul>
+    <p style="font-size:0.85rem; color:var(--fg-dim);">
+      📚 <a href="https://github.com/ethereum/EIPs/issues/1411">EIP-1400 논의</a> ·
+      <a href="https://thesecuritytokenstandard.org/">Security Token Standard</a>
+    </p>
+  </div>
+
+  <h3>그 외 알아두면 좋은 표준</h3>
+  <table>
+    <thead>
+      <tr><th>EIP</th><th>이름</th><th>설명</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><a href="https://eips.ethereum.org/EIPS/eip-165">EIP-165</a></td><td>Interface Detection</td><td>컨트랙트가 어떤 표준을 구현하는지 조회</td></tr>
+      <tr><td><a href="https://eips.ethereum.org/EIPS/eip-712">EIP-712</a></td><td>Typed Structured Data</td><td>구조화된 메시지 서명 (Permit·x402 핵심)</td></tr>
+      <tr><td><a href="https://eips.ethereum.org/EIPS/eip-777">EIP-777</a></td><td>Improved ERC-20</td><td>hook 콜백, 운영자 개념 (보안 이슈로 인기 저조)</td></tr>
+      <tr><td><a href="https://eips.ethereum.org/EIPS/eip-2981">EIP-2981</a></td><td>NFT Royalty</td><td>NFT 2차 판매 시 로열티 표준</td></tr>
+      <tr><td><a href="https://eips.ethereum.org/EIPS/eip-3009">EIP-3009</a></td><td>transferWithAuthorization</td><td>가스리스 전송 (x402의 핵심)</td></tr>
+      <tr><td><a href="https://eips.ethereum.org/EIPS/eip-5192">EIP-5192</a></td><td>SBT (Soulbound)</td><td>이전 불가능 NFT (자격증·신원)</td></tr>
+      <tr><td><a href="https://eips.ethereum.org/EIPS/eip-7201">EIP-7201</a></td><td>Namespaced Storage</td><td>업그레이드 가능 컨트랙트의 스토리지 충돌 방지</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="tokenization">
+  <h2>4. 자산 토큰화 vs 기존 디지털화 — 무엇이 다른가?</h2>
+  <p>
+    종이 증서나 실물 자산을 컴퓨터로 옮긴 "디지털화"와, 블록체인 위의 토큰으로 표현하는 "토큰화"는
+    겉으로는 비슷해 보이지만 본질이 다르다. 이 차이를 이해하는 것이 STO·CBDC·RWA(실물자산) 시장을 이해하는 핵심이다.
+  </p>
+
+  <h3>4.1 정의 비교</h3>
+  <div class="diagram">
+    <svg viewBox="0 0 880 280" xmlns="http://www.w3.org/2000/svg">
+      <!-- Digitalization -->
+      <rect x="20" y="40" width="400" height="220" rx="12" fill="#1a2332" stroke="#79c0ff" stroke-width="2"/>
+      <text x="220" y="65" text-anchor="middle" font-size="14" font-weight="700" fill="#79c0ff">📄 디지털화 (Digitalization)</text>
+      <text x="220" y="84" text-anchor="middle" font-size="11" fill="#8b949e">"종이 → 전자 기록"</text>
+
+      <line x1="40" y1="105" x2="400" y2="105" stroke="#30363d"/>
+
+      <text x="40" y="125" font-size="11" fill="#e6edf3" font-weight="600">📝 데이터 위치</text>
+      <text x="55" y="142" font-size="10" fill="#8b949e">중앙기관 DB (예탁결제원·은행)</text>
+
+      <text x="40" y="165" font-size="11" fill="#e6edf3" font-weight="600">🔑 소유 증명</text>
+      <text x="55" y="182" font-size="10" fill="#8b949e">기관의 기록 (계좌 잔액)</text>
+
+      <text x="40" y="205" font-size="11" fill="#e6edf3" font-weight="600">🔄 이전 방식</text>
+      <text x="55" y="222" font-size="10" fill="#8b949e">기관이 양쪽 장부 갱신</text>
+
+      <text x="40" y="245" font-size="10" fill="#79c0ff">예: 전자증권 · 인터넷뱅킹 · 전자등기</text>
+
+      <!-- Tokenization -->
+      <rect x="460" y="40" width="400" height="220" rx="12" fill="#1a2332" stroke="#7ee787" stroke-width="2"/>
+      <text x="660" y="65" text-anchor="middle" font-size="14" font-weight="700" fill="#7ee787">🪙 토큰화 (Tokenization)</text>
+      <text x="660" y="84" text-anchor="middle" font-size="11" fill="#8b949e">"자산 → 블록체인 위 토큰"</text>
+
+      <line x1="480" y1="105" x2="840" y2="105" stroke="#30363d"/>
+
+      <text x="480" y="125" font-size="11" fill="#e6edf3" font-weight="600">📝 데이터 위치</text>
+      <text x="495" y="142" font-size="10" fill="#8b949e">분산 원장 (모든 노드 보유)</text>
+
+      <text x="480" y="165" font-size="11" fill="#e6edf3" font-weight="600">🔑 소유 증명</text>
+      <text x="495" y="182" font-size="10" fill="#8b949e">암호학적 키 (개인키 = 소유권)</text>
+
+      <text x="480" y="205" font-size="11" fill="#e6edf3" font-weight="600">🔄 이전 방식</text>
+      <text x="495" y="222" font-size="10" fill="#8b949e">P2P 트랜잭션 (스마트 컨트랙트)</text>
+
+      <text x="480" y="245" font-size="10" fill="#7ee787">예: 스테이블코인 · NFT · 토큰증권(STO)</text>
+    </svg>
+    <div class="caption">디지털화는 "기관이 보관하는 전자 기록", 토큰화는 "본인이 직접 보유하는 암호학적 자산"</div>
+  </div>
+
+  <h3>4.2 핵심 차이점 — 9가지 측면</h3>
+  <table>
+    <thead><tr><th>측면</th><th>디지털화 (전자 기록)</th><th>토큰화 (블록체인 토큰)</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>보관 주체</strong></td>
+        <td>중앙기관 (예탁결제원·은행·증권사)</td>
+        <td>분산 원장 (사용자 또는 위탁 지갑)</td>
+      </tr>
+      <tr>
+        <td><strong>소유 증명</strong></td>
+        <td>기관의 장부 기록 = "내 잔액"</td>
+        <td>개인키 보유 = "내 자산"</td>
+      </tr>
+      <tr>
+        <td><strong>이전 메커니즘</strong></td>
+        <td>기관 시스템 경유 (DvP·중개)</td>
+        <td>P2P 즉시 (스마트 컨트랙트)</td>
+      </tr>
+      <tr>
+        <td><strong>분할 가능성</strong></td>
+        <td>액면가·최소 단위 제약</td>
+        <td>자유로움 (특히 <a href="#erc-3525">ERC-3525</a>)</td>
+      </tr>
+      <tr>
+        <td><strong>운영 시간</strong></td>
+        <td>영업시간·결제일 제약</td>
+        <td>24/7/365</td>
+      </tr>
+      <tr>
+        <td><strong>프로그래머블</strong></td>
+        <td>제한적 (배치 처리)</td>
+        <td>완전 — 자동 배당·조건부 이전·DvP</td>
+      </tr>
+      <tr>
+        <td><strong>글로벌 접근성</strong></td>
+        <td>국가·기관별 단절</td>
+        <td>인터넷만 있으면 무제한</td>
+      </tr>
+      <tr>
+        <td><strong>법적 효력</strong></td>
+        <td>명확 (법령으로 보장)</td>
+        <td>진화 중 (국가별 상이)</td>
+      </tr>
+      <tr>
+        <td><strong>검열·강제 회수</strong></td>
+        <td>기관·법원이 가능</td>
+        <td>설계에 따라 다름 (<a href="#erc-1400">ERC-1400</a>은 가능)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>4.3 분야별 비교 — 같은 자산의 두 가지 모습</h3>
+
+  <h4>💰 화폐</h4>
+  <table>
+    <tbody>
+      <tr>
+        <td><strong>디지털화</strong></td>
+        <td>은행 예금 잔액 = 은행 부채 · 인터넷뱅킹·계좌이체 · 한은금융망(BOK-Wire+) · CHIPS·Fedwire</td>
+      </tr>
+      <tr>
+        <td><strong>토큰화</strong></td>
+        <td>스테이블코인(USDC·DAI) · CBDC(<a href="cbdc.html">한강 예금토큰</a>) · 24/7 P2P · 프로그래머블 (바우처·조건부)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>📈 주식 · 증권</h4>
+  <table>
+    <tbody>
+      <tr>
+        <td><strong>디지털화</strong></td>
+        <td>전자증권 (예탁결제원 집중 관리) · HTS·MTS · T+2 결제 · 의결권 위임 절차 복잡</td>
+      </tr>
+      <tr>
+        <td><strong>토큰화</strong></td>
+        <td>토큰증권(STO, <a href="#erc-1400">ERC-1400</a>) · 즉시 결제 (DvP) · 분할 투자 (1주의 1/100 등) · 자동 배당</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>🏛️ 채권</h4>
+  <table>
+    <tbody>
+      <tr>
+        <td><strong>디지털화</strong></td>
+        <td>한국예탁결제원 등록 · 액면가 단위 발행 · 만기 시 일괄 상환 · 중개수수료</td>
+      </tr>
+      <tr>
+        <td><strong>토큰화</strong></td>
+        <td><a href="#erc-3525">ERC-3525 SFT</a>로 발행 — slot(만기·이자율) + value(액면) · <strong>채권을 잘게 쪼개 거래 가능</strong> · 자동 이자 지급</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>🏠 부동산</h4>
+  <table>
+    <tbody>
+      <tr>
+        <td><strong>디지털화</strong></td>
+        <td>전자등기 (법원) · 명의 이전 절차 (인지세·등록세) · 분할 소유 어려움</td>
+      </tr>
+      <tr>
+        <td><strong>토큰화</strong></td>
+        <td>부동산 NFT/SFT · <strong>건물 1채를 1만 토큰으로 쪼개 분할 투자</strong> · 임대료 자동 분배 · 다만 법적 효력은 진화 중</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>🎓 신원·자격증</h4>
+  <table>
+    <tbody>
+      <tr>
+        <td><strong>디지털화</strong></td>
+        <td>공인인증서 · 모바일 신분증 · 정부24 · 발급 기관이 검증 책임</td>
+      </tr>
+      <tr>
+        <td><strong>토큰화</strong></td>
+        <td>DID(분산 신원) · W3C VC(Verifiable Credentials) · Soulbound Token(<a href="https://eips.ethereum.org/EIPS/eip-5192">EIP-5192</a>) · <strong>선택적 공개</strong> (ZK 활용)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>4.4 토큰화가 제공하는 새로운 가치</h3>
+  <ul>
+    <li><strong>분할(Fractionalization)</strong>: 고가 자산을 작은 단위로 → 빌딩 1채 → 1만 토큰으로 1만 명이 공동 투자</li>
+    <li><strong>유동성 증대</strong>: 비유동 자산(부동산·미술품·비상장주)을 거래 가능한 토큰으로</li>
+    <li><strong>24/7 거래</strong>: 시간대·휴일 제약 해소</li>
+    <li><strong>자동화 (Composability)</strong>: 배당·이자·환매 등이 코드로 자동 실행</li>
+    <li><strong>DvP/PvP 동시이행</strong>: 결제와 자산이전이 atomic하게 결합 → 결제실패 위험 0</li>
+    <li><strong>글로벌 접근</strong>: 국경·기관 제약 없는 투자자 풀</li>
+    <li><strong>투명한 이력</strong>: 모든 거래·소유권 변동이 영구 기록</li>
+    <li><strong>프로그래머블 권리</strong>: 일정 조건 충족 시 자동 권리 행사 (예: 베스팅 종료 시 자동 이전)</li>
+  </ul>
+
+  <h3>4.5 토큰화의 한계 — 디지털화가 여전히 우월한 영역</h3>
+  <div class="note warn">
+    <ul style="margin: 8px 0;">
+      <li><strong>법적 정합성</strong>: "토큰을 소유하면 법적으로 자산을 소유한다"는 명확한 법령 정비 진행 중</li>
+      <li><strong>오라클·신뢰 문제</strong>: 부동산 토큰은 실제 등기와 어떻게 연결되는가? (Off-chain ↔ On-chain 연결)</li>
+      <li><strong>강제 회수의 어려움</strong>: 법원 명령으로 자산 동결·환수가 디지털화에서는 쉽지만 토큰은 별도 설계 필요</li>
+      <li><strong>UX·키 관리</strong>: 일반 사용자에게 개인키 관리는 여전히 큰 부담</li>
+      <li><strong>회계·세무 처리</strong>: 기존 시스템과의 정합성, 평가·과세 기준 미성숙</li>
+      <li><strong>운영 비용</strong>: 가스비, 노드 운영, 보안 감사 등이 추가 비용</li>
+      <li><strong>규제 리스크</strong>: 증권성 판단, AML/CFT, 국경간 규제 갈등</li>
+    </ul>
+  </div>
+
+  <h3>4.6 한국 토큰증권(STO) 가이드라인</h3>
+  <div class="card">
+    <p>
+      <strong>2023년 2월 금융위원회는 "토큰증권(ST)" 발행·유통 가이드라인</strong>을 발표했다.
+      현행 자본시장법 체계 내에서 분산원장 기술을 활용해 증권을 발행할 수 있도록 한 정책 변화.
+    </p>
+    <ul>
+      <li><strong>적용 대상</strong>: 자본시장법상 증권으로 분류되는 디지털자산</li>
+      <li><strong>발행 방식</strong>: 전자증권법 개정으로 분산원장에서의 증권 등록 허용 추진</li>
+      <li><strong>유통 인프라</strong>: 증권사·예탁결제원·KRX 등 기존 인프라와 연계</li>
+      <li><strong>혁신금융서비스(샌드박스)</strong>: STO 실증사업 다수 진행 중</li>
+    </ul>
+    <p>
+      한국은행의 <a href="cbdc.html">한강 프로젝트(예금토큰)</a>와 결합되면 <strong>토큰증권 + CBDC + DvP 자동 결제</strong>가
+      단일 인프라에서 실현될 수 있다. 이것이 자산 토큰화의 궁극적 가치 — 결제와 자산 이전의 통합 — 이다.
+    </p>
+    <p style="font-size:0.85rem; color:var(--fg-dim);">
+      📚 참고:
+      <a href="https://www.fsc.go.kr/no010101/79412">금융위 토큰증권 가이드라인</a> ·
+      <a href="https://thesecuritytokenstandard.org/">Security Token Standard</a>
+    </p>
+  </div>
+
+  <div class="note">
+    <strong>한 줄 정리:</strong>
+    디지털화 = "기관의 전자 장부",
+    토큰화 = "본인이 직접 보유하는 프로그래머블 자산".
+    토큰화가 우월한 것이 아니라 <em>각각의 강점이 다른 영역</em>이며,
+    실제로는 두 시스템이 결합된 하이브리드 형태로 발전 중이다.
+  </div>
+</section>
+
+<section id="patterns">
+  <h2>5. 컨트랙트 디자인 패턴</h2>
+
+  <h3>4.1 Proxy Upgrade Pattern</h3>
+  <p>
+    배포된 컨트랙트는 불변이 원칙이지만, 실무에서는 버그 수정·기능 추가가 필요하다.
+    Proxy 패턴은 사용자가 보는 주소(Proxy)를 그대로 두고, 내부 구현(Implementation)만 교체한다.
+  </p>
+  <table>
+    <thead><tr><th>패턴</th><th>특징</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Transparent Proxy</strong></td><td>admin/user 함수 분리 (OpenZeppelin 표준)</td></tr>
+      <tr><td><strong>UUPS</strong> (EIP-1822)</td><td>업그레이드 로직을 구현체에 둠 (가스 효율)</td></tr>
+      <tr><td><strong>Diamond</strong> (EIP-2535)</td><td>여러 facet(구현)을 결합, 무제한 크기</td></tr>
+      <tr><td><strong>Beacon Proxy</strong></td><td>여러 프록시가 단일 beacon 공유</td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.2 Factory Pattern</h3>
+  <p>새 컨트랙트를 동적으로 생성. <code>CREATE2</code>는 결정론적 주소 계산이 가능해 카운터팩추얼 배포에 사용.</p>
+<pre><code>// CREATE2: 배포 전에 주소 예측 가능
+address computed = address(uint160(uint256(keccak256(abi.encodePacked(
+    bytes1(0xff), factory, salt, keccak256(bytecode)
+)))));</code></pre>
+
+  <h3>4.3 Pull over Push 패턴</h3>
+  <p>
+    돈을 직접 보내지 말고(<em>push</em>), 수신자가 가져가게 하라(<em>pull</em>).
+    수신자가 컨트랙트일 경우 revert로 전체 트랜잭션이 실패하는 사고를 막을 수 있다.
+  </p>
+
+  <h3>4.4 Checks-Effects-Interactions</h3>
+  <p>Reentrancy 방지의 황금 규칙: 검사 → 상태 변경 → 외부 호출 순서를 지킬 것.</p>
+<pre><code>function withdraw(uint256 amount) external {
+    // 1. Checks
+    require(balances[msg.sender] >= amount, "Insufficient");
+
+    // 2. Effects (외부 호출 전에 상태 갱신)
+    balances[msg.sender] -= amount;
+
+    // 3. Interactions (마지막에)
+    (bool ok, ) = msg.sender.call{value: amount}("");
+    require(ok, "Transfer failed");
+}</code></pre>
+</section>
+
+<section id="security">
+  <h2>6. 보안 함정 심층</h2>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://swcregistry.io/">SWC Registry</a> ·
+    <a href="https://consensys.github.io/smart-contract-best-practices/">ConsenSys Best Practices</a> ·
+    <a href="https://github.com/crytic/slither">Slither 정적 분석</a>
+  </p>
+
+  <table>
+    <thead><tr><th>취약점</th><th>설명</th><th>방어</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Reentrancy</strong></td>
+        <td>외부 호출이 다시 같은 함수로 돌아와 상태 조작 (DAO 해킹, 약 6천만 달러)</td>
+        <td>CEI 패턴, ReentrancyGuard</td>
+      </tr>
+      <tr>
+        <td><strong>Integer Overflow</strong></td>
+        <td>uint256 한계 초과로 0으로 wrap-around</td>
+        <td>Solidity 0.8+ 기본 체크, unchecked 신중 사용</td>
+      </tr>
+      <tr>
+        <td><strong>Front-running / MEV</strong></td>
+        <td>mempool의 트랜잭션을 보고 더 높은 가스로 새치기</td>
+        <td>Commit-Reveal, Flashbots, 슬리피지 제한</td>
+      </tr>
+      <tr>
+        <td><strong>Oracle Manipulation</strong></td>
+        <td>DEX 단일 시점 가격을 가격 피드로 사용 → 플래시론으로 조작</td>
+        <td>TWAP, Chainlink, 다중 oracle</td>
+      </tr>
+      <tr>
+        <td><strong>Access Control</strong></td>
+        <td>onlyOwner 누락, role 검사 우회</td>
+        <td>OpenZeppelin AccessControl, 정확한 modifier</td>
+      </tr>
+      <tr>
+        <td><strong>Signature Replay</strong></td>
+        <td>같은 서명을 여러 번 사용</td>
+        <td>nonce, deadline, chainId 포함</td>
+      </tr>
+      <tr>
+        <td><strong>Flash Loan Attack</strong></td>
+        <td>무담보 대출 + 시세 조작 + 청산을 한 블록에 (Cream, bZx 등)</td>
+        <td>TWAP oracle, atomic invariant 검증</td>
+      </tr>
+      <tr>
+        <td><strong>Phishing via approve</strong></td>
+        <td>악성 사이트가 unlimited approve 요청</td>
+        <td>Permit (ERC-2612) 활용, 지갑 경고 강화</td>
+      </tr>
+      <tr>
+        <td><strong>Storage Collision</strong></td>
+        <td>Proxy 업그레이드 시 슬롯 충돌</td>
+        <td>Namespaced Storage (EIP-7201), gap 변수</td>
+      </tr>
+      <tr>
+        <td><strong>Delegatecall to untrusted</strong></td>
+        <td>임의 코드를 자기 컨텍스트에서 실행 → 자산 탈취</td>
+        <td>delegatecall 절대 신뢰된 코드만</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>감사(Audit) 체크리스트 핵심</h3>
+  <ul>
+    <li>외부 호출 후 상태 변경 → CEI 위배 여부</li>
+    <li>모든 함수에 적절한 access modifier</li>
+    <li>0 주소·자기 자신 주소 입력 처리</li>
+    <li>이벤트 누락 (인덱서 깨짐 위험)</li>
+    <li>가격 oracle의 신뢰성과 지연 처리</li>
+    <li>업그레이드 가능 컨트랙트의 storage layout 호환성</li>
+    <li>가스 한도·외부 호출 실패 처리</li>
+    <li>고정 소수점 산술의 정밀도 손실</li>
+    <li>알려진 SWC ID(<a href="https://swcregistry.io/">SWC Registry</a>) 전수 확인</li>
+  </ul>
+
+  <h3>도구 체인</h3>
+  <table>
+    <thead><tr><th>도구</th><th>유형</th><th>특징</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://github.com/crytic/slither">Slither</a></td><td>정적 분석</td><td>Trail of Bits, 빠른 스캔</td></tr>
+      <tr><td><a href="https://mythril-classic.readthedocs.io/">Mythril</a></td><td>심볼릭 실행</td><td>EVM 바이트코드 분석</td></tr>
+      <tr><td><a href="https://github.com/crytic/echidna">Echidna</a></td><td>퍼징</td><td>속성 기반 테스트</td></tr>
+      <tr><td><a href="https://book.getfoundry.sh/forge/fuzz-testing">Foundry Fuzzing</a></td><td>퍼징</td><td>Forge 내장</td></tr>
+      <tr><td><a href="https://www.certora.com/">Certora</a></td><td>형식 검증</td><td>수학적 증명 (상용)</td></tr>
+      <tr><td><a href="https://tenderly.co/">Tenderly</a></td><td>시뮬레이션·모니터링</td><td>프로덕션 추적</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="page-nav">
+  <a class="prev" href="chains.html">
+    <div class="dir">← 이전</div>
+    <div class="ttl">PART 2 · 체인별 특징</div>
+  </a>
+  <a class="next" href="bridges.html">
+    <div class="dir">다음 →</div>
+    <div class="ttl">PART 4 · 브릿지</div>
+  </a>
+</div>
+
+</main>
+
+<footer>© 2026 Blockchain Technical Guide · PART 3/6</footer>
+
+</body>
+</html>

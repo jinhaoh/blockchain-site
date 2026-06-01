@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>주요 체인별 특징 — 블록체인 가이드</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site">
+  <h1>PART 2 · 주요 체인별 특징</h1>
+  <p>Bitcoin · Ethereum · Solana · Cosmos · Polkadot · L2 · 엔터프라이즈 DLT 비교</p>
+  <div class="breadcrumb"><a href="index.html">홈</a> › 체인별 특징</div>
+</header>
+
+<nav class="top">
+  <ul>
+    <li><a href="index.html">홈</a></li>
+    <li><a href="basics.html">기초</a></li>
+    <li><a href="chains.html" class="active">체인별 특징</a></li>
+    <li><a href="contracts.html">스마트 컨트랙트</a></li>
+    <li><a href="bridges.html">브릿지</a></li>
+    <li><a href="cbdc.html">CBDC</a></li>
+    <li><a href="x402.html">x402</a></li>
+    <li><a href="limits.html">한계와 비교</a></li>
+    <li><a href="references.html">참고자료</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section>
+  <h2>주요 블록체인 체인별 특징</h2>
+  <p>
+    체인은 합의 알고리즘, 데이터 모델, VM, 거버넌스, 목적에 따라 매우 다른 설계를 갖는다.
+    동일한 "블록체인"이지만 트레이드오프가 다르므로, 유스케이스에 맞는 선택이 필요하다.
+  </p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://chainlist.org/">ChainList</a> ·
+    <a href="https://l2beat.com/">L2BEAT</a> ·
+    <a href="https://defillama.com/chains">DefiLlama Chains</a> ·
+    <a href="https://messari.io/">Messari Research</a>
+  </p>
+</section>
+
+<section>
+  <h3>Layer 1 — 퍼블릭 메인넷</h3>
+  <div class="chain-grid">
+    <div class="chain-card">
+      <h4>Bitcoin (BTC)</h4>
+      <div class="tagline">디지털 금 · 가치 저장 수단의 표준</div>
+      <dl>
+        <dt>합의</dt><dd>Proof of Work (SHA-256d)</dd>
+        <dt>데이터 모델</dt><dd>UTXO</dd>
+        <dt>스크립팅</dt><dd>Bitcoin Script (튜링 불완전)</dd>
+        <dt>블록 시간</dt><dd>약 10분</dd>
+        <dt>TPS</dt><dd>약 7 (L1)</dd>
+        <dt>주요 확장</dt><dd>Lightning Network, Taproot, Ordinals/BRC-20</dd>
+        <dt>발행 정책</dt><dd>2,100만 BTC 상한, 4년마다 반감기</dd>
+      </dl>
+      <div class="links">
+        <a href="https://bitcoin.org/">bitcoin.org</a>
+        <a href="https://github.com/bitcoin/bitcoin">GitHub</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>Ethereum (ETH)</h4>
+      <div class="tagline">스마트 컨트랙트의 사실상 표준</div>
+      <dl>
+        <dt>합의</dt><dd>Proof of Stake (Gasper)</dd>
+        <dt>데이터 모델</dt><dd>Account</dd>
+        <dt>VM</dt><dd>EVM (Solidity, Vyper)</dd>
+        <dt>블록 시간</dt><dd>12초 slot, 32 slot = 1 epoch</dd>
+        <dt>TPS</dt><dd>L1 ~15, L2 포함 10,000+</dd>
+        <dt>L2</dt><dd>Arbitrum, Optimism, Base, zkSync</dd>
+        <dt>거버넌스</dt><dd>EIP 프로세스 + 사회적 합의</dd>
+      </dl>
+      <div class="links">
+        <a href="https://ethereum.org/">ethereum.org</a>
+        <a href="https://eips.ethereum.org/">EIPs</a>
+        <a href="https://etherscan.io/">Etherscan</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>Solana (SOL)</h4>
+      <div class="tagline">고성능 단일 글로벌 상태 머신</div>
+      <dl>
+        <dt>합의</dt><dd>PoS + PoH (Proof of History)</dd>
+        <dt>데이터 모델</dt><dd>Account (병렬 실행)</dd>
+        <dt>실행</dt><dd>Sealevel — 병렬 처리, SVM</dd>
+        <dt>언어</dt><dd>Rust, C, Anchor</dd>
+        <dt>블록 시간</dt><dd>약 400ms</dd>
+        <dt>실측 TPS</dt><dd>2,000~5,000</dd>
+        <dt>특징</dt><dd>저수수료, 노드 요구사항 높음</dd>
+      </dl>
+      <div class="links">
+        <a href="https://solana.com/">solana.com</a>
+        <a href="https://docs.solana.com/">Docs</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>Cosmos (ATOM)</h4>
+      <div class="tagline">앱체인 인터넷 · IBC 연결</div>
+      <dl>
+        <dt>합의</dt><dd>Tendermint BFT</dd>
+        <dt>SDK</dt><dd>Cosmos SDK (Go)</dd>
+        <dt>VM</dt><dd>CosmWasm (Rust) / SDK 모듈</dd>
+        <dt>상호운용</dt><dd>IBC — 가장 성숙한 네이티브 브릿지</dd>
+        <dt>대표 체인</dt><dd>Cosmos Hub, Osmosis, Celestia, dYdX v4</dd>
+        <dt>특징</dt><dd>각 체인 독립 주권</dd>
+      </dl>
+      <div class="links">
+        <a href="https://cosmos.network/">cosmos.network</a>
+        <a href="https://www.ibcprotocol.dev/">IBC</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>Polkadot (DOT)</h4>
+      <div class="tagline">공유 보안 + 파라체인 모델</div>
+      <dl>
+        <dt>합의</dt><dd>BABE + GRANDPA</dd>
+        <dt>구조</dt><dd>Relay Chain + Parachain</dd>
+        <dt>프레임워크</dt><dd>Substrate (Rust)</dd>
+        <dt>상호운용</dt><dd>XCM</dd>
+        <dt>특징</dt><dd>파라체인이 Relay 검증자 풀 공유</dd>
+      </dl>
+      <div class="links">
+        <a href="https://polkadot.network/">polkadot.network</a>
+        <a href="https://substrate.io/">Substrate</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>Avalanche (AVAX)</h4>
+      <div class="tagline">서브넷으로 확장하는 EVM 호환 L1</div>
+      <dl>
+        <dt>합의</dt><dd>Snowman / Avalanche 합의</dd>
+        <dt>구조</dt><dd>X (자산), P (플랫폼), C (EVM)</dd>
+        <dt>서브넷</dt><dd>커스텀 VM·검증자로 별도 체인 발행</dd>
+        <dt>최종성</dt><dd>1초 이내 결정적</dd>
+      </dl>
+      <div class="links">
+        <a href="https://www.avax.network/">avax.network</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>Cardano (ADA)</h4>
+      <div class="tagline">학술 동료심사 기반 PoS</div>
+      <dl>
+        <dt>합의</dt><dd>Ouroboros (수학적 보안 증명)</dd>
+        <dt>데이터 모델</dt><dd>EUTXO</dd>
+        <dt>VM</dt><dd>Plutus (Haskell)</dd>
+        <dt>특징</dt><dd>형식 검증 친화적</dd>
+      </dl>
+      <div class="links">
+        <a href="https://cardano.org/">cardano.org</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>Sui · Aptos</h4>
+      <div class="tagline">Move 언어 · Facebook Diem 계보</div>
+      <dl>
+        <dt>언어</dt><dd>Move — 자원(Resource) 중심, 선형 타입</dd>
+        <dt>Sui</dt><dd>객체 중심, Narwhal+Bullshark</dd>
+        <dt>Aptos</dt><dd>AptosBFT, Block-STM</dd>
+        <dt>차별점</dt><dd>자산 = 리소스 타입 안전성</dd>
+      </dl>
+      <div class="links">
+        <a href="https://sui.io/">Sui</a>
+        <a href="https://aptosfoundation.org/">Aptos</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>TON (The Open Network)</h4>
+      <div class="tagline">Telegram 통합 · 9억 사용자 잠재 지갑</div>
+      <dl>
+        <dt>합의</dt><dd>PoS BFT, 무한 샤딩</dd>
+        <dt>VM</dt><dd>TVM (FunC / Tact)</dd>
+        <dt>특징</dt><dd>비동기 메시징, 낮은 수수료, 텔레그램 미니앱</dd>
+      </dl>
+      <div class="links">
+        <a href="https://ton.org/">ton.org</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h3>Layer 2 — Ethereum 확장 레이어</h3>
+  <div class="chain-grid">
+    <div class="chain-card">
+      <h4>Arbitrum · Optimism · Base</h4>
+      <div class="tagline">Optimistic Rollup — 7일 challenge</div>
+      <dl>
+        <dt>방식</dt><dd>실행은 L2, 데이터는 L1, 부정 증명</dd>
+        <dt>호환</dt><dd>EVM Equivalent / Compatible</dd>
+        <dt>Base</dt><dd>Coinbase가 OP Stack 기반 운영</dd>
+        <dt>한계</dt><dd>L1 출금 7일 지연</dd>
+      </dl>
+      <div class="links">
+        <a href="https://arbitrum.io/">Arbitrum</a>
+        <a href="https://www.optimism.io/">Optimism</a>
+        <a href="https://base.org/">Base</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>zkSync · Scroll · Linea</h4>
+      <div class="tagline">ZK Rollup — 영지식 증명으로 즉시 정산</div>
+      <dl>
+        <dt>방식</dt><dd>SNARK/STARK로 압축 증명</dd>
+        <dt>장점</dt><dd>출금 지연 없음, 데이터 효율</dd>
+        <dt>단점</dt><dd>증명 생성 비용·시간</dd>
+        <dt>분류</dt><dd>Type 1 (Eth Equivalent) → Type 4</dd>
+      </dl>
+      <div class="links">
+        <a href="https://zksync.io/">zkSync</a>
+        <a href="https://scroll.io/">Scroll</a>
+        <a href="https://linea.build/">Linea</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>Starknet</h4>
+      <div class="tagline">Cairo 언어 기반 STARK Rollup</div>
+      <dl>
+        <dt>증명</dt><dd>STARK (양자내성, 신뢰셋업 불필요)</dd>
+        <dt>언어</dt><dd>Cairo</dd>
+        <dt>특징</dt><dd>비-EVM, Kakarot로 EVM 호환층</dd>
+      </dl>
+      <div class="links">
+        <a href="https://www.starknet.io/">starknet.io</a>
+        <a href="https://book.cairo-lang.org/">Cairo Book</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h3>엔터프라이즈 · 퍼미션드 DLT</h3>
+  <div class="chain-grid">
+    <div class="chain-card">
+      <h4>Hyperledger Fabric</h4>
+      <div class="tagline">Linux Foundation · 금융/공급망 표준</div>
+      <dl>
+        <dt>합의</dt><dd>Pluggable (Raft, BFT-SMaRt)</dd>
+        <dt>모델</dt><dd>채널 — 부분 참여자만 보는 프라이빗 원장</dd>
+        <dt>체인코드</dt><dd>Go, Java, Node.js</dd>
+        <dt>적용</dt><dd>한국은행 모의실험(1단계), IBM Food Trust</dd>
+      </dl>
+      <div class="links">
+        <a href="https://www.hyperledger.org/projects/fabric">Fabric</a>
+        <a href="https://hyperledger-fabric.readthedocs.io/">Docs</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>R3 Corda</h4>
+      <div class="tagline">금융권 P2P 거래 특화</div>
+      <dl>
+        <dt>구조</dt><dd>UTXO 유사 + Notary (글로벌 합의 없음)</dd>
+        <dt>언어</dt><dd>Kotlin / Java (JVM)</dd>
+        <dt>특징</dt><dd>당사자 간에만 데이터 공유</dd>
+        <dt>적용</dt><dd>HSBC FX, 마젤란 보험</dd>
+      </dl>
+      <div class="links">
+        <a href="https://www.r3.com/">r3.com</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>Quorum / Besu</h4>
+      <div class="tagline">기관용 Ethereum 포크</div>
+      <dl>
+        <dt>합의</dt><dd>IBFT, QBFT, Raft</dd>
+        <dt>특징</dt><dd>EVM 호환, 프라이빗 트랜잭션</dd>
+        <dt>운영</dt><dd>Besu: Hyperledger 산하</dd>
+      </dl>
+      <div class="links">
+        <a href="https://www.hyperledger.org/projects/besu">Besu</a>
+        <a href="https://docs.goquorum.consensys.io/">Quorum</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h3>체인 선택 가이드</h3>
+  <table>
+    <thead>
+      <tr><th>요구사항</th><th>추천 카테고리</th><th>예시</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>최대 탈중앙화·가치 저장</td><td>비트코인 계열</td><td>Bitcoin, Litecoin</td></tr>
+      <tr><td>가장 큰 DeFi/NFT 생태계</td><td>Ethereum L1 + L2</td><td>ETH, Arbitrum, Base</td></tr>
+      <tr><td>고빈도·저수수료 결제</td><td>고성능 L1 / L2</td><td>Solana, Sui, Base</td></tr>
+      <tr><td>자체 체인·앱체인</td><td>Cosmos SDK / Polkadot Parachain</td><td>dYdX v4, Polkadot</td></tr>
+      <tr><td>형식 검증·자산 안전성</td><td>Move 계열 또는 Cardano</td><td>Sui, Aptos, Cardano</td></tr>
+      <tr><td>은행·기관 컨소시엄</td><td>퍼미션드 DLT</td><td>Fabric, Corda, Besu</td></tr>
+      <tr><td>CBDC·예금토큰</td><td>퍼미션드 + 프로그래머블</td><td>한강(BoK), Agora 플랫폼</td></tr>
+      <tr><td>ZK 프라이버시·압축</td><td>ZK Rollup / Mina</td><td>zkSync, Scroll, Mina</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="page-nav">
+  <a class="prev" href="basics.html">
+    <div class="dir">← 이전</div>
+    <div class="ttl">PART 1 · 기초</div>
+  </a>
+  <a class="next" href="contracts.html">
+    <div class="dir">다음 →</div>
+    <div class="ttl">PART 3 · 스마트 컨트랙트</div>
+  </a>
+</div>
+
+</main>
+
+<footer>© 2026 Blockchain Technical Guide · PART 2/6</footer>
+
+</body>
+</html>

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>x402 결제 프로토콜 — 블록체인 가이드</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site">
+  <h1>PART 6 · x402: HTTP 기반 결제 프로토콜</h1>
+  <p>AI 에이전트 경제를 위한 머신 간 결제 표준 · EIP-3009 가스리스 결제</p>
+  <div class="breadcrumb"><a href="index.html">홈</a> › x402</div>
+</header>
+
+<nav class="top">
+  <ul>
+    <li><a href="index.html">홈</a></li>
+    <li><a href="basics.html">기초</a></li>
+    <li><a href="chains.html">체인별 특징</a></li>
+    <li><a href="contracts.html">스마트 컨트랙트</a></li>
+    <li><a href="bridges.html">브릿지</a></li>
+    <li><a href="cbdc.html">CBDC</a></li>
+    <li><a href="x402.html" class="active">x402</a></li>
+    <li><a href="limits.html">한계와 비교</a></li>
+    <li><a href="references.html">참고자료</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section>
+  <h2>x402 소개</h2>
+  <p>
+    <strong>x402</strong>는 1997년 HTTP/1.1 명세에서 예약만 되어 있던 <code>HTTP 402 Payment Required</code>
+    상태 코드를 실제로 작동하게 만든 오픈 결제 프로토콜이다. 2025년 Coinbase가 공개했으며,
+    AI 에이전트와 머신 간 결제(machine-to-machine), API 종량 과금을 1차 타깃으로 한다.
+  </p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://www.x402.org/">x402.org 공식</a> ·
+    <a href="https://github.com/coinbase/x402">coinbase/x402 GitHub</a> ·
+    <a href="https://eips.ethereum.org/EIPS/eip-3009">EIP-3009</a> ·
+    <a href="https://eips.ethereum.org/EIPS/eip-712">EIP-712</a> ·
+    <a href="https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.2">RFC 7231 §6.5.2</a> ·
+    <a href="https://www.circle.com/en/usdc">Circle USDC</a>
+  </p>
+</section>
+
+<section id="micropayments">
+  <h2>1. 마이크로페이먼트와 블록체인</h2>
+  <p>
+    x402의 등장 배경을 이해하려면 먼저 <strong>마이크로페이먼트(Micropayment)</strong>가 무엇이고
+    왜 전통 결제 시스템에서는 불가능했는지를 살펴볼 필요가 있다.
+  </p>
+
+  <h3>1.1 마이크로페이먼트란?</h3>
+  <p>
+    일반적으로 <strong>$0.01 ~ $1 (수십원 ~ 천원) 수준의 소액 결제</strong>를 의미한다.
+    더 작은 단위($0.001 미만)는 <em>나노페이먼트(Nanopayment)</em>로 부르기도 한다.
+  </p>
+
+  <h3>1.2 왜 전통 결제망에서는 안 되는가?</h3>
+  <div class="diagram">
+    <svg viewBox="0 0 880 280" xmlns="http://www.w3.org/2000/svg">
+      <text x="440" y="25" text-anchor="middle" font-size="14" font-weight="700" fill="#f85149">⚠️ 전통 결제망의 "마이크로페이먼트 불가능 함정"</text>
+
+      <!-- Credit card -->
+      <rect x="40" y="60" width="260" height="170" rx="10" fill="#1a2332" stroke="#f85149" stroke-width="2"/>
+      <text x="170" y="85" text-anchor="middle" font-size="13" font-weight="700" fill="#f85149">💳 신용카드</text>
+      <text x="55" y="115" font-size="11" fill="#e6edf3">고정 수수료: <tspan fill="#ffa657" font-weight="700">$0.30+</tspan></text>
+      <text x="55" y="135" font-size="11" fill="#e6edf3">비율 수수료: <tspan fill="#ffa657" font-weight="700">2~3%</tspan></text>
+      <text x="55" y="158" font-size="10" fill="#8b949e">→ $0.10 결제 시 수수료가</text>
+      <text x="55" y="174" font-size="10" fill="#8b949e">  결제액의 300%</text>
+      <text x="55" y="200" font-size="10" fill="#f85149" font-weight="700">❌ $1 미만 결제 사실상 불가</text>
+      <text x="55" y="218" font-size="10" fill="#f85149">❌ 차지백 위험으로 익명 결제 X</text>
+
+      <!-- SWIFT -->
+      <rect x="320" y="60" width="240" height="170" rx="10" fill="#1a2332" stroke="#f85149" stroke-width="2"/>
+      <text x="440" y="85" text-anchor="middle" font-size="13" font-weight="700" fill="#f85149">🏦 SWIFT 국제송금</text>
+      <text x="335" y="115" font-size="11" fill="#e6edf3">건당 수수료: <tspan fill="#ffa657" font-weight="700">$25~50</tspan></text>
+      <text x="335" y="135" font-size="11" fill="#e6edf3">환차익 마진 추가</text>
+      <text x="335" y="158" font-size="10" fill="#8b949e">→ $10 송금 시 수수료가</text>
+      <text x="335" y="174" font-size="10" fill="#8b949e">  결제액의 250%+</text>
+      <text x="335" y="200" font-size="10" fill="#f85149" font-weight="700">❌ 소액 국제송금 불가</text>
+      <text x="335" y="218" font-size="10" fill="#f85149">❌ 1~5 영업일 지연</text>
+
+      <!-- Bank transfer -->
+      <rect x="580" y="60" width="260" height="170" rx="10" fill="#1a2332" stroke="#f85149" stroke-width="2"/>
+      <text x="710" y="85" text-anchor="middle" font-size="13" font-weight="700" fill="#f85149">🏧 은행 이체</text>
+      <text x="595" y="115" font-size="11" fill="#e6edf3">국내 무료 (한국)</text>
+      <text x="595" y="135" font-size="11" fill="#e6edf3">하지만:</text>
+      <text x="595" y="158" font-size="10" fill="#8b949e">→ 영업시간 외 지연</text>
+      <text x="595" y="174" font-size="10" fill="#8b949e">→ 계좌 정보 노출</text>
+      <text x="595" y="200" font-size="10" fill="#f85149" font-weight="700">❌ 자동·고빈도 결제 X</text>
+      <text x="595" y="218" font-size="10" fill="#f85149">❌ 글로벌 작동 X</text>
+
+      <text x="440" y="265" text-anchor="middle" font-size="11" fill="#8b949e">결과: API당 과금·콘텐츠 분당 결제·AI 에이전트 자율결제 등은 <strong>구조적으로 불가능</strong></text>
+    </svg>
+    <div class="caption">전통 결제망은 "큰 결제"에 최적화되어 마이크로페이먼트 시장을 외면해왔다</div>
+  </div>
+
+  <h3>1.3 블록체인이 가능하게 하는 것</h3>
+  <table>
+    <thead>
+      <tr><th>요건</th><th>전통 결제</th><th>블록체인 (특히 L2·스테이블코인)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>건당 수수료</td><td>$0.30~$50</td><td><strong>$0.001~$0.10</strong> (L2 기준)</td></tr>
+      <tr><td>최소 결제 단위</td><td>약 $1~$10</td><td><strong>$0.0001 이하 가능</strong></td></tr>
+      <tr><td>정산 시간</td><td>2일~5일</td><td><strong>수초~수분</strong></td></tr>
+      <tr><td>운영시간</td><td>영업시간</td><td><strong>24/7/365</strong></td></tr>
+      <tr><td>자동화</td><td>제한적</td><td><strong>스마트 컨트랙트 무제한</strong></td></tr>
+      <tr><td>글로벌</td><td>국가별 단절</td><td><strong>네트워크 어디서나</strong></td></tr>
+    </tbody>
+  </table>
+
+  <h3>1.4 마이크로페이먼트의 새로운 비즈니스 모델</h3>
+  <div class="chain-grid">
+    <div class="chain-card">
+      <h4>📰 콘텐츠 per-article 결제</h4>
+      <div class="tagline">광고 없이 기사당 ₩100</div>
+      <dl>
+        <dt>현재</dt><dd>월 구독 모델만 가능 (광고로 보완)</dd>
+        <dt>마이크로페이먼트</dt><dd>기사 1개 ₩100, 영상 1편 ₩200</dd>
+      </dl>
+    </div>
+
+    <div class="chain-card">
+      <h4>🔌 API 호출당 과금</h4>
+      <div class="tagline">월 구독 → pay-per-use</div>
+      <dl>
+        <dt>현재</dt><dd>API 키 + 월 $50 등 구독제</dd>
+        <dt>마이크로페이먼트</dt><dd>호출 1회 $0.001 즉시 결제 (x402)</dd>
+      </dl>
+    </div>
+
+    <div class="chain-card">
+      <h4>🤖 AI 에이전트 자율 결제</h4>
+      <div class="tagline">M2M(Machine-to-Machine) 경제</div>
+      <dl>
+        <dt>현재</dt><dd>에이전트가 결제 불가 → 사람 개입 필요</dd>
+        <dt>마이크로페이먼트</dt><dd>예산 한도 내 자율적으로 API·콘텐츠·연산 구매</dd>
+      </dl>
+    </div>
+
+    <div class="chain-card">
+      <h4>🎬 스트리밍 per-second 과금</h4>
+      <div class="tagline">초 단위 정확한 과금</div>
+      <dl>
+        <dt>현재</dt><dd>월 구독·시청수 기반 정산</dd>
+        <dt>마이크로페이먼트</dt><dd>실제 시청한 1초당 결제 (Lightning + 콘텐츠)</dd>
+      </dl>
+    </div>
+
+    <div class="chain-card">
+      <h4>💾 클라우드 자원 정밀 과금</h4>
+      <div class="tagline">CPU·GPU·저장 분 단위</div>
+      <dl>
+        <dt>현재</dt><dd>월 청구·복잡한 요금제</dd>
+        <dt>마이크로페이먼트</dt><dd>Render·Akash 등 — 사용분만 토큰 결제</dd>
+      </dl>
+    </div>
+
+    <div class="chain-card">
+      <h4>🎮 게임 인앱 마이크로결제</h4>
+      <div class="tagline">아이템 단가 ₩10도 가능</div>
+      <dl>
+        <dt>현재</dt><dd>최소 ₩1,100 묶음 결제</dd>
+        <dt>마이크로페이먼트</dt><dd>아이템·스킨 1개씩 정확한 가격</dd>
+      </dl>
+    </div>
+  </div>
+
+  <h3>1.5 블록체인 마이크로페이먼트의 주요 인프라</h3>
+  <table>
+    <thead>
+      <tr><th>기술/프로토콜</th><th>방식</th><th>특징</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Lightning Network</strong> (Bitcoin L2)</td>
+        <td>오프체인 채널, 수신 시에만 온체인 정산</td>
+        <td>BTC 마이크로페이먼트, 1초 정산, sat 단위</td>
+      </tr>
+      <tr>
+        <td><strong>x402</strong> (본 페이지 주제)</td>
+        <td>HTTP 402 + EIP-3009 가스리스 결제</td>
+        <td>API·AI 에이전트 결제 표준, USDC 기반</td>
+      </tr>
+      <tr>
+        <td><strong>L2 스테이블코인 결제</strong></td>
+        <td>Base·Optimism·zkSync에서 USDC 직접 전송</td>
+        <td>수수료 $0.01 이하, 즉시 정산</td>
+      </tr>
+      <tr>
+        <td><strong>Brave / BAT</strong></td>
+        <td>광고 시청 보상으로 BAT 토큰</td>
+        <td>콘텐츠 크리에이터 후원 모델</td>
+      </tr>
+      <tr>
+        <td><strong>Filecoin / Storj</strong></td>
+        <td>저장 GB당 토큰 결제</td>
+        <td>DePIN 분야 마이크로페이먼트 적용 사례</td>
+      </tr>
+      <tr>
+        <td><strong>Web Monetization API</strong> (W3C)</td>
+        <td>HTTP 헤더로 자동 스트리밍 결제</td>
+        <td>표준화 진행 중 (Interledger 기반)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>1.6 마이크로페이먼트의 한계 — 여전히 풀어야 할 숙제</h3>
+  <div class="note warn">
+    <ul style="margin:8px 0;">
+      <li><strong>L1 가스비</strong>: Ethereum L1에서는 마이크로페이먼트도 수 달러 가스비 — L2 이주 필수</li>
+      <li><strong>UX 복잡성</strong>: 지갑 설정·잔액 충전·서명 확인이 일반 사용자에게 부담 — AA(Account Abstraction)·세션키로 개선 진행</li>
+      <li><strong>회계·세무</strong>: 1만 번의 $0.01 결제를 어떻게 회계 처리할 것인가</li>
+      <li><strong>규제</strong>: 가상자산 결제의 법적 지위, 자금세탁방지(AML), 한국의 가상자산이용자보호법 적용 범위</li>
+      <li><strong>거래소 환금성</strong>: 마이크로페이먼트로 받은 토큰을 일상 화폐로 바꾸는 비용·시간</li>
+      <li><strong>가격 변동성</strong>: 스테이블코인을 쓰지 않으면 결제 후 가치 변동 위험</li>
+    </ul>
+  </div>
+
+  <div class="note">
+    <strong>요점:</strong> 마이크로페이먼트는 새로운 비즈니스 모델(에이전트 경제·콘텐츠 직접 보상)을 가능하게 하는 핵심 기반이지만,
+    <em>블록체인만으로는 부족</em>하다. L2 확장성, 스테이블코인의 가치 안정, AA의 UX 개선, 규제 정합성이 모두 갖춰져야
+    실용 단계에 진입한다. <strong>x402</strong>는 이 모든 조건을 종합한 표준화 시도의 하나로, 아래에서 자세히 다룬다.
+  </div>
+</section>
+
+<section>
+  <h3>2. 왜 지금인가?</h3>
+  <ul>
+    <li><strong>AI 에이전트 경제</strong>: 자율 에이전트가 API·콘텐츠·연산 자원을 마이크로결제로 소비</li>
+    <li><strong>스테이블코인의 정착</strong>: USDC 등 결제 적합성·결제 최종성·낮은 수수료를 갖춘 자산 등장</li>
+    <li><strong>전통 결제망의 한계</strong>: 신용카드 최소 결제 단위($0.30+α), KYC, 30~120일 지연 정산</li>
+    <li><strong>표준의 부재</strong>: API 키 + 청구서 모델이 에이전트 워크플로우에 부적합</li>
+  </ul>
+</section>
+
+<section>
+  <h3>3. 프로토콜 흐름</h3>
+<pre><code>┌──────────┐                                         ┌──────────┐
+│  Client  │                                         │  Server  │
+│ (Agent)  │                                         │  (API)   │
+└────┬─────┘                                         └────┬─────┘
+     │                                                    │
+     │ ①  GET /premium-resource                           │
+     │ ───────────────────────────────────────────────►   │
+     │                                                    │
+     │     ②  HTTP/1.1 402 Payment Required               │
+     │     X-PAYMENT-REQUIRED: {                         │
+     │       "scheme": "exact",                          │
+     │       "amount": "0.001",                          │
+     │       "asset": "USDC",                            │
+     │       "network": "base-mainnet",                  │
+     │       "recipient": "0xabc...",                    │
+     │       "resource": "/premium-resource"             │
+     │     }                                             │
+     │ ◄───────────────────────────────────────────────  │
+     │                                                    │
+     │ ③ EIP-3009 transferWithAuthorization 서명          │
+     │   (가스리스 — 에이전트가 USDC 잔액만 있으면 됨)    │
+     │                                                    │
+     │ ④  GET /premium-resource                           │
+     │    X-PAYMENT: &lt;base64(signed authorization)&gt;       │
+     │ ───────────────────────────────────────────────►   │
+     │                                                    │
+     │                          ⑤ Facilitator에 검증 의뢰  │
+     │                             또는 자체 온체인 검증   │
+     │                                                    │
+     │      ⑥  HTTP/1.1 200 OK                            │
+     │          X-PAYMENT-RESPONSE: { txHash: 0x... }    │
+     │          (실제 리소스 본문 반환)                    │
+     │ ◄───────────────────────────────────────────────   │</code></pre>
+</section>
+
+<section>
+  <h3>4. EIP-3009: 가스리스 결제의 핵심</h3>
+  <p>
+    x402가 사용자 친화적인 이유는 <strong>EIP-3009 <code>transferWithAuthorization</code></strong>에 있다.
+    사용자(에이전트)는 USDC 자체만 보유하면 되고, ETH 가스비는 facilitator가 대납한다.
+    서명은 EIP-712 typed data로 만들어진다.
+  </p>
+
+<pre><code>// USDC 컨트랙트의 EIP-3009 인터페이스
+function transferWithAuthorization(
+    address from,
+    address to,
+    uint256 value,
+    uint256 validAfter,
+    uint256 validBefore,
+    bytes32 nonce,
+    uint8 v, bytes32 r, bytes32 s   // EIP-712 서명
+) external;
+
+// 클라이언트(에이전트) 측 의사 코드
+const auth = {
+  from: agentWallet.address,
+  to: serverPaymentAddress,
+  value: parseUnits("0.001", 6),     // USDC 6 decimals
+  validAfter: 0,
+  validBefore: now() + 600,          // 10분 유효
+  nonce: randomBytes32(),
+};
+const signature = await agentWallet.signTypedData(
+  USDC_DOMAIN, EIP3009_TYPES, auth
+);
+// → X-PAYMENT 헤더로 전송</code></pre>
+</section>
+
+<section>
+  <h3>5. facilitator 패턴</h3>
+  <p>
+    서버가 매 요청마다 직접 온체인 검증·정산을 하면 RPC 비용·지연이 발생하므로,
+    <strong>facilitator</strong>라는 중개자가 권장된다.
+  </p>
+  <table>
+    <thead><tr><th>구성요소</th><th>역할</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Client / Agent</strong></td><td>지불 의사 결정 + EIP-3009 서명</td></tr>
+      <tr><td><strong>Resource Server</strong></td><td>402 응답으로 가격 통지 + 결제 후 자원 반환</td></tr>
+      <tr><td><strong>Facilitator</strong></td><td>서명 검증, 온체인 정산 대납, txHash 반환</td></tr>
+      <tr><td><strong>Settlement Network</strong></td><td>Base, Ethereum, Solana 등 결제 자산이 발행된 체인</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h3>6. 시나리오: 에이전트가 자율적으로 API 결제</h3>
+<pre><code>// LLM 에이전트가 유료 검색 API를 호출하는 의사 코드
+async function callPaidAPI(url, agentWallet) {
+  let res = await fetch(url);
+
+  if (res.status === 402) {
+    const requirement = JSON.parse(res.headers.get('X-PAYMENT-REQUIRED'));
+
+    // 에이전트의 정책 (예산, 자산, 화이트리스트) 검사
+    if (!agentPolicy.canPay(requirement)) {
+      throw new Error("Payment policy rejected");
+    }
+
+    const payment = await signX402Payment(requirement, agentWallet);
+    res = await fetch(url, {
+      headers: { 'X-PAYMENT': payment }
+    });
+  }
+  return res.json();
+}</code></pre>
+</section>
+
+<section>
+  <h3>7. 한계와 열린 과제</h3>
+  <div class="note warn">
+    <ul style="margin:8px 0;">
+      <li><strong>규제·세무 모호성</strong>: 자율 에이전트의 결제 주체는 누구인가? 한국은 가상자산이용자보호법 적용 검토 필요</li>
+      <li><strong>가격 발견 메커니즘 부재</strong>: 정적 가격 책정 → 동적 경매·번들링은 후속 표준 영역</li>
+      <li><strong>리플레이·재정산 공격</strong>: nonce + validBefore에 의존 → 클라이언트 구현 결함 시 이중지불 위험</li>
+      <li><strong>facilitator 신뢰</strong>: 단일 facilitator는 검열 위험, 다중화 시 비용 증가</li>
+      <li><strong>비-EVM 체인 확장</strong>: 현재 USDC on Base가 1차 타깃, Solana/L2 확장은 진행 중</li>
+      <li><strong>금융권 시각</strong>: CBDC·예금토큰을 결제 자산으로 사용할 수 있는가? <a href="cbdc.html">한강 모델</a>과 결합 시 새로운 통화정책 함의 발생</li>
+    </ul>
+  </div>
+
+  <div class="note">
+    <strong>한국은행 관점의 함의:</strong>
+    x402가 가정하는 결제 자산은 현재 스테이블코인이지만, 프로토콜 자체는 자산 중립적이다.
+    한강 프로젝트의 <em>예금토큰</em>을 x402 결제 자산으로 사용하는 시나리오는,
+    M2M·에이전트 경제에서 <strong>은행화폐(commercial bank money)의 단위성 유지</strong>를
+    실험할 수 있는 흥미로운 정책 실험이 될 수 있다.
+  </div>
+</section>
+
+<div class="page-nav">
+  <a class="prev" href="cbdc.html">
+    <div class="dir">← 이전</div>
+    <div class="ttl">PART 5 · CBDC</div>
+  </a>
+  <a class="next" href="limits.html">
+    <div class="dir">다음 →</div>
+    <div class="ttl">PART 7 · 한계와 비교</div>
+  </a>
+</div>
+
+</main>
+
+<footer>© 2026 Blockchain Technical Guide · PART 6/6</footer>
+
+</body>
+</html>

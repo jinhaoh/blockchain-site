@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>한계와 기존 시스템 비교 — 블록체인 가이드</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site">
+  <h1>PART 7 · 한계와 기존 시스템 비교</h1>
+  <p>확장성 트릴레마 · 기술/비기술 한계 · 전통 시스템 대비 장단점 · 의사결정 가이드</p>
+  <div class="breadcrumb"><a href="index.html">홈</a> › 한계와 비교</div>
+</header>
+
+<nav class="top">
+  <ul>
+    <li><a href="index.html">홈</a></li>
+    <li><a href="basics.html">기초</a></li>
+    <li><a href="chains.html">체인별 특징</a></li>
+    <li><a href="contracts.html">스마트 컨트랙트</a></li>
+    <li><a href="bridges.html">브릿지</a></li>
+    <li><a href="cbdc.html">CBDC</a></li>
+    <li><a href="x402.html">x402</a></li>
+    <li><a href="limits.html" class="active">한계와 비교</a></li>
+    <li><a href="references.html">참고자료</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section>
+  <h2>1. 확장성 트릴레마 (Scalability Trilemma)</h2>
+  <p>Vitalik Buterin이 제시한 명제: <strong>탈중앙화 · 보안 · 확장성</strong> 중 두 가지만 동시에 달성 가능.</p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://vitalik.eth.limo/general/2021/04/07/sharding.html">Vitalik: Why sharding is great</a> ·
+    <a href="https://ethereum.org/en/layer-2/">Ethereum L2 가이드</a> ·
+    <a href="https://l2beat.com/">L2BEAT</a> ·
+    <a href="https://celestia.org/learn/">Celestia: 모듈러</a>
+  </p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 500 440" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="250,40 60,380 440,380" fill="none" stroke="#7ee787" stroke-width="2"/>
+      <circle cx="250" cy="40" r="6" fill="#7ee787"/>
+      <text x="250" y="25" text-anchor="middle" font-size="15" font-weight="700" fill="#7ee787">탈중앙화</text>
+      <text x="250" y="68" text-anchor="middle" font-size="10" fill="#8b949e">Decentralization</text>
+      <circle cx="60" cy="380" r="6" fill="#79c0ff"/>
+      <text x="40" y="405" text-anchor="middle" font-size="15" font-weight="700" fill="#79c0ff">보안</text>
+      <text x="40" y="422" text-anchor="middle" font-size="10" fill="#8b949e">Security</text>
+      <circle cx="440" cy="380" r="6" fill="#ffa657"/>
+      <text x="460" y="405" text-anchor="middle" font-size="15" font-weight="700" fill="#ffa657">확장성</text>
+      <text x="460" y="422" text-anchor="middle" font-size="10" fill="#8b949e">Scalability</text>
+      <text x="140" y="220" text-anchor="middle" font-size="11" fill="#e6edf3" transform="rotate(-60 140 220)">Bitcoin · Ethereum L1</text>
+      <text x="360" y="220" text-anchor="middle" font-size="11" fill="#e6edf3" transform="rotate(60 360 220)">Solana · 고성능 L1</text>
+      <text x="250" y="395" text-anchor="middle" font-size="11" fill="#e6edf3">Permissioned DLT · BSC</text>
+      <text x="250" y="250" text-anchor="middle" font-size="12" font-weight="600" fill="#f85149">3가지 동시 달성 불가</text>
+      <text x="250" y="270" text-anchor="middle" font-size="10" fill="#8b949e">(현재까지 알려진 모든 L1)</text>
+      <text x="250" y="295" text-anchor="middle" font-size="11" fill="#7ee787">→ L2 / 샤딩 / ZK Rollup</text>
+      <text x="250" y="313" text-anchor="middle" font-size="11" fill="#7ee787">→ 모듈러 분리로 우회</text>
+    </svg>
+    <div class="caption">그림. 확장성 트릴레마 — 각 체인의 위치는 어떤 정점을 양보했는지 보여준다</div>
+  </div>
+
+  <h3>해결 시도</h3>
+  <ul>
+    <li><strong>Layer 2</strong>: Lightning Network (Bitcoin), Optimistic/ZK Rollups (Ethereum)</li>
+    <li><strong>샤딩(Sharding)</strong>: 상태와 검증을 분할 처리 (Ethereum Danksharding)</li>
+    <li><strong>모듈러 블록체인</strong>: Celestia 등 데이터 가용성 계층 분리</li>
+    <li><strong>ZK-SNARK / ZK-STARK</strong>: 영지식 증명을 통한 압축 검증</li>
+  </ul>
+</section>
+
+<section>
+  <h2>2. 기술적 한계</h2>
+
+  <h3>2.1 처리량(TPS) 격차</h3>
+  <table>
+    <thead><tr><th>시스템</th><th>실측 TPS</th><th>비고</th></tr></thead>
+    <tbody>
+      <tr><td>Bitcoin</td><td>~7</td><td>10분/블록 ・ 4MB 블록 한계</td></tr>
+      <tr><td>Ethereum L1</td><td>~15</td><td>가스 한도 ・ 12초 슬롯</td></tr>
+      <tr><td>Solana</td><td>2,000~5,000</td><td>이론치 65,000, 노드 요구사항 극히 높음</td></tr>
+      <tr><td>Ethereum L2 합산</td><td>10,000+</td><td>Rollup으로 분산</td></tr>
+      <tr><td><strong>Visa (참고)</strong></td><td><strong>24,000 평균 / 65,000 피크</strong></td><td><strong>중앙화 처리</strong></td></tr>
+      <tr><td><strong>국내 카드망 (참고)</strong></td><td><strong>피크 시 수만 TPS</strong></td><td><strong>중앙화 처리</strong></td></tr>
+    </tbody>
+  </table>
+  <p>퍼블릭 블록체인 단독으로는 글로벌 결제망의 처리량을 따라잡기 어렵다. L2 누적·샤딩으로 격차를 좁히는 추세.</p>
+
+  <h3>2.2 최종성(Finality) 지연</h3>
+  <ul>
+    <li><strong>Bitcoin</strong>: 6 confirm ≈ 약 1시간 (확률적)</li>
+    <li><strong>Ethereum</strong>: ~12.8분 (2 epoch, finality gadget)</li>
+    <li><strong>Solana/Cosmos</strong>: 1~2초 (결정적)</li>
+    <li><strong>전통 RTGS (한은금융망 BOK-Wire+)</strong>: 즉시 결정적 + 법적 효력 명확</li>
+  </ul>
+
+  <h3>2.3 스토리지 증가 (State Bloat)</h3>
+  <p>
+    누적된 상태(account, contract storage)는 모든 풀노드가 보유해야 한다.
+    이더리움 상태는 2025년 기준 약 1TB+ 규모. 노드 운영자 진입장벽이 높아지며 탈중앙화를 약화시킨다.
+  </p>
+  <ul>
+    <li>해결 시도: Stateless Client, Verkle Tree, Witness 기반 검증</li>
+  </ul>
+
+  <h3>2.4 키 관리 (Key Management)</h3>
+  <div class="note warn">
+    <strong>"Not your keys, not your coins"</strong>는 양날의 검이다.
+    <ul style="margin-top:8px;">
+      <li>개인키 분실 = 자산 영구 손실 (분실 BTC 추정 300~400만 개)</li>
+      <li>피싱·악성 컨트랙트 approve로 인한 손실 일상화</li>
+      <li>오프라인 백업·하드웨어 지갑·MPC·소셜 복구가 표준화 필요</li>
+    </ul>
+  </div>
+
+  <h3>2.5 오라클 문제 (Oracle Problem)</h3>
+  <p>
+    스마트 컨트랙트는 결정론적이라 <strong>off-chain 데이터(가격, 날씨, 환율 등)</strong>를 직접 가져올 수 없다.
+    중개자(오라클)가 필요하며, 오라클이 조작되면 컨트랙트 로직이 무력화된다.
+    Chainlink, Pyth, Band Protocol 등이 다중 노드 합의로 완화하지만 근본 해결책은 없다.
+  </p>
+
+  <h3>2.6 MEV (Maximal Extractable Value)</h3>
+  <p>
+    검증자·채굴자가 트랜잭션 순서를 조작해 이익을 추출하는 현상.
+    프론트러닝, 샌드위치 공격, 청산 가로채기 등으로 사용자가 손해를 본다.
+    2021~2024 누적 MEV 추출액 수십억 달러 규모.
+  </p>
+  <ul>
+    <li>완화: Flashbots, MEV-Boost, Encrypted Mempool, CoW Protocol 등</li>
+  </ul>
+</section>
+
+<section>
+  <h2>3. 비기술적 한계</h2>
+
+  <h3>3.1 규제 불확실성</h3>
+  <ul>
+    <li>증권성 판단(Howey Test 등): SEC vs Ripple 등 다년간 소송</li>
+    <li>국가 간 규제 격차: 미국 SEC·CFTC 분쟁, EU MiCA 발효, 한국 가상자산이용자보호법(2024.07)</li>
+    <li>AML/CFT: Travel Rule, FATF 권고로 익명성 약화</li>
+    <li>회계·세무 기준 미성숙 (특히 토큰화 자산)</li>
+  </ul>
+
+  <h3>3.2 에너지 소비 (PoW)</h3>
+  <p>비트코인 연간 전력 소비량은 약 150 TWh (네덜란드 1년 전력 사용량 수준). PoS 전환이 ESG 압력에 대응하는 흐름이지만, 정통성·보안 측면 비판도 존재.</p>
+
+  <h3>3.3 양자 컴퓨팅 위협</h3>
+  <p>
+    ECDSA/EdDSA 같은 타원곡선 서명은 충분히 강력한 양자컴퓨터가 등장하면 깨질 수 있다(Shor's algorithm).
+    2030~2040년 사이가 현실적 위협 시점으로 거론되며,
+    NIST 양자내성 알고리즘(ML-KEM, ML-DSA 등) 마이그레이션이 진행 중.
+    블록체인은 모든 노드가 동시에 업그레이드해야 해서 마이그레이션이 더 어렵다.
+  </p>
+
+  <h3>3.4 UX 복잡성</h3>
+  <ul>
+    <li>지갑 설치·시드구문 보관·니모닉 관리는 일반 사용자에게 부담</li>
+    <li>가스비 변동, 트랜잭션 실패 시 비용 발생, 주소 입력 오류 등 함정 많음</li>
+    <li>ERC-4337 Account Abstraction이 일부 개선하지만 완성에는 시간 필요</li>
+  </ul>
+
+  <h3>3.5 거버넌스 갈등 (Fork Risk)</h3>
+  <p>
+    중앙 관리자가 없으므로 의사결정 충돌이 체인 분기(fork)로 이어진다.
+    Bitcoin Cash, Ethereum Classic, Solana Saga 등 사례.
+    Code is Law 원칙이 항상 유지되지는 않으며, 사회적 합의가 결정적 변수.
+  </p>
+</section>
+
+<section>
+  <h2>4. 기존 시스템 vs 블록체인 — 분야별 비교</h2>
+
+  <h3>4.1 데이터베이스: PostgreSQL vs 블록체인</h3>
+  <table>
+    <thead><tr><th>특성</th><th>전통 DB (PostgreSQL 등)</th><th>퍼블릭 블록체인</th></tr></thead>
+    <tbody>
+      <tr><td>처리량</td><td>수만~수십만 TPS</td><td>L1: 수~수십 TPS</td></tr>
+      <tr><td>지연</td><td>밀리초</td><td>초~분 단위</td></tr>
+      <tr><td>저장 비용</td><td>저렴 (GB당 수 센트)</td><td>매우 비쌈 (KB당 수 달러)</td></tr>
+      <tr><td>수정/삭제</td><td>자유로움 (UPDATE/DELETE)</td><td>불가능 (append-only)</td></tr>
+      <tr><td>스키마 변경</td><td>ALTER TABLE</td><td>마이그레이션 컨트랙트 필요</td></tr>
+      <tr><td>신뢰 모델</td><td>운영 주체 신뢰 필요</td><td>합의로 변조 방지</td></tr>
+      <tr><td>가용성</td><td>운영 주체 책임</td><td>다수 노드 분산</td></tr>
+      <tr><td>프라이버시</td><td>강함 (접근 제어)</td><td>약함 (퍼블릭은 모두 공개)</td></tr>
+      <tr><td>감사 가능성</td><td>로그 의존, 위변조 가능</td><td>변조 불가능한 영구 기록</td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.2 결제 시스템: SWIFT/카드망 vs 블록체인</h3>
+  <table>
+    <thead><tr><th>특성</th><th>SWIFT · 카드망</th><th>블록체인 결제 (스테이블코인)</th></tr></thead>
+    <tbody>
+      <tr><td>국경간 송금 시간</td><td>1~5 영업일</td><td>수초~수분</td></tr>
+      <tr><td>수수료</td><td>건당 $25~50 + 환차익 마진</td><td>$0.001~수 달러 (체인별)</td></tr>
+      <tr><td>운영 시간</td><td>은행 영업시간 + 메시지망</td><td>24/7/365</td></tr>
+      <tr><td>최소 결제 단위</td><td>카드 ~$0.30, SWIFT 사실상 큰 금액</td><td>마이크로결제 가능 ($0.001)</td></tr>
+      <tr><td>차지백·환불</td><td>가능 (카드)</td><td>불가능 (irreversible)</td></tr>
+      <tr><td>KYC/AML</td><td>은행 책임, 표준화</td><td>VASP 책임, 점진적 표준화</td></tr>
+      <tr><td>최종성</td><td>법적 효력 확립</td><td>기술적 최종성 + 법적 모호성</td></tr>
+      <tr><td>소비자 보호</td><td>강함 (예금자보호, 분쟁 조정)</td><td>약함 (자기 책임)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.3 자산 등록/등기 시스템: 정부 시스템 vs 블록체인</h3>
+  <table>
+    <thead><tr><th>특성</th><th>전자등기·정부 시스템</th><th>블록체인 토큰 (NFT/ERC-3525 등)</th></tr></thead>
+    <tbody>
+      <tr><td>법적 효력</td><td>국가 보증</td><td>스마트 컨트랙트 ≠ 법적 권리 (현재)</td></tr>
+      <tr><td>이전 절차</td><td>등기관 개입, 비용·시간</td><td>자동·즉시</td></tr>
+      <tr><td>분할 가능</td><td>제한적</td><td>토큰 단위로 자유로움</td></tr>
+      <tr><td>접근성</td><td>국가별 시스템 격차</td><td>인터넷만 있으면 글로벌 접근</td></tr>
+      <tr><td>강제 회수 (법원)</td><td>가능</td><td>ERC-1400처럼 별도 설계 필요</td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.4 신원 시스템: 정부 ID vs DID</h3>
+  <table>
+    <thead><tr><th>특성</th><th>주민등록·정부 ID</th><th>분산 신원확인(DID)</th></tr></thead>
+    <tbody>
+      <tr><td>발급 주체</td><td>국가</td><td>다수 발급자 (대학, 회사, 정부 등)</td></tr>
+      <tr><td>이용자 제어</td><td>제한적</td><td>강함 (자기주권신원, SSI)</td></tr>
+      <tr><td>선택적 공개</td><td>전부 또는 전무</td><td>나이 ≥ 19세만 증명 등 가능 (ZK)</td></tr>
+      <tr><td>위변조</td><td>국가 시스템 신뢰</td><td>암호학적 검증</td></tr>
+      <tr><td>호환성</td><td>국가별 단절</td><td>W3C VC/DID 표준으로 글로벌 호환</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>5. 블록체인이 적합한 경우 vs 부적합한 경우</h2>
+
+  <h3>✅ 블록체인이 정말 필요한 경우</h3>
+  <ul>
+    <li><strong>다수 당사자가 공동 신뢰 기관 없이 협력</strong>: 컨소시엄, 국경간 결제</li>
+    <li><strong>변조 저항성이 결정적</strong>: 공증, 학위 검증, 공급망 이력</li>
+    <li><strong>토큰화·프로그래머블 가치 이전</strong>: CBDC, 증권 토큰, DeFi</li>
+    <li><strong>최종 사용자가 자산을 자기 보관하는 것이 본질</strong>: 자기주권신원, 검열저항</li>
+    <li><strong>스마트 컨트랙트로 신뢰 비용 절감</strong>: 에스크로, 자동 배당</li>
+  </ul>
+
+  <h3>❌ 블록체인이 부적합한 경우</h3>
+  <ul>
+    <li><strong>단일 조직이 데이터를 통제</strong>: 그냥 DB가 낫다</li>
+    <li><strong>고빈도·저지연이 필수</strong>: 거래소 매칭엔진 같은 ms 단위</li>
+    <li><strong>개인정보 등 비공개 데이터 저장</strong>: GDPR 위배 가능, 오프체인 + 해시 앵커링 권장</li>
+    <li><strong>잦은 수정·삭제 필요</strong>: 블록체인은 append-only</li>
+    <li><strong>참여자가 신뢰 가능한 소수</strong>: 분산 합의 비용이 무의미</li>
+    <li><strong>저장량이 매우 큰 데이터</strong>: 영상·이미지는 IPFS·S3 + 해시만 온체인</li>
+  </ul>
+
+  <h3>의사결정 플로우</h3>
+<pre><code>Q1. 여러 당사자가 공동 신뢰 기관 없이 데이터를 공유해야 하는가?
+    └─ NO  → 전통 DB 사용 (블록체인 불필요)
+    └─ YES → Q2로
+
+Q2. 모든 참여자가 같은 데이터를 봐야 하는가?
+    └─ NO  → 메시징 시스템 + 개별 DB 충분
+    └─ YES → Q3로
+
+Q3. 데이터의 무결성·이력이 법적·규제적으로 중요한가?
+    └─ NO  → 공유 DB로 충분 (블록체인 과잉)
+    └─ YES → Q4로
+
+Q4. 참여자 신원을 통제할 수 있는가?
+    └─ YES → 퍼미션드 DLT (Fabric, Corda, Quorum)
+    └─ NO  → 퍼블릭 블록체인 (Ethereum, L2)
+
+Q5. 자산이나 가치를 토큰으로 표현해야 하는가?
+    └─ YES → 스마트 컨트랙트 + 토큰 표준 (ERC-20/721/3525/1400 등)
+    └─ NO  → 단순 기록용이면 머클 앵커링도 고려</code></pre>
+</section>
+
+<section>
+  <h2>6. 실패·왜곡 사례에서 배우기</h2>
+  <table>
+    <thead><tr><th>사례</th><th>문제의 본질</th><th>교훈</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Walmart Hyperledger Pilot</strong></td>
+        <td>실효성 입증 못 함, 운영 비용 증가</td>
+        <td>중앙 관리자가 있는 환경에 블록체인 강제 시 오버엔지니어링</td>
+      </tr>
+      <tr>
+        <td><strong>Australia ASX CHESS 교체 실패 (Digital Asset 활용)</strong></td>
+        <td>2022년 약 2.5억 호주달러 손실, 프로젝트 중단</td>
+        <td>레거시 인프라 교체는 기술 외 거버넌스·테스트가 더 중요</td>
+      </tr>
+      <tr>
+        <td><strong>Terra/LUNA 붕괴 (2022.05)</strong></td>
+        <td>알고리즘 스테이블코인의 죽음의 나선</td>
+        <td>경제 모델·게임이론 결함 → 기술이 견고해도 시스템 붕괴</td>
+      </tr>
+      <tr>
+        <td><strong>FTX 파산 (2022.11)</strong></td>
+        <td>중앙화 거래소의 고객 자산 횡령</td>
+        <td>블록체인이 아무리 투명해도 CEX는 별개 — "Not your keys"</td>
+      </tr>
+      <tr>
+        <td><strong>NFT 가격 폭락 (2022~2023)</strong></td>
+        <td>유틸리티 없는 투기 → 90%+ 손실</td>
+        <td>토큰 기술 ≠ 비즈니스 모델</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>7. 한국은행·금융권 관점의 종합 평가</h2>
+  <div class="card">
+    <p>중앙은행과 금융권의 의사결정 관점에서 본 블록체인의 위치:</p>
+    <ul>
+      <li><strong>퍼블릭 블록체인은 결제 인프라로 부적합</strong>: TPS, 최종성, 규제, 법적 효력에서 한계</li>
+      <li><strong>퍼미션드 DLT는 효과적</strong>: 컨소시엄·국제송금·도매 결제에 적합 (Fabric, Corda, mBridge)</li>
+      <li><strong>예금토큰 모델은 유망</strong>: 한강 프로젝트가 보여주듯 기존 통화시스템과 정합성 유지</li>
+      <li><strong>토큰화 자산(STO)의 잠재력</strong>: ERC-3525·ERC-1400은 채권·증권 토큰화에 적합</li>
+      <li><strong>스테이블코인의 양면성</strong>: 효율 ↑, 통화주권·금융안정성 위협 가능 → CBDC 필요성 증대</li>
+      <li><strong>x402 같은 에이전트 결제 표준</strong>: M2M 경제의 새 결제 인프라 가능성, 통화·결제 정책에 시사점</li>
+    </ul>
+    <p style="margin-top:12px;">
+      <strong>요약:</strong> 블록체인을 "범용 솔루션"으로 보기보다, <em>특정 마찰 비용을 줄이는 도구상자의 한 칸</em>으로 인식하고
+      유스케이스별 적합성을 판단하는 것이 실무적으로 효과적이다.
+    </p>
+  </div>
+</section>
+
+<div class="page-nav">
+  <a class="prev" href="x402.html">
+    <div class="dir">← 이전</div>
+    <div class="ttl">PART 6 · x402</div>
+  </a>
+  <a class="next" href="references.html">
+    <div class="dir">다음 →</div>
+    <div class="ttl">참고자료</div>
+  </a>
+</div>
+
+</main>
+
+<footer>© 2026 Blockchain Technical Guide · PART 7/7</footer>
+
+</body>
+</html>

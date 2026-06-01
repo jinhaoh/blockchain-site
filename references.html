@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>참고자료 — 블록체인 가이드</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site">
+  <h1>부록 · 참고자료 (References)</h1>
+  <p>백서·논문, 표준, 중앙은행 자료, 개발자 리소스, 추천 도서를 주제별로 정리</p>
+  <div class="breadcrumb"><a href="index.html">홈</a> › 참고자료</div>
+</header>
+
+<nav class="top">
+  <ul>
+    <li><a href="index.html">홈</a></li>
+    <li><a href="basics.html">기초</a></li>
+    <li><a href="chains.html">체인별 특징</a></li>
+    <li><a href="contracts.html">스마트 컨트랙트</a></li>
+    <li><a href="bridges.html">브릿지</a></li>
+    <li><a href="cbdc.html">CBDC</a></li>
+    <li><a href="x402.html">x402</a></li>
+    <li><a href="limits.html">한계와 비교</a></li>
+    <li><a href="references.html" class="active">참고자료</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section>
+  <h2>📘 백서·논문 (Whitepapers & Academic Papers)</h2>
+  <ul>
+    <li><a href="https://bitcoin.org/bitcoin.pdf">Bitcoin: A Peer-to-Peer Electronic Cash System</a> — Satoshi Nakamoto (2008)</li>
+    <li><a href="https://ethereum.org/en/whitepaper/">Ethereum Whitepaper</a> — Vitalik Buterin (2013)</li>
+    <li><a href="https://ethereum.github.io/yellowpaper/paper.pdf">Ethereum Yellow Paper</a> — Gavin Wood (formal EVM spec)</li>
+    <li><a href="https://lamport.azurewebsites.net/pubs/byz.pdf">The Byzantine Generals Problem</a> — Lamport, Shostak, Pease (1982)</li>
+    <li><a href="https://pmg.csail.mit.edu/papers/osdi99.pdf">Practical Byzantine Fault Tolerance (PBFT)</a> — Castro & Liskov (1999)</li>
+    <li><a href="https://www.ifca.ai/fc14/papers/fc14_submission_82.pdf">Majority is not Enough: Selfish Mining</a> — Eyal & Sirer (2014)</li>
+    <li><a href="https://eprint.iacr.org/2016/889.pdf">Ouroboros: Provably Secure PoS</a> — IOHK (Cardano)</li>
+  </ul>
+</section>
+
+<section>
+  <h2>🏛 표준 (Standards & EIPs)</h2>
+  <h3>핵심 토큰 표준</h3>
+  <ul>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-20">EIP-20 (ERC-20 Fungible Token)</a></li>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-721">EIP-721 (ERC-721 NFT)</a></li>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-1155">EIP-1155 (Multi-Token Standard)</a></li>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-3525">EIP-3525 (Semi-Fungible Token)</a></li>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-4626">EIP-4626 (Tokenized Vault)</a></li>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-4337">EIP-4337 (Account Abstraction)</a></li>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-6551">EIP-6551 (Token Bound Accounts)</a></li>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-2612">EIP-2612 (Permit)</a></li>
+  </ul>
+
+  <h3>기반 표준</h3>
+  <ul>
+    <li><a href="https://eips.ethereum.org/">EIPs Index — Ethereum Improvement Proposals 전체</a></li>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-165">EIP-165 (Interface Detection)</a></li>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-712">EIP-712 (Typed Structured Data Signing)</a></li>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-3009">EIP-3009 (transferWithAuthorization — x402 핵심)</a></li>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-2981">EIP-2981 (NFT Royalty)</a></li>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-5192">EIP-5192 (Soulbound Token)</a></li>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-7201">EIP-7201 (Namespaced Storage)</a></li>
+    <li><a href="https://github.com/bitcoin/bips">BIPs — Bitcoin Improvement Proposals</a></li>
+    <li><a href="https://datatracker.ietf.org/doc/html/rfc7231">RFC 7231 — HTTP/1.1 Semantics</a></li>
+    <li><a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf">NIST FIPS 180-4 — Secure Hash Standard</a></li>
+  </ul>
+</section>
+
+<section>
+  <h2>🏦 중앙은행·국제기구 자료</h2>
+  <ul>
+    <li><a href="https://www.bis.org/about/bisih/topics/fmis/agora.htm">BIS Innovation Hub — Project Agora</a></li>
+    <li><a href="https://www.bis.org/publ/othp83.htm">BIS — Blueprint for the future monetary system</a></li>
+    <li><a href="https://www.bis.org/publ/othp61.htm">BIS — Project mBridge</a></li>
+    <li><a href="https://www.bis.org/publ/othp59.htm">BIS — Project Mariana</a></li>
+    <li><a href="https://www.bok.or.kr/portal/main/contents.do?menuNo=200773">한국은행 — CBDC 페이지</a></li>
+    <li><a href="https://www.bok.or.kr/portal/bbs/B0000338/list.do?menuNo=200761">한국은행 — 보도자료</a></li>
+    <li><a href="https://www.atlanticcouncil.org/cbdctracker/">Atlantic Council — CBDC Tracker</a></li>
+    <li><a href="https://www.imf.org/en/Topics/fintech">IMF — Fintech & CBDC</a></li>
+  </ul>
+</section>
+
+<section>
+  <h2>🌉 크로스체인 · 상호운용성</h2>
+  <ul>
+    <li><a href="https://vitalik.eth.limo/general/2022/01/07/sharding.html">Vitalik — Why cross-chain bridges are fundamentally limited</a></li>
+    <li><a href="https://www.ibcprotocol.dev/">IBC Protocol — Inter-Blockchain Communication</a></li>
+    <li><a href="https://layerzero.network/publications/LayerZero_Whitepaper_V2.0.pdf">LayerZero V2 백서</a></li>
+    <li><a href="https://chain.link/cross-chain">Chainlink CCIP</a></li>
+    <li><a href="https://www.axelar.network/whitepaper">Axelar Network 백서</a></li>
+    <li><a href="https://rekt.news/leaderboard/">rekt.news — 해킹 리더보드</a></li>
+  </ul>
+</section>
+
+<section>
+  <h2>💳 x402 · 에이전트 결제</h2>
+  <ul>
+    <li><a href="https://www.x402.org/">x402.org — 공식 사이트</a></li>
+    <li><a href="https://github.com/coinbase/x402">coinbase/x402 — GitHub 리포지토리</a></li>
+    <li><a href="https://www.circle.com/en/usdc">Circle USDC — 결제 자산</a></li>
+    <li><a href="https://docs.cdp.coinbase.com/x402/welcome">Coinbase Developer Platform: x402</a></li>
+  </ul>
+</section>
+
+<section>
+  <h2>🛠 개발자 리소스</h2>
+  <ul>
+    <li><a href="https://ethereum.org/en/developers/">Ethereum.org 개발자 포털</a></li>
+    <li><a href="https://soliditylang.org/">Solidity 공식</a></li>
+    <li><a href="https://book.getfoundry.sh/">Foundry Book (Rust 기반 개발툴)</a></li>
+    <li><a href="https://hardhat.org/">Hardhat (JS 기반 개발툴)</a></li>
+    <li><a href="https://docs.openzeppelin.com/">OpenZeppelin — 안전한 표준 컨트랙트 라이브러리</a></li>
+    <li><a href="https://github.com/crytic/slither">Slither — Solidity 정적 분석</a></li>
+    <li><a href="https://swcregistry.io/">SWC Registry — 스마트 컨트랙트 약점 분류</a></li>
+    <li><a href="https://consensys.github.io/smart-contract-best-practices/">ConsenSys Best Practices</a></li>
+    <li><a href="https://docs.solana.com/">Solana Docs</a></li>
+    <li><a href="https://docs.cosmos.network/">Cosmos SDK Docs</a></li>
+    <li><a href="https://move-language.github.io/move/">Move Book</a></li>
+  </ul>
+</section>
+
+<section>
+  <h2>📊 데이터·리서치</h2>
+  <ul>
+    <li><a href="https://l2beat.com/">L2BEAT — L2 보안·TVL 추적</a></li>
+    <li><a href="https://defillama.com/">DefiLlama — DeFi TVL 통계</a></li>
+    <li><a href="https://chainlist.org/">ChainList — EVM 체인 디렉토리</a></li>
+    <li><a href="https://etherscan.io/">Etherscan — Ethereum 익스플로러</a></li>
+    <li><a href="https://messari.io/research">Messari Research</a></li>
+    <li><a href="https://a16zcrypto.com/">a16z crypto</a></li>
+    <li><a href="https://research.paradigm.xyz/">Paradigm Research</a></li>
+  </ul>
+</section>
+
+<section>
+  <h2>📚 추천 도서 · 강의</h2>
+  <ul>
+    <li>"Mastering Bitcoin" — Andreas M. Antonopoulos (<a href="https://github.com/bitcoinbook/bitcoinbook">GitHub 무료 공개</a>)</li>
+    <li>"Mastering Ethereum" — Antonopoulos & Wood (<a href="https://github.com/ethereumbook/ethereumbook">GitHub 무료 공개</a>)</li>
+    <li><a href="https://www.coursera.org/learn/cryptocurrency">Princeton — Bitcoin and Cryptocurrency Technologies</a></li>
+    <li><a href="https://cryptozombies.io/">CryptoZombies — Solidity 인터랙티브 튜토리얼</a></li>
+    <li><a href="https://www.useweb3.xyz/">useWeb3 — 종합 학습 경로</a></li>
+  </ul>
+</section>
+
+<section>
+  <h2>⚠️ 면책 조항</h2>
+  <div class="note">
+    본 문서의 링크와 통계는 작성 시점 기준이며, 블록체인 분야는 빠르게 변하므로
+    실제 의사결정에는 1차 자료(공식 백서, 중앙은행 보도자료, 공식 GitHub)를 항상 재확인하시기 바랍니다.
+    프로젝트별 진행 상황·참여 기관·수치는 각 기관의 최신 공식 발표를 우선 신뢰해야 합니다.
+  </div>
+</section>
+
+<div class="page-nav">
+  <a class="prev" href="limits.html">
+    <div class="dir">← 이전</div>
+    <div class="ttl">PART 7 · 한계와 비교</div>
+  </a>
+  <a class="next" href="index.html">
+    <div class="dir">처음으로 ↑</div>
+    <div class="ttl">홈</div>
+  </a>
+</div>
+
+</main>
+
+<footer>© 2026 Blockchain Technical Guide · 부록</footer>
+
+</body>
+</html>

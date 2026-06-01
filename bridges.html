@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>크로스체인 브릿지 — 블록체인 가이드</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site">
+  <h1>PART 4 · 크로스체인 브릿지</h1>
+  <p>5가지 메커니즘 · 신뢰 모델 스펙트럼 · LayerZero · 주요 해킹 사례 · zkBridge</p>
+  <div class="breadcrumb"><a href="index.html">홈</a> › 크로스체인 브릿지</div>
+</header>
+
+<nav class="top">
+  <ul>
+    <li><a href="index.html">홈</a></li>
+    <li><a href="basics.html">기초</a></li>
+    <li><a href="chains.html">체인별 특징</a></li>
+    <li><a href="contracts.html">스마트 컨트랙트</a></li>
+    <li><a href="bridges.html" class="active">브릿지</a></li>
+    <li><a href="cbdc.html">CBDC</a></li>
+    <li><a href="x402.html">x402</a></li>
+    <li><a href="limits.html">한계와 비교</a></li>
+    <li><a href="references.html">참고자료</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section>
+  <h2>크로스체인 브릿지 (Cross-Chain Bridges)</h2>
+  <p>
+    서로 다른 블록체인 간에 자산·메시지·상태를 이전하기 위한 프로토콜. 각 체인은 독립된 합의·실행 환경을 가지므로
+    네이티브한 상호운용성이 존재하지 않으며, 브릿지는 그 격차를 메우는 <strong>중개 신뢰 계층</strong>이다.
+    2022~2023년 사이 단일 카테고리로는 가장 큰 해킹 피해(누적 25억 달러+)가 발생한 영역이기도 하다.
+  </p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://vitalik.eth.limo/general/2022/01/07/sharding.html">Vitalik: Multi-chain ≠ Cross-chain</a> ·
+    <a href="https://ethereum.org/en/bridges/">Ethereum.org: Bridges</a> ·
+    <a href="https://www.ibcprotocol.dev/">IBC Protocol</a> ·
+    <a href="https://layerzero.network/publications/LayerZero_Whitepaper_V2.0.pdf">LayerZero V2</a> ·
+    <a href="https://chain.link/cross-chain">Chainlink CCIP</a> ·
+    <a href="https://rekt.news/leaderboard/">rekt.news: 해킹 리더보드</a>
+  </p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="80" width="160" height="120" rx="8" fill="#1a2332" stroke="#7ee787" stroke-width="2"/>
+      <text x="100" y="105" text-anchor="middle" font-size="14" font-weight="700" fill="#7ee787">Chain A</text>
+      <text x="100" y="125" text-anchor="middle" font-size="11" fill="#8b949e">(예: Ethereum)</text>
+      <rect x="40" y="140" width="120" height="22" rx="4" fill="#0a0e15" stroke="#30363d"/>
+      <text x="100" y="156" text-anchor="middle" font-size="10" fill="#ffa657">🔒 Lock Contract</text>
+      <rect x="40" y="170" width="120" height="22" rx="4" fill="#0a0e15" stroke="#30363d"/>
+      <text x="100" y="186" text-anchor="middle" font-size="10" fill="#e6edf3">Native Token</text>
+      <rect x="240" y="40" width="320" height="200" rx="8" fill="#1a2332" stroke="#79c0ff" stroke-width="2"/>
+      <text x="400" y="65" text-anchor="middle" font-size="14" font-weight="700" fill="#79c0ff">Bridge Layer (신뢰 모델별)</text>
+      <rect x="260" y="80" width="135" height="34" rx="4" fill="#0a0e15" stroke="#f85149"/>
+      <text x="327" y="100" text-anchor="middle" font-size="10" fill="#f85149">Multi-Sig (5/9)</text>
+      <text x="327" y="110" text-anchor="middle" font-size="8" fill="#8b949e">Ronin 모델</text>
+      <rect x="405" y="80" width="135" height="34" rx="4" fill="#0a0e15" stroke="#f85149"/>
+      <text x="472" y="100" text-anchor="middle" font-size="10" fill="#f85149">MPC Threshold</text>
+      <text x="472" y="110" text-anchor="middle" font-size="8" fill="#8b949e">Wormhole</text>
+      <rect x="260" y="120" width="135" height="34" rx="4" fill="#0a0e15" stroke="#ffa657"/>
+      <text x="327" y="140" text-anchor="middle" font-size="10" fill="#ffa657">Optimistic</text>
+      <text x="327" y="150" text-anchor="middle" font-size="8" fill="#8b949e">Nomad · Across</text>
+      <rect x="405" y="120" width="135" height="34" rx="4" fill="#0a0e15" stroke="#ffa657"/>
+      <text x="472" y="140" text-anchor="middle" font-size="10" fill="#ffa657">Liquidity Pool</text>
+      <text x="472" y="150" text-anchor="middle" font-size="8" fill="#8b949e">Hop · Stargate</text>
+      <rect x="260" y="160" width="135" height="34" rx="4" fill="#0a0e15" stroke="#7ee787"/>
+      <text x="327" y="180" text-anchor="middle" font-size="10" fill="#7ee787">zkBridge</text>
+      <text x="327" y="190" text-anchor="middle" font-size="8" fill="#8b949e">Polyhedra · Succinct</text>
+      <rect x="405" y="160" width="135" height="34" rx="4" fill="#0a0e15" stroke="#7ee787"/>
+      <text x="472" y="180" text-anchor="middle" font-size="10" fill="#7ee787">Native Light Client</text>
+      <text x="472" y="190" text-anchor="middle" font-size="8" fill="#8b949e">IBC · XCM</text>
+      <text x="400" y="225" text-anchor="middle" font-size="10" fill="#8b949e">← 신뢰 가정 多 ──────────── 신뢰 가정 少 →</text>
+      <rect x="620" y="80" width="160" height="120" rx="8" fill="#1a2332" stroke="#ffa657" stroke-width="2"/>
+      <text x="700" y="105" text-anchor="middle" font-size="14" font-weight="700" fill="#ffa657">Chain B</text>
+      <text x="700" y="125" text-anchor="middle" font-size="11" fill="#8b949e">(예: Polygon · Base)</text>
+      <rect x="640" y="140" width="120" height="22" rx="4" fill="#0a0e15" stroke="#30363d"/>
+      <text x="700" y="156" text-anchor="middle" font-size="10" fill="#7ee787">🪙 Mint Contract</text>
+      <rect x="640" y="170" width="120" height="22" rx="4" fill="#0a0e15" stroke="#30363d"/>
+      <text x="700" y="186" text-anchor="middle" font-size="10" fill="#e6edf3">Wrapped Token</text>
+      <path d="M 180 140 L 240 140" stroke="#7ee787" stroke-width="2" fill="none" marker-end="url(#arrow1)"/>
+      <path d="M 560 140 L 620 140" stroke="#ffa657" stroke-width="2" fill="none" marker-end="url(#arrow2)"/>
+      <defs>
+        <marker id="arrow1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#7ee787"/>
+        </marker>
+        <marker id="arrow2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffa657"/>
+        </marker>
+      </defs>
+      <text x="210" y="130" text-anchor="middle" font-size="9" fill="#8b949e">①Lock</text>
+      <text x="590" y="130" text-anchor="middle" font-size="9" fill="#8b949e">②Mint</text>
+    </svg>
+    <div class="caption">크로스체인 브릿지 아키텍처 — 신뢰 모델 스펙트럼</div>
+  </div>
+</section>
+
+<section>
+  <h3>1. 메커니즘별 분류</h3>
+  <table>
+    <thead>
+      <tr><th>방식</th><th>원리</th><th>대표 사례</th><th>장점</th><th>단점</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Lock & Mint</strong></td><td>원본에 잠그고 대상에서 wrapped 발행</td><td>WBTC, Wormhole</td><td>구현 단순</td><td>커스터디 리스크 집중</td></tr>
+      <tr><td><strong>Burn & Mint</strong></td><td>원본 소각, 대상에서 발행</td><td>Circle CCTP (USDC)</td><td>유동성 분산 없음</td><td>발행 권한 보유 주체 필요</td></tr>
+      <tr><td><strong>Liquidity Pool</strong></td><td>양쪽 체인에 풀, 스왑</td><td>Hop, Across, Stargate</td><td>즉시 정산</td><td>유동성·슬리피지</td></tr>
+      <tr><td><strong>Atomic Swap (HTLC)</strong></td><td>Hashlock + Timelock</td><td>Lightning Network</td><td>완전 trustless</td><td>UX 복잡</td></tr>
+      <tr><td><strong>Native / IBC</strong></td><td>상대방 라이트클라이언트 검증</td><td>Cosmos IBC, Polkadot XCM</td><td>최고 보안</td><td>호환 체인 한정</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h3>2. 신뢰 모델 스펙트럼</h3>
+<pre><code>← 신뢰 최대                                                                신뢰 최소 →
+
+[Multi-Sig] → [Federated MPC] → [Optimistic] → [zkBridge] → [Native Light Client / IBC]
+   ↓               ↓                  ↓               ↓                  ↓
+Ronin         Wormhole          Nomad / Across   Polyhedra ZK      Cosmos IBC
+($625M 해킹)   ($325M 해킹)      ($190M 해킹)    Succinct          Polkadot</code></pre>
+</section>
+
+<section>
+  <h3>3. 메시지 전달 추상화 (Generalized Messaging)</h3>
+  <p>
+    자산 이동을 넘어 <strong>임의의 호출 데이터</strong>를 다른 체인에 전달하는 일반화된 인터체인 메시징.
+    LayerZero, Axelar, Wormhole, Chainlink CCIP가 대표적.
+  </p>
+
+<pre><code>// LayerZero 스타일 OApp 예시
+contract MyOApp is OAppSender, OAppReceiver {
+    function sendMessage(uint32 dstEid, string calldata message)
+        external payable
+    {
+        bytes memory payload = abi.encode(message);
+        _lzSend(dstEid, payload, "", MessagingFee(msg.value, 0), payable(msg.sender));
+    }
+
+    function _lzReceive(
+        Origin calldata _origin, bytes32 _guid,
+        bytes calldata _message, address, bytes calldata
+    ) internal override {
+        string memory msg_ = abi.decode(_message, (string));
+        // 대상 체인에서 실행할 로직
+    }
+}</code></pre>
+</section>
+
+<section>
+  <h3>4. 보안 — "브릿지는 가장 약한 고리"</h3>
+  <div class="note warn">
+    <strong>주요 해킹 사례:</strong>
+    <ul style="margin: 8px 0;">
+      <li><strong>Ronin Bridge (2022.03)</strong>: 9개 검증자 중 5개 키 탈취 → 약 6.25억 달러</li>
+      <li><strong>Wormhole (2022.02)</strong>: Solana guardian 서명 검증 우회 → 약 3.25억 달러</li>
+      <li><strong>Nomad (2022.08)</strong>: Merkle root 초기화 버그 → 약 1.9억 달러</li>
+      <li><strong>Poly Network (2021.08)</strong>: keeper 권한 함수 오용 → 약 6.1억 달러</li>
+      <li><strong>Multichain (2023.07)</strong>: CEO 키 단일 보관 → 약 1.3억 달러</li>
+    </ul>
+    공통 원인: <em>다자간 신뢰 모델의 키 관리 실패</em>와 <em>크로스체인 검증 로직의 미묘한 버그</em>.
+  </div>
+</section>
+
+<section>
+  <h3>5. 차세대 — zkBridge</h3>
+  <p>
+    소스 체인의 라이트클라이언트 검증을 ZK 회로로 압축해 대상 체인에서 단일 증명으로 검증.
+    <strong>Polyhedra</strong>, <strong>Succinct Labs(SP1)</strong>, <strong>Electron Labs</strong> 등이 구현 중.
+    신뢰가정 없는 보안과 온체인 검증 비용의 트레이드오프를 ZK 증명 압축으로 해결하려는 시도.
+  </p>
+</section>
+
+<div class="page-nav">
+  <a class="prev" href="contracts.html">
+    <div class="dir">← 이전</div>
+    <div class="ttl">PART 3 · 스마트 컨트랙트</div>
+  </a>
+  <a class="next" href="cbdc.html">
+    <div class="dir">다음 →</div>
+    <div class="ttl">PART 5 · CBDC</div>
+  </a>
+</div>
+
+</main>
+
+<footer>© 2026 Blockchain Technical Guide · PART 4/6</footer>
+
+</body>
+</html>
