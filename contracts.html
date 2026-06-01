@@ -723,7 +723,232 @@ function account(
     </ul>
   </div>
 
-  <h3>4.6 한국 토큰증권(STO) 가이드라인</h3>
+  <h3>4.6 "그런데 기존 시스템으로는 못하는가?" — 객관적 재평가</h3>
+  <p>
+    앞서 나열한 8가지 토큰화의 가치는 매력적으로 들리지만, <strong>대부분은 기존 시스템에서도 어느 정도 제공 가능하다</strong>.
+    토큰화의 독점적 가치는 생각보다 좁다. 정직하게 항목별로 재평가한다.
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>토큰화 주장</th><th>기존에서 가능?</th><th>객관적 평가</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>분할 (Fractionalization)</strong></td>
+        <td>✅ 가능</td>
+        <td>REITs, ETF, 뮤추얼펀드, K-OTC, 토스 1주 미만 투자 — 이미 분할투자 보편화. 토큰화는 <em>분할 단위를 더 작게</em> 할 수 있을 뿐</td>
+      </tr>
+      <tr>
+        <td><strong>유동성 증대</strong></td>
+        <td>⚠️ 부분적</td>
+        <td>상장 REIT는 매우 유동적. <strong>유동성은 토큰화로 생기지 않고 수요가 만든다.</strong> 실제 토큰화 부동산 대부분 거래량 미미</td>
+      </tr>
+      <tr>
+        <td><strong>24/7 거래</strong></td>
+        <td>✅ 국내 가능</td>
+        <td>한국 카카오뱅크/토스는 사실상 24/7. BOK-Wire+ 실시간. <strong>국제 거래는 토큰화 우위</strong>, 국내는 차이 작음</td>
+      </tr>
+      <tr>
+        <td><strong>자동화 (Composability)</strong></td>
+        <td>✅ 가능</td>
+        <td>자동이체, ACH, 정기지급, 자동배당 모두 이미 존재. 토큰화는 <em>더 유연</em>하지만 "새로 가능한" 것은 아님</td>
+      </tr>
+      <tr>
+        <td><strong>DvP/PvP 동시이행</strong></td>
+        <td>✅ 가능</td>
+        <td>CLS(FX), 예탁결제원 DvP, T+2 결제 작동 중. 토큰화는 결제일을 <em>T+0으로 단축</em>하는 정도</td>
+      </tr>
+      <tr>
+        <td><strong>글로벌 접근</strong></td>
+        <td>⚠️ 제약 있음</td>
+        <td>SWIFT가 글로벌. 외환관리법·자본통제로 토큰화도 결국 KYC 필요. <strong>법적으로 완전 자유롭지 않음</strong></td>
+      </tr>
+      <tr>
+        <td><strong>투명한 이력</strong></td>
+        <td>✅ 가능</td>
+        <td>금감원 감사, 거래소 공시, 회계 감사 모두 이력 추적. <em>퍼블릭 체인 외에는 차이 작음</em></td>
+      </tr>
+      <tr>
+        <td><strong>프로그래머블 권리</strong></td>
+        <td>⚠️ 제한적</td>
+        <td>에스크로, 트러스트, 법적 계약으로 가능. 토큰화는 <strong>유연성·속도·자동화 수준에서 우위</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note warn">
+    <strong>자주 과장되는 주장들:</strong>
+    <ul style="margin-top:8px;">
+      <li>"중개자 없이 결제" → 사실은 거래소·지갑·오라클·브릿지 등 <em>새 중개자</em>가 생김</li>
+      <li>"수수료 0" → L1 가스비, L2 sequencer, 브릿지 수수료가 누적됨</li>
+      <li>"탈중앙" → 검증자·개발팀·재단·VC 집중 (Lido·Coinbase 등)</li>
+      <li>"글로벌 즉시" → 거래소 입출금 지연, 규제 차단 흔함</li>
+    </ul>
+  </div>
+
+  <h3>4.7 토큰화가 진짜로 독점적인 영역 — 3가지</h3>
+  <p>기존 시스템이 정말 못하는 것은 다음 3가지로 좁혀진다. 이것들이 진짜 토큰화의 가치다.</p>
+
+  <div class="card">
+    <h4 style="margin-top:0; color:var(--accent);">1. 무허가 혁신 (Permissionless Innovation)</h4>
+    <p>
+      <strong>기존:</strong> 새 금융 서비스를 만들려면 → 은행·예탁원·금융위·증권사 등의 승인·계약·인프라 통합 필요. 몇 달~몇 년.<br>
+      <strong>토큰화 (퍼블릭):</strong> 누구나 즉시 dApp을 배포 가능. 기존 토큰을 그대로 활용. <em>DeFi가 폭발적으로 발전한 본질적 이유.</em>
+    </p>
+    <p style="font-size:0.9rem; color:var(--fg-dim);">예: Uniswap은 단 며칠 만에 배포되어 수십억 달러 거래 시장을 형성. 기존 금융에서는 불가능한 속도</p>
+  </div>
+
+  <div class="card">
+    <h4 style="margin-top:0; color:var(--accent);">2. 자기 보관 (Self-Custody)</h4>
+    <p>
+      <strong>기존:</strong> 자산 보관은 항상 기관에 의존 (은행·증권사·예탁원). 기관이 동결·해킹·파산하면 손실 위험.<br>
+      <strong>토큰화 (퍼블릭):</strong> 개인키 = 소유권. 어떤 기관도 동결·차단 불가 (이론상). <em>FTX 사태 이후 "자기 보관"의 가치 재조명.</em>
+    </p>
+    <p style="font-size:0.9rem; color:var(--fg-dim);">단점: 키 분실 = 영구 손실. 자기 책임이 어려운 일반 사용자에게는 부담</p>
+  </div>
+
+  <div class="card">
+    <h4 style="margin-top:0; color:var(--accent);">3. 조합 가능성 (Composability) — "Money Lego"</h4>
+    <p>
+      <strong>기존:</strong> A 은행 채권을 → B 증권사 옵션과 → C 펀드 ETF에 결합 = 거의 불가능. 각자 폐쇄 시스템.<br>
+      <strong>토큰화 (퍼블릭):</strong> 레고 블록처럼 자유 조합. USDC를 Aave에 예치 → aUSDC 받음 → Curve LP에 → CRV 받음 → ... 단일 트랜잭션 가능.
+    </p>
+    <p style="font-size:0.9rem; color:var(--fg-dim);">이게 DeFi가 "money lego"라 불리는 이유. 무한 조합으로 새 금융 상품 창출 가능</p>
+  </div>
+
+  <h3>4.8 도입 의사결정 — 3가지 질문</h3>
+  <p>토큰화 도입 의사결정은 다음 3가지 질문에 답해야 한다. <strong>모두 "예"가 아니라면 기존 시스템 개선이 더 합리적</strong>일 수 있다.</p>
+
+<pre><code>Q1. 무허가 혁신이 정말 필요한가?
+    └─ NO  → 퍼미션드 DLT 또는 그냥 잘 만든 DB
+    └─ YES → Q2로
+
+Q2. 자기 보관이 정말 가치 있는가? (사용자 책임 감당 가능?)
+    └─ NO  → 커스터디 서비스 + 기존 시스템
+    └─ YES → Q3로
+
+Q3. 다른 서비스와의 조합(Composability)이 핵심 가치인가?
+    └─ NO  → 토큰화 효익이 작음 → 기존 시스템 개선 검토
+    └─ YES → 토큰화 + 퍼블릭 블록체인 + 표준(ERC-20/3525 등)</code></pre>
+
+  <h3>4.9 퍼미션드 체인의 경우 — 가치는 더 좁아진다</h3>
+  <p>
+    위 분석은 주로 <strong>퍼블릭(permissionless) 블록체인</strong> 기준이다.
+    퍼미션드 체인(예: 한강, Hyperledger Fabric, R3 Corda, QBFT 기반 컨소시엄)을 선택하면 토큰화의 가치는 더욱 좁아진다.
+    각 가치가 어떻게 변하는지 객관적으로 살펴본다.
+  </p>
+
+  <h4>4.9.1 퍼미션드로 가면 사라지거나 약화되는 가치</h4>
+  <table>
+    <thead><tr><th>가치</th><th>퍼블릭</th><th>퍼미션드</th><th>이유</th></tr></thead>
+    <tbody>
+      <tr><td>무허가 혁신</td><td>✅</td><td>❌</td><td>운영 컨소시엄의 승인 없이 dApp 배포 불가</td></tr>
+      <tr><td>자기 보관</td><td>✅</td><td>⚠️</td><td>보통 운영 기관(은행 등)이 관리. 한강도 은행 앱 안에서 운영</td></tr>
+      <tr><td>조합 가능성</td><td>✅</td><td>❌</td><td>폐쇄적 → 외부 dApp이 들어올 수 없음</td></tr>
+      <tr><td>검열 저항</td><td>⚠️ (약함)</td><td>❌</td><td>운영자가 트랜잭션 검열·자산 동결 가능</td></tr>
+      <tr><td>글로벌 접근</td><td>✅</td><td>❌</td><td>승인된 참여자만 접근</td></tr>
+      <tr><td>외부 개발자 생태계</td><td>✅</td><td>❌</td><td>접근 불가</td></tr>
+    </tbody>
+  </table>
+
+  <h4>4.9.2 그렇다면 퍼미션드 체인의 진짜 가치는?</h4>
+  <p>퍼미션드 체인이 여전히 제공하는 (그리고 단일 DB가 제공하기 어려운) 가치:</p>
+  <ul>
+    <li><strong>다자간 신뢰 모델</strong>: 한 기관이 아닌 여러 기관 공동 운영 → 단일 기관이 데이터 임의 조작 불가 <em>(가장 중요한 가치)</em></li>
+    <li><strong>변조 저항 (감사 추적)</strong>: 모든 노드가 같은 데이터 보유 + 합의 검증 → 사후 위변조 불가능</li>
+    <li><strong>합의된 단일 진실</strong>: 별도 reconciliation 절차 없이 모든 참여자가 같은 상태 공유</li>
+    <li><strong>표준화된 분산 인프라</strong>: 자체 구축보다 검증된 오픈소스(Fabric, Besu, Corda) 활용</li>
+    <li><strong>스마트 컨트랙트 호환성</strong>: 향후 외부 토큰화 자산(예: ERC-3525)과 연계 가능</li>
+  </ul>
+
+  <h4>4.9.3 그런데... "잘 설계된 분산 DB"로도 가능한가?</h4>
+  <p>대부분의 가치가 다중 DBMS + 감사 로그 + 정합성 검증으로 어느 정도 구현 가능하다. 정직한 비교:</p>
+  <table>
+    <thead><tr><th>요건</th><th>분산 DB로 구현 가능?</th><th>퍼미션드 블록체인의 우위</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>다자간 합의</td>
+        <td>⚠️ 가능 (2PC, Paxos, Raft)</td>
+        <td>BFT는 비잔틴 노드(악의적 참여자) 견딤 — Paxos/Raft는 단순 장애만 견딤</td>
+      </tr>
+      <tr>
+        <td>변조 저항</td>
+        <td>⚠️ 부분적 (감사 로그 + 해시 체인)</td>
+        <td>모든 노드 합의 검증으로 더 강력</td>
+      </tr>
+      <tr>
+        <td>스마트 컨트랙트</td>
+        <td>✅ 가능 (Stored Procedure, 워크플로우 엔진)</td>
+        <td>EVM 호환성 → 이더리움 생태계 도구·표준 활용</td>
+      </tr>
+      <tr>
+        <td>다자간 거버넌스</td>
+        <td>⚠️ 별도 구축 필요</td>
+        <td>온체인 보팅 등 기본 제공</td>
+      </tr>
+      <tr>
+        <td>외부 토큰화 자산과 호환</td>
+        <td>❌ 별도 인터페이스 구축</td>
+        <td>표준 토큰(ERC-20/3525 등) 즉시 호환</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>4.9.4 퍼미션드 체인이 적합한 경우</h4>
+  <ul>
+    <li>✅ 다수 독립 기관이 공동 운영해야 (단일 기관 운영이면 그냥 DB)</li>
+    <li>✅ <strong>비잔틴 내성</strong>이 진짜 필요 (참가자 중 일부의 악의 가정)</li>
+    <li>✅ 이미 컨소시엄이 형성되어 있고 기관 간 신뢰 부족</li>
+    <li>✅ 변조 저항이 법적·규제적 핵심 요구사항</li>
+    <li>✅ 향후 외부 토큰화 자산(CBDC·증권 등)과 연계 필요</li>
+  </ul>
+
+  <h4>4.9.5 퍼미션드 체인이 부적합한 경우</h4>
+  <div class="note warn">
+    <ul style="margin: 8px 0;">
+      <li>❌ 단일 조직 내부 데이터 → 그냥 DB 또는 데이터 레이크</li>
+      <li>❌ 성능이 핵심 → 중앙 DB가 BFT 대비 10~100배 빠름</li>
+      <li>❌ 프라이버시가 절대 우선 → 채널·ZK 등 추가 복잡 설계 필요</li>
+      <li>❌ 외부 개발자 생태계 활용 → 퍼블릭이 적합</li>
+      <li>❌ 진정한 탈중앙화 필요 → 퍼블릭 외에는 의미 없음</li>
+    </ul>
+  </div>
+
+  <h4>4.9.6 한강·CBDC 컨소시엄에의 적용</h4>
+  <div class="card">
+    <p>한강 프로젝트의 퍼미션드 모델을 객관적으로 평가하면:</p>
+    <ul>
+      <li><strong>"왜 BOK-Wire+가 아닌가?"</strong>: 이미 도매 결제 즉시성·법적 효력 확립되어 있음</li>
+      <li><strong>"왜 분산 DB가 아닌가?"</strong>: 7개 은행 + BoK 노드를 BFT로 운영해도, 잘 설계된 분산 DB와의 본질적 차이는 좁음</li>
+      <li><strong>실제 차별화 가치</strong>:
+        <ol style="margin-top:6px;">
+          <li>프로그래머블 머니 (청소년 바우처, 조건부 결제 등)</li>
+          <li>향후 토큰화 자산(<a href="#erc-3525">ERC-3525</a>, 토큰증권)과 표준 호환</li>
+          <li>Agora 국경간 결제와의 연계 기반</li>
+          <li>비잔틴 내성으로 한 은행의 악의·장애가 시스템 전체 영향 차단</li>
+        </ol>
+      </li>
+    </ul>
+    <p style="margin-top:12px;">
+      <strong>객관적 평가:</strong> 퍼미션드 CBDC의 가치는 <em>"지금 결제를 더 효율적으로"</em>보다
+      <em>"향후 토큰화 자산·국경간 결제·프로그래머블 머니 시대를 위한 인프라"</em>에 있다.
+      현재 효익만 비교하면 기존 시스템(BOK-Wire+ 등) 우위라는 회의론이 타당하며,
+      미래 옵션 가치를 어떻게 평가하느냐가 도입 정당화의 핵심이 된다.
+    </p>
+  </div>
+
+  <div class="note">
+    <strong>핵심 정리:</strong>
+    <ul style="margin-top:8px;">
+      <li>토큰화의 8가지 가치 중 <strong>독점적인 것은 3가지(무허가 혁신·자기 보관·조합 가능성)</strong>뿐</li>
+      <li>퍼미션드 체인은 이 3가지마저 대부분 잃음 → 남는 가치는 <strong>"다자간 신뢰 + 비잔틴 내성"</strong>으로 좁아짐</li>
+      <li>그렇다면 "왜 분산 DB가 아닌가?" 질문에 답할 수 있어야 도입 정당화 가능</li>
+      <li>한강 같은 컨소시엄 CBDC는 <em>현재 효익보다 미래 토큰화 인프라 옵션 가치</em>로 평가하는 게 정직함</li>
+    </ul>
+  </div>
+
+  <h3>4.10 한국 토큰증권(STO) 가이드라인</h3>
   <div class="card">
     <p>
       <strong>2023년 2월 금융위원회는 "토큰증권(ST)" 발행·유통 가이드라인</strong>을 발표했다.
@@ -947,7 +1172,7 @@ contract Governor {
 <section id="patterns">
   <h2>7. 컨트랙트 디자인 패턴</h2>
 
-  <h3>4.1 Proxy Upgrade Pattern</h3>
+  <h3>7.1 Proxy Upgrade Pattern</h3>
   <p>
     배포된 컨트랙트는 불변이 원칙이지만, 실무에서는 버그 수정·기능 추가가 필요하다.
     Proxy 패턴은 사용자가 보는 주소(Proxy)를 그대로 두고, 내부 구현(Implementation)만 교체한다.
@@ -962,20 +1187,20 @@ contract Governor {
     </tbody>
   </table>
 
-  <h3>4.2 Factory Pattern</h3>
+  <h3>7.2 Factory Pattern</h3>
   <p>새 컨트랙트를 동적으로 생성. <code>CREATE2</code>는 결정론적 주소 계산이 가능해 카운터팩추얼 배포에 사용.</p>
 <pre><code>// CREATE2: 배포 전에 주소 예측 가능
 address computed = address(uint160(uint256(keccak256(abi.encodePacked(
     bytes1(0xff), factory, salt, keccak256(bytecode)
 )))));</code></pre>
 
-  <h3>4.3 Pull over Push 패턴</h3>
+  <h3>7.3 Pull over Push 패턴</h3>
   <p>
     돈을 직접 보내지 말고(<em>push</em>), 수신자가 가져가게 하라(<em>pull</em>).
     수신자가 컨트랙트일 경우 revert로 전체 트랜잭션이 실패하는 사고를 막을 수 있다.
   </p>
 
-  <h3>4.4 Checks-Effects-Interactions</h3>
+  <h3>7.4 Checks-Effects-Interactions</h3>
   <p>Reentrancy 방지의 황금 규칙: 검사 → 상태 변경 → 외부 호출 순서를 지킬 것.</p>
 <pre><code>function withdraw(uint256 amount) external {
     // 1. Checks
