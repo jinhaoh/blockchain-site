@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>블록체인 기술 심층 가이드 — 개발자용</title>
+<style>
+  :root {
+    --bg: #0b0f17;
+    --bg-elev: #121826;
+    --bg-code: #0a0e15;
+    --fg: #e6edf3;
+    --fg-dim: #8b949e;
+    --accent: #7ee787;
+    --accent-2: #79c0ff;
+    --accent-3: #ffa657;
+    --border: #30363d;
+    --danger: #f85149;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Roboto, sans-serif;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    padding: 80px 24px 60px;
+    text-align: center;
+    background: linear-gradient(180deg, #0b0f17 0%, #131b2c 100%);
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    margin: 0 0 16px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  header p {
+    color: var(--fg-dim);
+    font-size: 1.1rem;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  nav {
+    position: sticky;
+    top: 0;
+    background: rgba(11, 15, 23, 0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    z-index: 10;
+  }
+  nav ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin: 0;
+    padding: 0;
+    max-width: 1100px;
+    margin-inline: auto;
+    justify-content: center;
+  }
+  nav a {
+    color: var(--fg-dim);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--accent); }
+  main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 48px 24px;
+  }
+  section {
+    margin-bottom: 80px;
+    scroll-margin-top: 80px;
+  }
+  h2 {
+    font-size: 2rem;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 12px;
+    margin-top: 0;
+    color: var(--accent);
+  }
+  h3 {
+    color: var(--accent-2);
+    margin-top: 32px;
+  }
+  code {
+    background: var(--bg-code);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "SF Mono", Consolas, "D2Coding", monospace;
+    font-size: 0.9em;
+    color: var(--accent-3);
+  }
+  pre {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    font-size: 0.88rem;
+  }
+  pre code {
+    background: transparent;
+    padding: 0;
+    color: var(--fg);
+  }
+  .card {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 20px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.92rem;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    text-align: left;
+  }
+  th { background: var(--bg-elev); color: var(--accent-2); }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  /* Block chain visualization */
+  .chain {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 16px 0;
+  }
+  .block {
+    min-width: 180px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 0.8rem;
+    position: relative;
+  }
+  .block:not(:last-child)::after {
+    content: "→";
+    position: absolute;
+    right: -18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent);
+    font-size: 1.2rem;
+  }
+  .block .label { color: var(--fg-dim); font-size: 0.7rem; text-transform: uppercase; }
+  .block .hash { font-family: monospace; word-break: break-all; color: var(--accent-3); }
+
+  /* Hash demo */
+  .demo {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 24px 0;
+  }
+  .demo input, .demo textarea {
+    width: 100%;
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    margin-top: 6px;
+    resize: vertical;
+  }
+  .demo label { color: var(--fg-dim); font-size: 0.85rem; }
+  .demo .output {
+    margin-top: 16px;
+    font-family: monospace;
+    background: var(--bg-code);
+    padding: 12px;
+    border-radius: 6px;
+    word-break: break-all;
+    color: var(--accent);
+    border: 1px solid var(--border);
+    min-height: 24px;
+  }
+  .demo .meta {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: var(--fg-dim);
+  }
+  button {
+    background: var(--accent-2);
+    color: var(--bg);
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-top: 12px;
+    transition: opacity 0.2s;
+  }
+  button:hover { opacity: 0.85; }
+
+  /* Merkle tree */
+  .merkle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 0;
+  }
+  .merkle-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+  .merkle-node {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: var(--accent-3);
+  }
+  .merkle-root { border-color: var(--accent); color: var(--accent); }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+  .badge-pow { background: #f85149; color: white; }
+  .badge-pos { background: #7ee787; color: var(--bg); }
+  .badge-bft { background: #79c0ff; color: var(--bg); }
+
+  footer {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--fg-dim);
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  .note {
+    border-left: 3px solid var(--accent-2);
+    padding: 12px 16px;
+    background: rgba(121, 192, 255, 0.05);
+    margin: 16px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.92rem;
+  }
+  .warn {
+    border-left-color: var(--danger);
+    background: rgba(248, 81, 73, 0.05);
+  }
+
+  /* Inline reference links */
+  main a {
+    color: var(--accent-2);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--accent-2);
+    transition: color 0.15s, border-color 0.15s;
+  }
+  main a:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  main a[href^="http"]::after {
+    content: " ↗";
+    font-size: 0.7em;
+    opacity: 0.6;
+  }
+
+  /* SVG diagram container */
+  .diagram {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 24px 0;
+    text-align: center;
+  }
+  .diagram svg {
+    max-width: 100%;
+    height: auto;
+  }
+  .diagram .caption {
+    color: var(--fg-dim);
+    font-size: 0.85rem;
+    margin-top: 12px;
+    font-style: italic;
+  }
+  .diagram text {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    fill: var(--fg);
+  }
+
+  /* Chain comparison cards */
+  .chain-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .chain-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .chain-card h4 {
+    margin: 0 0 8px;
+    color: var(--accent-2);
+    font-size: 1.05rem;
+  }
+  .chain-card .tagline {
+    color: var(--fg-dim);
+    font-size: 0.8rem;
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+  .chain-card dl {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+  .chain-card dt {
+    color: var(--accent-3);
+    font-weight: 600;
+    margin-top: 8px;
+  }
+  .chain-card dd {
+    margin: 2px 0 0 0;
+    color: var(--fg);
+  }
+  .chain-card .links {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem;
+  }
+  .chain-card .links a { margin-right: 10px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>블록체인 기술 심층 가이드</h1>
+  <p>개발자와 기술 전문가를 위한 분산원장 기술의 구조, 합의 알고리즘, 스마트 컨트랙트, 크로스체인 브릿지, CBDC(Agora·한강), x402 결제 프로토콜까지</p>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="#intro">개요</a></li>
+    <li><a href="#structure">블록 구조</a></li>
+    <li><a href="#hash">해시 & 데모</a></li>
+    <li><a href="#merkle">머클 트리</a></li>
+    <li><a href="#consensus">합의 알고리즘</a></li>
+    <li><a href="#chains">체인별 특징</a></li>
+    <li><a href="#tx">트랜잭션 흐름</a></li>
+    <li><a href="#contract">스마트 컨트랙트</a></li>
+    <li><a href="#limits">한계와 과제</a></li>
+    <li><a href="#usecase">활용 사례</a></li>
+    <li><a href="#bridge">크로스체인 브릿지</a></li>
+    <li><a href="#cbdc">CBDC: Agora & 한강</a></li>
+    <li><a href="#x402">x402 결제</a></li>
+    <li><a href="#refs">참고자료</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section id="intro">
+  <h2>1. 블록체인이란?</h2>
+  <p>
+    블록체인(Blockchain)은 <strong>암호학적으로 연결된 블록의 순차적 자료구조</strong>를 분산 네트워크의 다수 노드가
+    공유하고, 합의 알고리즘으로 단일 상태에 도달하게 만드는 분산원장(Distributed Ledger) 기술이다.
+    중앙 신뢰 기관 없이도 <em>변조 저항성(tamper-evidence)</em>, <em>이중지불 방지</em>, <em>최종성(finality)</em>을 제공한다.
+  </p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 더 읽기:
+    <a href="https://bitcoin.org/bitcoin.pdf">Bitcoin 백서 (Nakamoto, 2008)</a> ·
+    <a href="https://ethereum.org/en/whitepaper/">Ethereum 백서</a> ·
+    <a href="https://ko.wikipedia.org/wiki/%EB%B8%94%EB%A1%9D%EC%B2%B4%EC%9D%B8">위키백과: 블록체인</a> ·
+    <a href="https://www.bis.org/publ/work880.htm">BIS Working Paper #880: Rise of CBDCs</a>
+  </p>
+  <div class="note">
+    <strong>핵심 명제:</strong> 블록체인은 단일 기술이 아니라 <em>해시 함수 + 디지털 서명 + P2P 네트워크 + 합의 알고리즘</em>의
+    공학적 조합이다. 각 구성요소의 트레이드오프를 이해해야 시스템을 올바르게 설계할 수 있다.
+  </div>
+
+  <div class="diagram">
+    <svg viewBox="0 0 760 360" xmlns="http://www.w3.org/2000/svg">
+      <!-- Application Layer -->
+      <rect x="20" y="20" width="720" height="55" rx="6" fill="#1a2332" stroke="#7ee787" stroke-width="1.5"/>
+      <text x="380" y="45" text-anchor="middle" font-size="14" font-weight="600" fill="#7ee787">Application Layer</text>
+      <text x="380" y="65" text-anchor="middle" font-size="11" fill="#8b949e">DApps · Wallets · DeFi · NFT · CBDC · Smart Contracts</text>
+
+      <!-- Consensus Layer -->
+      <rect x="20" y="90" width="720" height="55" rx="6" fill="#1a2332" stroke="#79c0ff" stroke-width="1.5"/>
+      <text x="380" y="115" text-anchor="middle" font-size="14" font-weight="600" fill="#79c0ff">Consensus Layer</text>
+      <text x="380" y="135" text-anchor="middle" font-size="11" fill="#8b949e">PoW · PoS · BFT · DAG — 단일 상태 결정</text>
+
+      <!-- Network Layer -->
+      <rect x="20" y="160" width="720" height="55" rx="6" fill="#1a2332" stroke="#ffa657" stroke-width="1.5"/>
+      <text x="380" y="185" text-anchor="middle" font-size="14" font-weight="600" fill="#ffa657">Network Layer (P2P)</text>
+      <text x="380" y="205" text-anchor="middle" font-size="11" fill="#8b949e">Gossip · Mempool · Block propagation · Discovery</text>
+
+      <!-- Data Layer -->
+      <rect x="20" y="230" width="720" height="55" rx="6" fill="#1a2332" stroke="#f85149" stroke-width="1.5"/>
+      <text x="380" y="255" text-anchor="middle" font-size="14" font-weight="600" fill="#f85149">Data Layer</text>
+      <text x="380" y="275" text-anchor="middle" font-size="11" fill="#8b949e">Blocks · Merkle Tree · State Trie · Transactions</text>
+
+      <!-- Crypto Foundation -->
+      <rect x="20" y="300" width="720" height="50" rx="6" fill="#0a0e15" stroke="#30363d" stroke-width="1.5"/>
+      <text x="380" y="322" text-anchor="middle" font-size="13" font-weight="600" fill="#e6edf3">Cryptographic Primitives</text>
+      <text x="380" y="340" text-anchor="middle" font-size="10" fill="#8b949e">Hash (SHA-256/Keccak) · ECDSA/EdDSA · ZK Proofs · MPC</text>
+    </svg>
+    <div class="caption">그림 1. 블록체인 스택 5계층 — 하위 계층은 상위 계층에 신뢰의 뿌리(root of trust)를 제공한다.</div>
+  </div>
+</section>
+
+<section id="structure">
+  <h2>2. 블록 구조</h2>
+  <p>각 블록은 <strong>헤더(Header)</strong>와 <strong>바디(Body)</strong>로 구성된다. 이전 블록의 해시를 헤더에 포함시켜 체인을 형성한다.</p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://developer.bitcoin.org/reference/block_chain.html">Bitcoin Developer Reference: Block Chain</a> ·
+    <a href="https://en.bitcoin.it/wiki/Block">Bitcoin Wiki: Block</a> ·
+    <a href="https://ethereum.org/en/developers/docs/blocks/">Ethereum.org: Blocks</a>
+  </p>
+
+  <div class="chain">
+    <div class="block">
+      <div class="label">Block #0 (Genesis)</div>
+      <div>prev: <span class="hash">0x000...</span></div>
+      <div>merkleRoot: <span class="hash">a1b2c3...</span></div>
+      <div>nonce: 2083236893</div>
+    </div>
+    <div class="block">
+      <div class="label">Block #1</div>
+      <div>prev: <span class="hash">e3b0c4...</span></div>
+      <div>merkleRoot: <span class="hash">d8f3a7...</span></div>
+      <div>nonce: 18923</div>
+    </div>
+    <div class="block">
+      <div class="label">Block #2</div>
+      <div>prev: <span class="hash">9c1185...</span></div>
+      <div>merkleRoot: <span class="hash">3f7e9b...</span></div>
+      <div>nonce: 27482</div>
+    </div>
+  </div>
+
+  <h3>비트코인 블록 헤더 (80 bytes)</h3>
+<pre><code>struct BlockHeader {
+    int32_t  version;          // 4  bytes
+    uint8_t  prevBlockHash[32]; // 32 bytes — 이전 블록의 SHA256d
+    uint8_t  merkleRoot[32];    // 32 bytes — 트랜잭션 머클 루트
+    uint32_t timestamp;        // 4  bytes — Unix epoch
+    uint32_t bits;             // 4  bytes — 난이도 타깃 (compact)
+    uint32_t nonce;            // 4  bytes — PoW 카운터
+};</code></pre>
+
+  <p>
+    헤더의 어떤 비트라도 변경되면 <code>SHA256(SHA256(header))</code> 결과가 완전히 달라지므로
+    이후 모든 블록의 <code>prevBlockHash</code>가 깨진다. 이것이 <em>변조 저항성</em>의 기술적 근거다.
+  </p>
+</section>
+
+<section id="hash">
+  <h2>3. 암호학적 해시 함수</h2>
+  <p>
+    SHA-256, Keccak-256(이더리움) 같은 해시 함수는 다음 세 가지 성질을 만족해야 한다:
+  </p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf">NIST FIPS 180-4 (SHA-2)</a> ·
+    <a href="https://keccak.team/keccak.html">Keccak Team (SHA-3)</a> ·
+    <a href="https://en.wikipedia.org/wiki/Cryptographic_hash_function">Wikipedia: Cryptographic Hash</a> ·
+    <a href="https://developer.mozilla.org/ko/docs/Web/API/SubtleCrypto/digest">MDN: SubtleCrypto.digest()</a>
+  </p>
+  <ul>
+    <li><strong>전상저항성(Pre-image resistance)</strong>: <code>h = H(x)</code>에서 <code>x</code>를 역산하기 어려움</li>
+    <li><strong>2차 전상저항성(Second pre-image)</strong>: <code>H(x) = H(x')</code>인 <code>x' ≠ x</code> 찾기 어려움</li>
+    <li><strong>충돌저항성(Collision resistance)</strong>: <code>H(x) = H(y)</code>인 임의의 <code>(x, y)</code> 쌍 찾기 어려움</li>
+  </ul>
+
+  <div class="demo">
+    <strong>SHA-256 인터랙티브 데모</strong>
+    <label for="hashInput">입력 텍스트:</label>
+    <textarea id="hashInput" rows="3">Hello, Blockchain!</textarea>
+    <div class="meta">
+      <span>입력 1글자만 바꿔도 해시 전체가 완전히 달라집니다 (Avalanche Effect)</span>
+    </div>
+    <label style="margin-top:12px; display:block;">SHA-256 결과:</label>
+    <div class="output" id="hashOutput">—</div>
+  </div>
+</section>
+
+<section id="merkle">
+  <h2>4. 머클 트리 (Merkle Tree)</h2>
+  <p>
+    블록에 포함된 수천 개의 트랜잭션을 단 32바이트의 <strong>머클 루트(Merkle Root)</strong>로 요약하는 이진 해시 트리.
+    SPV(Simplified Payment Verification) 클라이언트는 전체 블록을 다운로드하지 않고도
+    <code>O(log n)</code> 크기의 머클 증명(Merkle Proof)으로 트랜잭션 포함 여부를 검증할 수 있다.
+  </p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://en.wikipedia.org/wiki/Merkle_tree">Wikipedia: Merkle Tree</a> ·
+    <a href="https://www.investopedia.com/terms/m/merkle-tree.asp">Investopedia: Merkle Tree</a> ·
+    <a href="https://bitcoin.org/bitcoin.pdf">Bitcoin 백서 §8 (SPV)</a> ·
+    <a href="https://github.com/ethereum/wiki/wiki/Patricia-Tree">Ethereum Patricia Trie</a>
+  </p>
+
+  <div class="merkle">
+    <div class="merkle-row"><div class="merkle-node merkle-root">Root = H(H12 ‖ H34)</div></div>
+    <div class="merkle-row">
+      <div class="merkle-node">H12 = H(H1 ‖ H2)</div>
+      <div class="merkle-node">H34 = H(H3 ‖ H4)</div>
+    </div>
+    <div class="merkle-row">
+      <div class="merkle-node">H1 = H(Tx1)</div>
+      <div class="merkle-node">H2 = H(Tx2)</div>
+      <div class="merkle-node">H3 = H(Tx3)</div>
+      <div class="merkle-node">H4 = H(Tx4)</div>
+    </div>
+  </div>
+
+<pre><code>// Merkle Proof 검증 (의사 코드)
+function verifyProof(txHash, proof, root) {
+  let computed = txHash;
+  for (const { hash, position } of proof) {
+    computed = position === 'left'
+      ? sha256(hash + computed)
+      : sha256(computed + hash);
+  }
+  return computed === root;
+}</code></pre>
+</section>
+
+<section id="consensus">
+  <h2>5. 합의 알고리즘</h2>
+  <p>비잔틴 장군 문제(<a href="https://lamport.azurewebsites.net/pubs/byz.pdf">Byzantine Generals Problem</a>)를 분산 환경에서 해결하기 위한 메커니즘.</p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://ethereum.org/en/developers/docs/consensus-mechanisms/pow/">Ethereum: PoW</a> ·
+    <a href="https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/">Ethereum: PoS</a> ·
+    <a href="https://pmg.csail.mit.edu/papers/osdi99.pdf">Castro & Liskov: PBFT 원논문</a> ·
+    <a href="https://tendermint.com/static/docs/tendermint.pdf">Tendermint BFT</a> ·
+    <a href="https://www.ifca.ai/fc14/papers/fc14_submission_82.pdf">Eyal & Sirer: Selfish Mining</a>
+  </p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 760 320" xmlns="http://www.w3.org/2000/svg">
+      <!-- PoW left -->
+      <text x="190" y="25" text-anchor="middle" font-size="16" font-weight="700" fill="#f85149">Proof of Work</text>
+      <text x="190" y="45" text-anchor="middle" font-size="11" fill="#8b949e">"가장 많은 연산을 한 체인이 정답"</text>
+
+      <!-- Miners -->
+      <circle cx="80" cy="100" r="22" fill="#1a2332" stroke="#f85149" stroke-width="2"/>
+      <text x="80" y="105" text-anchor="middle" font-size="11" fill="#e6edf3">⛏️ M1</text>
+      <circle cx="190" cy="100" r="22" fill="#1a2332" stroke="#f85149" stroke-width="2"/>
+      <text x="190" y="105" text-anchor="middle" font-size="11" fill="#e6edf3">⛏️ M2</text>
+      <circle cx="300" cy="100" r="22" fill="#1a2332" stroke="#f85149" stroke-width="2"/>
+      <text x="300" y="105" text-anchor="middle" font-size="11" fill="#e6edf3">⛏️ M3</text>
+
+      <!-- Energy arrows -->
+      <text x="80" y="145" text-anchor="middle" font-size="10" fill="#ffa657">⚡ 해시 연산</text>
+      <text x="190" y="145" text-anchor="middle" font-size="10" fill="#ffa657">⚡ 해시 연산</text>
+      <text x="300" y="145" text-anchor="middle" font-size="10" fill="#ffa657">⚡ 해시 연산</text>
+
+      <!-- Winner block -->
+      <rect x="60" y="180" width="260" height="50" rx="6" fill="#1a2332" stroke="#7ee787" stroke-width="2"/>
+      <text x="190" y="200" text-anchor="middle" font-size="12" font-weight="600" fill="#7ee787">가장 빨리 nonce를 찾은 채굴자가 보상</text>
+      <text x="190" y="220" text-anchor="middle" font-size="10" fill="#8b949e">에너지 소비 ∝ 보안</text>
+
+      <!-- Properties -->
+      <text x="190" y="260" text-anchor="middle" font-size="10" fill="#8b949e">✓ 51% 공격 ✗ 환경 부담</text>
+      <text x="190" y="278" text-anchor="middle" font-size="10" fill="#8b949e">✓ Permissionless ✗ 느린 최종성</text>
+
+      <!-- Divider -->
+      <line x1="380" y1="20" x2="380" y2="300" stroke="#30363d" stroke-width="1.5" stroke-dasharray="4 4"/>
+
+      <!-- PoS right -->
+      <text x="570" y="25" text-anchor="middle" font-size="16" font-weight="700" fill="#7ee787">Proof of Stake</text>
+      <text x="570" y="45" text-anchor="middle" font-size="11" fill="#8b949e">"가장 많이 스테이크한 자가 정직할 인센티브"</text>
+
+      <!-- Validators -->
+      <rect x="438" y="78" width="44" height="44" rx="6" fill="#1a2332" stroke="#7ee787" stroke-width="2"/>
+      <text x="460" y="105" text-anchor="middle" font-size="11" fill="#e6edf3">V1</text>
+      <text x="460" y="135" text-anchor="middle" font-size="9" fill="#ffa657">32 ETH</text>
+
+      <rect x="548" y="78" width="44" height="44" rx="6" fill="#1a2332" stroke="#7ee787" stroke-width="2"/>
+      <text x="570" y="105" text-anchor="middle" font-size="11" fill="#e6edf3">V2</text>
+      <text x="570" y="135" text-anchor="middle" font-size="9" fill="#ffa657">128 ETH</text>
+
+      <rect x="658" y="78" width="44" height="44" rx="6" fill="#1a2332" stroke="#7ee787" stroke-width="2"/>
+      <text x="680" y="105" text-anchor="middle" font-size="11" fill="#e6edf3">V3</text>
+      <text x="680" y="135" text-anchor="middle" font-size="9" fill="#ffa657">64 ETH</text>
+
+      <!-- Random selection -->
+      <text x="570" y="165" text-anchor="middle" font-size="10" fill="#8b949e">🎲 무작위 선출 (지분 가중)</text>
+
+      <!-- Slashing -->
+      <rect x="440" y="180" width="260" height="50" rx="6" fill="#1a2332" stroke="#79c0ff" stroke-width="2"/>
+      <text x="570" y="200" text-anchor="middle" font-size="12" font-weight="600" fill="#79c0ff">악의적 행위 시 스테이크 슬래싱</text>
+      <text x="570" y="220" text-anchor="middle" font-size="10" fill="#8b949e">자본 위협 ∝ 보안</text>
+
+      <text x="570" y="260" text-anchor="middle" font-size="10" fill="#8b949e">✓ 에너지 효율 ✗ 부의 집중</text>
+      <text x="570" y="278" text-anchor="middle" font-size="10" fill="#8b949e">✓ 빠른 최종성 ✗ Nothing-at-Stake</text>
+    </svg>
+    <div class="caption">그림 2. PoW vs PoS — 보안의 원천이 "에너지"에서 "자본"으로 이동</div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>알고리즘</th>
+        <th>대표 체인</th>
+        <th>최종성</th>
+        <th>비잔틴 내성</th>
+        <th>특징</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="badge badge-pow">PoW</span> Proof of Work</td>
+        <td>Bitcoin, Litecoin</td>
+        <td>확률적</td>
+        <td>≤ 50%</td>
+        <td>높은 보안성, 에너지 소비 큼</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-pos">PoS</span> Proof of Stake</td>
+        <td>Ethereum 2.0, Cardano</td>
+        <td>확률적 / 결정적</td>
+        <td>≤ 33%</td>
+        <td>에너지 효율적, 스테이커 집중 위험</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-bft">BFT</span> PBFT / Tendermint</td>
+        <td>Cosmos, Hyperledger</td>
+        <td>즉시 결정적</td>
+        <td>≤ 33%</td>
+        <td>고성능, 노드 수 제한 (퍼미션드)</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-bft">DPoS</span> Delegated PoS</td>
+        <td>EOS, TRON</td>
+        <td>결정적</td>
+        <td>≤ 33%</td>
+        <td>대표 노드 위임, 탈중앙화 약화</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>PoW의 핵심: 난이도 조정</h3>
+<pre><code>// 비트코인은 매 2016 블록마다 평균 10분이 되도록 target을 재조정한다.
+new_target = old_target * (actual_time / expected_time)
+
+// 채굴은 다음 조건을 만족하는 nonce를 찾는 작업
+while (sha256d(blockHeader) > target) {
+    blockHeader.nonce++;
+}</code></pre>
+
+  <div class="note warn">
+    <strong>주의:</strong> 51% 공격은 이론적 임계점일 뿐, 실제로는 25~33%의 해시파워만으로도
+    셀피시 마이닝(Selfish Mining)으로 부당 이득을 취할 수 있음이 증명되었다 (Eyal & Sirer, 2014).
+  </div>
+</section>
+
+<section id="chains">
+  <h2>6. 주요 블록체인 체인별 특징</h2>
+  <p>
+    체인은 합의 알고리즘, 데이터 모델, VM, 거버넌스, 목적에 따라 매우 다른 설계를 갖는다.
+    동일한 "블록체인"이지만 트레이드오프가 다르므로, 유스케이스에 맞는 선택이 필요하다.
+  </p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://chainlist.org/">ChainList (EVM 체인 디렉토리)</a> ·
+    <a href="https://l2beat.com/">L2BEAT</a> ·
+    <a href="https://defillama.com/chains">DefiLlama Chains</a> ·
+    <a href="https://messari.io/">Messari Research</a>
+  </p>
+
+  <h3>6.1 Layer 1 — 퍼블릭 메인넷</h3>
+  <div class="chain-grid">
+    <div class="chain-card">
+      <h4>Bitcoin (BTC)</h4>
+      <div class="tagline">디지털 금 · 가치 저장 수단의 표준</div>
+      <dl>
+        <dt>합의</dt><dd>Proof of Work (SHA-256d)</dd>
+        <dt>데이터 모델</dt><dd>UTXO</dd>
+        <dt>스크립팅</dt><dd>Bitcoin Script (튜링 불완전)</dd>
+        <dt>블록 시간</dt><dd>약 10분</dd>
+        <dt>TPS</dt><dd>약 7 (L1)</dd>
+        <dt>주요 확장</dt><dd>Lightning Network, Taproot, Ordinals/BRC-20</dd>
+        <dt>발행 정책</dt><dd>2,100만 BTC 상한, 4년마다 반감기</dd>
+      </dl>
+      <div class="links">
+        <a href="https://bitcoin.org/">bitcoin.org</a>
+        <a href="https://github.com/bitcoin/bitcoin">GitHub</a>
+        <a href="https://bitcoinmagazine.com/">매거진</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>Ethereum (ETH)</h4>
+      <div class="tagline">스마트 컨트랙트의 사실상 표준 · 세계의 컴퓨터</div>
+      <dl>
+        <dt>합의</dt><dd>Proof of Stake (Gasper = Casper FFG + LMD-GHOST)</dd>
+        <dt>데이터 모델</dt><dd>Account</dd>
+        <dt>VM</dt><dd>EVM (Solidity, Vyper)</dd>
+        <dt>블록 시간</dt><dd>12초 (slot), 32 slot = 1 epoch</dd>
+        <dt>TPS</dt><dd>L1 약 15, L2 포함 시 10,000+</dd>
+        <dt>L2 생태계</dt><dd>Arbitrum, Optimism, Base, zkSync, Scroll, Linea</dd>
+        <dt>거버넌스</dt><dd>EIP 프로세스 + 사회적 합의</dd>
+      </dl>
+      <div class="links">
+        <a href="https://ethereum.org/">ethereum.org</a>
+        <a href="https://eips.ethereum.org/">EIPs</a>
+        <a href="https://etherscan.io/">Etherscan</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>Solana (SOL)</h4>
+      <div class="tagline">고성능 단일 글로벌 상태 머신</div>
+      <dl>
+        <dt>합의</dt><dd>PoS + PoH (Proof of History, VDF 기반 타임스탬프)</dd>
+        <dt>데이터 모델</dt><dd>Account (병렬 실행 가능)</dd>
+        <dt>실행</dt><dd>Sealevel — 트랜잭션 병렬 처리, BPF 기반 SVM</dd>
+        <dt>언어</dt><dd>Rust, C, Anchor 프레임워크</dd>
+        <dt>블록 시간</dt><dd>약 400ms</dd>
+        <dt>실측 TPS</dt><dd>2,000~5,000 (이론치 65,000)</dd>
+        <dt>특징</dt><dd>저수수료, 단일 체인 고성능, 노드 하드웨어 요구사항 높음</dd>
+      </dl>
+      <div class="links">
+        <a href="https://solana.com/">solana.com</a>
+        <a href="https://docs.solana.com/">Docs</a>
+        <a href="https://www.anchor-lang.com/">Anchor</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>Cosmos (ATOM) — Hub</h4>
+      <div class="tagline">앱체인 인터넷 · IBC로 연결되는 주권 체인들</div>
+      <dl>
+        <dt>합의</dt><dd>Tendermint BFT (즉시 결정적 최종성)</dd>
+        <dt>SDK</dt><dd>Cosmos SDK (Go) — 앱체인 부트스트랩</dd>
+        <dt>VM</dt><dd>CosmWasm (Rust) 또는 SDK 모듈</dd>
+        <dt>상호운용</dt><dd>IBC (Inter-Blockchain Communication) — 가장 성숙한 네이티브 브릿지</dd>
+        <dt>대표 체인</dt><dd>Cosmos Hub, Osmosis, Celestia, dYdX v4, Injective</dd>
+        <dt>특징</dt><dd>각 체인이 독립 주권, 거버넌스·토큰·검증자 분리</dd>
+      </dl>
+      <div class="links">
+        <a href="https://cosmos.network/">cosmos.network</a>
+        <a href="https://docs.cosmos.network/">SDK Docs</a>
+        <a href="https://www.ibcprotocol.dev/">IBC</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>Polkadot (DOT)</h4>
+      <div class="tagline">공유 보안 + 파라체인 모델</div>
+      <dl>
+        <dt>합의</dt><dd>BABE (블록 생성) + GRANDPA (최종성)</dd>
+        <dt>구조</dt><dd>Relay Chain + Parachain (슬롯 경매)</dd>
+        <dt>프레임워크</dt><dd>Substrate (Rust)</dd>
+        <dt>상호운용</dt><dd>XCM (Cross-Consensus Messaging)</dd>
+        <dt>특징</dt><dd>공유 보안 모델 — 파라체인이 Relay의 검증자 풀 공유</dd>
+        <dt>전환</dt><dd>JAM (Join-Accumulate Machine) 패러다임 전환 중</dd>
+      </dl>
+      <div class="links">
+        <a href="https://polkadot.network/">polkadot.network</a>
+        <a href="https://substrate.io/">Substrate</a>
+        <a href="https://wiki.polkadot.network/">Wiki</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>Avalanche (AVAX)</h4>
+      <div class="tagline">서브넷으로 확장하는 EVM 호환 L1</div>
+      <dl>
+        <dt>합의</dt><dd>Snowman / Avalanche 합의 (Sub-sampled voting)</dd>
+        <dt>구조</dt><dd>3개 빌트인 체인: X (자산), P (플랫폼), C (EVM 컨트랙트)</dd>
+        <dt>서브넷</dt><dd>커스텀 VM·검증자·규제로 별도 체인 발행 가능</dd>
+        <dt>최종성</dt><dd>1초 이내 결정적 최종성</dd>
+        <dt>사용 사례</dt><dd>게임, 기관 RWA(실물자산 토큰화)</dd>
+      </dl>
+      <div class="links">
+        <a href="https://www.avax.network/">avax.network</a>
+        <a href="https://docs.avax.network/">Docs</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>Cardano (ADA)</h4>
+      <div class="tagline">학술 동료심사 기반 PoS · UTXO 확장 모델</div>
+      <dl>
+        <dt>합의</dt><dd>Ouroboros (PoS, 수학적 보안 증명 완비)</dd>
+        <dt>데이터 모델</dt><dd>EUTXO (Extended UTXO)</dd>
+        <dt>VM</dt><dd>Plutus (Haskell) — 결정론적 스크립팅</dd>
+        <dt>특징</dt><dd>형식 검증 친화적, 느린 개발 속도</dd>
+      </dl>
+      <div class="links">
+        <a href="https://cardano.org/">cardano.org</a>
+        <a href="https://docs.cardano.org/">Docs</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>Sui · Aptos</h4>
+      <div class="tagline">Move 언어 기반 · Facebook Diem 계보</div>
+      <dl>
+        <dt>언어</dt><dd>Move — 자원(Resource) 중심, 선형 타입 시스템</dd>
+        <dt>Sui</dt><dd>객체 중심 모델, 병렬 실행, Narwhal+Bullshark 합의</dd>
+        <dt>Aptos</dt><dd>AptosBFT, Block-STM 병렬 실행</dd>
+        <dt>차별점</dt><dd>"자산 = 리소스" 타입 안전성 → 재진입·이중지출 컴파일 타임 차단</dd>
+      </dl>
+      <div class="links">
+        <a href="https://sui.io/">Sui</a>
+        <a href="https://aptosfoundation.org/">Aptos</a>
+        <a href="https://move-language.github.io/move/">Move Book</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>TON (The Open Network)</h4>
+      <div class="tagline">Telegram 통합 · 9억 사용자 잠재 지갑</div>
+      <dl>
+        <dt>합의</dt><dd>PoS BFT, 무한 샤딩(Infinite Sharding)</dd>
+        <dt>VM</dt><dd>TVM (TON Virtual Machine), FunC / Tact 언어</dd>
+        <dt>특징</dt><dd>비동기 메시징 모델, 매우 낮은 수수료, 텔레그램 미니앱 통합</dd>
+      </dl>
+      <div class="links">
+        <a href="https://ton.org/">ton.org</a>
+        <a href="https://docs.ton.org/">Docs</a>
+      </div>
+    </div>
+  </div>
+
+  <h3>6.2 Layer 2 — Ethereum 확장 레이어</h3>
+  <div class="chain-grid">
+    <div class="chain-card">
+      <h4>Arbitrum · Optimism · Base</h4>
+      <div class="tagline">Optimistic Rollup — 7일 challenge 기간</div>
+      <dl>
+        <dt>방식</dt><dd>실행은 L2, 데이터는 L1에 게시, 부정 증명(Fraud Proof)</dd>
+        <dt>호환</dt><dd>EVM Equivalent / Compatible</dd>
+        <dt>Base</dt><dd>Coinbase가 OP Stack 기반으로 운영</dd>
+        <dt>한계</dt><dd>L1 출금 7일 지연 (challenge window)</dd>
+      </dl>
+      <div class="links">
+        <a href="https://arbitrum.io/">Arbitrum</a>
+        <a href="https://www.optimism.io/">Optimism</a>
+        <a href="https://base.org/">Base</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>zkSync · Scroll · Linea · Polygon zkEVM</h4>
+      <div class="tagline">ZK Rollup — 영지식 증명으로 즉시 정산</div>
+      <dl>
+        <dt>방식</dt><dd>L2 실행 결과를 SNARK/STARK로 압축 증명, L1에서 검증</dd>
+        <dt>장점</dt><dd>출금 지연 없음, 데이터 효율</dd>
+        <dt>단점</dt><dd>증명 생성 비용·시간, EVM 호환성 구현 난도</dd>
+        <dt>분류</dt><dd>Type 1 (Eth Equivalent) → Type 4 (High-level lang) — Vitalik 분류</dd>
+      </dl>
+      <div class="links">
+        <a href="https://zksync.io/">zkSync</a>
+        <a href="https://scroll.io/">Scroll</a>
+        <a href="https://linea.build/">Linea</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>Starknet</h4>
+      <div class="tagline">Cairo 언어 기반 STARK Rollup</div>
+      <dl>
+        <dt>증명</dt><dd>STARK (양자내성, 신뢰셋업 불필요)</dd>
+        <dt>언어</dt><dd>Cairo — ZK 친화 설계</dd>
+        <dt>특징</dt><dd>비-EVM이지만 Kakarot 등으로 EVM 호환층 구현 중</dd>
+      </dl>
+      <div class="links">
+        <a href="https://www.starknet.io/">starknet.io</a>
+        <a href="https://book.cairo-lang.org/">Cairo Book</a>
+      </div>
+    </div>
+  </div>
+
+  <h3>6.3 엔터프라이즈 · 퍼미션드 DLT</h3>
+  <div class="chain-grid">
+    <div class="chain-card">
+      <h4>Hyperledger Fabric</h4>
+      <div class="tagline">Linux Foundation · 금융/공급망 표준</div>
+      <dl>
+        <dt>합의</dt><dd>Pluggable (Raft, BFT-SMaRt)</dd>
+        <dt>모델</dt><dd>채널(Channel) — 부분 참여자만 보는 프라이빗 원장</dd>
+        <dt>체인코드</dt><dd>Go, Java, Node.js</dd>
+        <dt>적용</dt><dd>한국은행 모의실험(1단계), IBM Food Trust, 무역 플랫폼</dd>
+      </dl>
+      <div class="links">
+        <a href="https://www.hyperledger.org/projects/fabric">Fabric 홈</a>
+        <a href="https://hyperledger-fabric.readthedocs.io/">Docs</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>R3 Corda</h4>
+      <div class="tagline">금융권 P2P 거래 특화 (블록체인이 아님)</div>
+      <dl>
+        <dt>구조</dt><dd>UTXO 유사 모델 + Notary 서비스 (글로벌 합의 없음)</dd>
+        <dt>언어</dt><dd>Kotlin / Java (JVM)</dd>
+        <dt>특징</dt><dd>당사자 간에만 데이터 공유, 규제 친화적</dd>
+        <dt>적용</dt><dd>HSBC FX 결제, 마젤란 보험 컨소시엄</dd>
+      </dl>
+      <div class="links">
+        <a href="https://www.r3.com/">r3.com</a>
+        <a href="https://docs.r3.com/">Docs</a>
+      </div>
+    </div>
+
+    <div class="chain-card">
+      <h4>Quorum / Besu</h4>
+      <div class="tagline">기관용 Ethereum 포크</div>
+      <dl>
+        <dt>합의</dt><dd>IBFT, QBFT, Raft</dd>
+        <dt>특징</dt><dd>EVM 호환, 프라이빗 트랜잭션 지원 (Tessera)</dd>
+        <dt>운영</dt><dd>Quorum: ConsenSys → 현재 OSS, Besu: Hyperledger 산하</dd>
+      </dl>
+      <div class="links">
+        <a href="https://www.hyperledger.org/projects/besu">Besu</a>
+        <a href="https://docs.goquorum.consensys.io/">Quorum Docs</a>
+      </div>
+    </div>
+  </div>
+
+  <h3>6.4 체인 선택 가이드</h3>
+  <table>
+    <thead>
+      <tr><th>요구사항</th><th>추천 카테고리</th><th>예시</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>최대 탈중앙화·가치 저장</td><td>비트코인 계열</td><td>Bitcoin, Litecoin</td></tr>
+      <tr><td>가장 큰 DeFi/NFT 생태계</td><td>Ethereum L1 + L2</td><td>ETH, Arbitrum, Base</td></tr>
+      <tr><td>고빈도·저수수료 결제</td><td>고성능 L1 / L2</td><td>Solana, Sui, Base</td></tr>
+      <tr><td>자체 체인·앱체인</td><td>Cosmos SDK / Polkadot Parachain / Avalanche Subnet</td><td>dYdX v4, Polkadot</td></tr>
+      <tr><td>형식 검증·자산 안전성</td><td>Move 계열 또는 Cardano</td><td>Sui, Aptos, Cardano</td></tr>
+      <tr><td>은행·기관 컨소시엄</td><td>퍼미션드 DLT</td><td>Fabric, Corda, Besu</td></tr>
+      <tr><td>CBDC·예금토큰</td><td>퍼미션드 + 프로그래머블</td><td>한강(BoK 자체), Agora 플랫폼</td></tr>
+      <tr><td>ZK 프라이버시·압축</td><td>ZK Rollup / Mina</td><td>zkSync, Scroll, Mina</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="tx">
+  <h2>7. 트랜잭션 생명주기</h2>
+  <ol>
+    <li><strong>생성</strong>: 클라이언트가 트랜잭션 구성 → <code>privKey</code>로 ECDSA/EdDSA 서명</li>
+    <li><strong>전파</strong>: P2P gossip 프로토콜로 메모리풀(Mempool)에 진입</li>
+    <li><strong>검증</strong>: 노드들이 서명·잔액·논스(nonce) 검증</li>
+    <li><strong>블록 포함</strong>: 채굴자/검증자가 우선순위(수수료 기준)로 선택해 블록에 포함</li>
+    <li><strong>합의</strong>: 합의 알고리즘에 따라 블록이 확정</li>
+    <li><strong>최종성 도달</strong>: 비트코인 6 confirm (≈ 1시간), 이더리움 finality gadget</li>
+  </ol>
+
+  <h3>UTXO vs Account 모델</h3>
+  <table>
+    <thead><tr><th>비교</th><th>UTXO (Bitcoin)</th><th>Account (Ethereum)</th></tr></thead>
+    <tbody>
+      <tr><td>상태 표현</td><td>미사용 출력 집합</td><td>주소 → 잔액 매핑</td></tr>
+      <tr><td>병렬성</td><td>높음 (독립 UTXO)</td><td>낮음 (순차 논스)</td></tr>
+      <tr><td>프라이버시</td><td>주소 재사용 안 하면 유리</td><td>주소 단위 추적 용이</td></tr>
+      <tr><td>스마트 컨트랙트</td><td>제한적 (Script)</td><td>튜링 완전 (EVM)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="contract">
+  <h2>8. 스마트 컨트랙트</h2>
+  <p>
+    블록체인 위에서 실행되는 결정론적 프로그램. 이더리움의 EVM(Ethereum Virtual Machine)이 대표적이며,
+    Solidity로 작성된 코드는 바이트코드로 컴파일되어 모든 노드에서 동일하게 실행된다.
+  </p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://soliditylang.org/">Solidity 공식</a> ·
+    <a href="https://ethereum.org/en/developers/docs/evm/">Ethereum: EVM</a> ·
+    <a href="https://docs.openzeppelin.com/contracts/">OpenZeppelin 표준 컨트랙트</a> ·
+    <a href="https://swcregistry.io/">SWC Registry (보안 약점 분류)</a> ·
+    <a href="https://github.com/crytic/slither">Slither 정적 분석</a> ·
+    <a href="https://book.getfoundry.sh/">Foundry Book</a>
+  </p>
+
+<pre><code>// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+contract SimpleToken {
+    mapping(address =&gt; uint256) public balanceOf;
+    uint256 public totalSupply;
+
+    event Transfer(address indexed from, address indexed to, uint256 value);
+
+    constructor(uint256 _initial) {
+        totalSupply = _initial;
+        balanceOf[msg.sender] = _initial;
+    }
+
+    function transfer(address to, uint256 amount) external returns (bool) {
+        require(balanceOf[msg.sender] &gt;= amount, "Insufficient");
+        unchecked {
+            balanceOf[msg.sender] -= amount;
+            balanceOf[to] += amount;
+        }
+        emit Transfer(msg.sender, to, amount);
+        return true;
+    }
+}</code></pre>
+
+  <div class="note warn">
+    <strong>보안 함정:</strong>
+    Reentrancy (DAO 해킹), Integer Overflow, Front-running (MEV), Oracle 조작,
+    Access Control 누락 등은 모두 실제 수억 달러 규모의 손실로 이어진 사례가 있다.
+    Slither, Mythril, Foundry의 fuzzing 등 정적/동적 분석 도구 사용은 필수다.
+  </div>
+</section>
+
+<section id="limits">
+  <h2>9. 한계와 과제</h2>
+
+  <h3>확장성 트릴레마 (Scalability Trilemma)</h3>
+  <p>Vitalik Buterin이 제시한 명제: <strong>탈중앙화 · 보안 · 확장성</strong> 중 두 가지만 동시에 달성 가능.</p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://vitalik.eth.limo/general/2021/04/07/sharding.html">Vitalik: Why sharding is great</a> ·
+    <a href="https://ethereum.org/en/layer-2/">Ethereum L2 가이드</a> ·
+    <a href="https://l2beat.com/">L2BEAT — L2 비교 대시보드</a> ·
+    <a href="https://celestia.org/learn/">Celestia: 모듈러 블록체인</a> ·
+    <a href="https://flashbots.net/">Flashbots (MEV)</a>
+  </p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 500 440" xmlns="http://www.w3.org/2000/svg">
+      <!-- Triangle -->
+      <polygon points="250,40 60,380 440,380"
+               fill="none" stroke="#7ee787" stroke-width="2"/>
+      <!-- Vertices -->
+      <circle cx="250" cy="40" r="6" fill="#7ee787"/>
+      <text x="250" y="25" text-anchor="middle" font-size="15" font-weight="700" fill="#7ee787">탈중앙화</text>
+      <text x="250" y="68" text-anchor="middle" font-size="10" fill="#8b949e">Decentralization</text>
+
+      <circle cx="60" cy="380" r="6" fill="#79c0ff"/>
+      <text x="40" y="405" text-anchor="middle" font-size="15" font-weight="700" fill="#79c0ff">보안</text>
+      <text x="40" y="422" text-anchor="middle" font-size="10" fill="#8b949e">Security</text>
+
+      <circle cx="440" cy="380" r="6" fill="#ffa657"/>
+      <text x="460" y="405" text-anchor="middle" font-size="15" font-weight="700" fill="#ffa657">확장성</text>
+      <text x="460" y="422" text-anchor="middle" font-size="10" fill="#8b949e">Scalability</text>
+
+      <!-- Examples on edges -->
+      <text x="140" y="220" text-anchor="middle" font-size="11" fill="#e6edf3" transform="rotate(-60 140 220)">Bitcoin · Ethereum L1</text>
+      <text x="360" y="220" text-anchor="middle" font-size="11" fill="#e6edf3" transform="rotate(60 360 220)">Solana · 고성능 L1</text>
+      <text x="250" y="395" text-anchor="middle" font-size="11" fill="#e6edf3">Permissioned DLT · BSC</text>
+
+      <!-- Center label -->
+      <text x="250" y="250" text-anchor="middle" font-size="12" font-weight="600" fill="#f85149">3가지 동시 달성 불가</text>
+      <text x="250" y="270" text-anchor="middle" font-size="10" fill="#8b949e">(현재까지 알려진 모든 L1)</text>
+      <text x="250" y="295" text-anchor="middle" font-size="11" fill="#7ee787">→ L2 / 샤딩 / ZK Rollup</text>
+      <text x="250" y="313" text-anchor="middle" font-size="11" fill="#7ee787">→ 모듈러 분리로 우회</text>
+    </svg>
+    <div class="caption">그림 3. 확장성 트릴레마 — 각 체인의 위치는 어떤 정점을 양보했는지 보여준다</div>
+  </div>
+
+  <h3>주요 해결 시도</h3>
+  <ul>
+    <li><strong>Layer 2</strong>: Lightning Network (Bitcoin), Optimistic/ZK Rollups (Ethereum)</li>
+    <li><strong>샤딩(Sharding)</strong>: 상태와 검증을 분할 처리 (Ethereum Danksharding)</li>
+    <li><strong>모듈러 블록체인</strong>: Celestia 등 데이터 가용성 계층 분리</li>
+    <li><strong>ZK-SNARK / ZK-STARK</strong>: 영지식 증명을 통한 압축 검증</li>
+  </ul>
+
+  <h3>고질적 문제</h3>
+  <ul>
+    <li>최종성 vs 액티브 사용자 수의 트레이드오프</li>
+    <li>MEV (Maximal Extractable Value) — 검증자가 트랜잭션 순서로 이익 추출</li>
+    <li>키 관리 (개인키 분실 = 자산 영구 손실)</li>
+    <li>법적·규제적 불확실성 (자금세탁방지·세무·증권성 판단)</li>
+    <li>오라클 문제 (off-chain 데이터의 신뢰성)</li>
+  </ul>
+</section>
+
+<section id="usecase">
+  <h2>10. 활용 사례</h2>
+  <div class="card">
+    <h3 style="margin-top:0">금융 (Financial)</h3>
+    <p>CBDC(Central Bank Digital Currency), 국제 송금(Ripple, Stellar), 토큰화 증권(STO), DeFi 프로토콜(Uniswap, Aave)</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">공급망 (Supply Chain)</h3>
+    <p>식품 이력추적(IBM Food Trust), 의약품 진위 검증, 탄소배출권 거래</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">디지털 ID & 인증</h3>
+    <p>분산 신원확인(DID, W3C Verifiable Credentials), 학위/자격증 발급, 부동산 등기</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">엔터프라이즈 DLT</h3>
+    <p>Hyperledger Fabric, R3 Corda, Quorum — 퍼미션드 환경에서 채널·프라이버시 강화</p>
+  </div>
+</section>
+
+<section id="bridge">
+  <h2>11. 크로스체인 브릿지 (Cross-Chain Bridges)</h2>
+  <p>
+    서로 다른 블록체인 간에 자산·메시지·상태를 이전하기 위한 프로토콜. 각 체인은 독립된 합의·실행 환경을 가지므로
+    네이티브한 상호운용성이 존재하지 않으며, 브릿지는 그 격차를 메우는 <strong>중개 신뢰 계층</strong>이다.
+    2022~2023년 사이 단일 카테고리로는 가장 큰 해킹 피해(누적 25억 달러+)가 발생한 영역이기도 하다.
+  </p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://vitalik.eth.limo/general/2022/01/07/sharding.html">Vitalik: Multi-chain ≠ Cross-chain</a> ·
+    <a href="https://ethereum.org/en/bridges/">Ethereum.org: Bridges</a> ·
+    <a href="https://www.ibcprotocol.dev/">IBC Protocol</a> ·
+    <a href="https://layerzero.network/publications/LayerZero_Whitepaper_V2.0.pdf">LayerZero V2 백서</a> ·
+    <a href="https://chain.link/cross-chain">Chainlink CCIP</a> ·
+    <a href="https://www.axelar.network/whitepaper">Axelar 백서</a> ·
+    <a href="https://rekt.news/leaderboard/">rekt.news: 해킹 리더보드</a>
+  </p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg">
+      <!-- Chain A -->
+      <rect x="20" y="80" width="160" height="120" rx="8" fill="#1a2332" stroke="#7ee787" stroke-width="2"/>
+      <text x="100" y="105" text-anchor="middle" font-size="14" font-weight="700" fill="#7ee787">Chain A</text>
+      <text x="100" y="125" text-anchor="middle" font-size="11" fill="#8b949e">(예: Ethereum)</text>
+      <rect x="40" y="140" width="120" height="22" rx="4" fill="#0a0e15" stroke="#30363d"/>
+      <text x="100" y="156" text-anchor="middle" font-size="10" fill="#ffa657">🔒 Lock Contract</text>
+      <rect x="40" y="170" width="120" height="22" rx="4" fill="#0a0e15" stroke="#30363d"/>
+      <text x="100" y="186" text-anchor="middle" font-size="10" fill="#e6edf3">Native Token</text>
+
+      <!-- Bridge Middle -->
+      <rect x="240" y="40" width="320" height="200" rx="8" fill="#1a2332" stroke="#79c0ff" stroke-width="2"/>
+      <text x="400" y="65" text-anchor="middle" font-size="14" font-weight="700" fill="#79c0ff">Bridge Layer (신뢰 모델별)</text>
+
+      <rect x="260" y="80" width="135" height="34" rx="4" fill="#0a0e15" stroke="#f85149"/>
+      <text x="327" y="100" text-anchor="middle" font-size="10" fill="#f85149">Multi-Sig (5/9)</text>
+      <text x="327" y="110" text-anchor="middle" font-size="8" fill="#8b949e">Ronin 모델</text>
+
+      <rect x="405" y="80" width="135" height="34" rx="4" fill="#0a0e15" stroke="#f85149"/>
+      <text x="472" y="100" text-anchor="middle" font-size="10" fill="#f85149">MPC Threshold</text>
+      <text x="472" y="110" text-anchor="middle" font-size="8" fill="#8b949e">Wormhole</text>
+
+      <rect x="260" y="120" width="135" height="34" rx="4" fill="#0a0e15" stroke="#ffa657"/>
+      <text x="327" y="140" text-anchor="middle" font-size="10" fill="#ffa657">Optimistic</text>
+      <text x="327" y="150" text-anchor="middle" font-size="8" fill="#8b949e">Nomad · Across</text>
+
+      <rect x="405" y="120" width="135" height="34" rx="4" fill="#0a0e15" stroke="#ffa657"/>
+      <text x="472" y="140" text-anchor="middle" font-size="10" fill="#ffa657">Liquidity Pool</text>
+      <text x="472" y="150" text-anchor="middle" font-size="8" fill="#8b949e">Hop · Stargate</text>
+
+      <rect x="260" y="160" width="135" height="34" rx="4" fill="#0a0e15" stroke="#7ee787"/>
+      <text x="327" y="180" text-anchor="middle" font-size="10" fill="#7ee787">zkBridge</text>
+      <text x="327" y="190" text-anchor="middle" font-size="8" fill="#8b949e">Polyhedra · Succinct</text>
+
+      <rect x="405" y="160" width="135" height="34" rx="4" fill="#0a0e15" stroke="#7ee787"/>
+      <text x="472" y="180" text-anchor="middle" font-size="10" fill="#7ee787">Native Light Client</text>
+      <text x="472" y="190" text-anchor="middle" font-size="8" fill="#8b949e">IBC · XCM</text>
+
+      <text x="400" y="225" text-anchor="middle" font-size="10" fill="#8b949e">← 신뢰 가정 多 ──────────── 신뢰 가정 少 →</text>
+
+      <!-- Chain B -->
+      <rect x="620" y="80" width="160" height="120" rx="8" fill="#1a2332" stroke="#ffa657" stroke-width="2"/>
+      <text x="700" y="105" text-anchor="middle" font-size="14" font-weight="700" fill="#ffa657">Chain B</text>
+      <text x="700" y="125" text-anchor="middle" font-size="11" fill="#8b949e">(예: Polygon · Base)</text>
+      <rect x="640" y="140" width="120" height="22" rx="4" fill="#0a0e15" stroke="#30363d"/>
+      <text x="700" y="156" text-anchor="middle" font-size="10" fill="#7ee787">🪙 Mint Contract</text>
+      <rect x="640" y="170" width="120" height="22" rx="4" fill="#0a0e15" stroke="#30363d"/>
+      <text x="700" y="186" text-anchor="middle" font-size="10" fill="#e6edf3">Wrapped Token</text>
+
+      <!-- Arrows -->
+      <path d="M 180 140 L 240 140" stroke="#7ee787" stroke-width="2" fill="none" marker-end="url(#arrow1)"/>
+      <path d="M 560 140 L 620 140" stroke="#ffa657" stroke-width="2" fill="none" marker-end="url(#arrow2)"/>
+
+      <defs>
+        <marker id="arrow1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#7ee787"/>
+        </marker>
+        <marker id="arrow2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffa657"/>
+        </marker>
+      </defs>
+
+      <text x="210" y="130" text-anchor="middle" font-size="9" fill="#8b949e">①Lock</text>
+      <text x="590" y="130" text-anchor="middle" font-size="9" fill="#8b949e">②Mint</text>
+    </svg>
+    <div class="caption">그림 4. 크로스체인 브릿지 아키텍처 — 신뢰 모델 스펙트럼</div>
+  </div>
+
+  <h3>11.1 메커니즘별 분류</h3>
+  <table>
+    <thead>
+      <tr><th>방식</th><th>원리</th><th>대표 사례</th><th>장점</th><th>단점</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Lock & Mint</strong></td>
+        <td>원본 체인에 잠그고 대상 체인에서 wrapped 토큰 발행</td>
+        <td>WBTC, Wormhole</td>
+        <td>구현 단순, 폭넓은 자산 지원</td>
+        <td>커스터디 리스크 집중</td>
+      </tr>
+      <tr>
+        <td><strong>Burn & Mint</strong></td>
+        <td>원본 체인에서 소각하고 대상 체인에서 발행</td>
+        <td>Circle CCTP (USDC)</td>
+        <td>유동성 분산 없음</td>
+        <td>발행 권한 보유 주체 필요</td>
+      </tr>
+      <tr>
+        <td><strong>Liquidity Pool</strong></td>
+        <td>양쪽 체인에 유동성 풀을 두고 스왑</td>
+        <td>Hop, Across, Stargate</td>
+        <td>즉시 정산, 신뢰 최소</td>
+        <td>유동성 깊이·슬리피지 문제</td>
+      </tr>
+      <tr>
+        <td><strong>Atomic Swap (HTLC)</strong></td>
+        <td>해시 잠금(Hashlock) + 시간 잠금(Timelock)</td>
+        <td>Lightning Network</td>
+        <td>완전 trustless</td>
+        <td>UX 복잡, 온라인성 요구</td>
+      </tr>
+      <tr>
+        <td><strong>Native / IBC</strong></td>
+        <td>각 체인이 상대방의 라이트클라이언트 검증</td>
+        <td>Cosmos IBC, Polkadot XCM</td>
+        <td>가장 높은 보안</td>
+        <td>호환 체인 한정</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>11.2 신뢰 모델 스펙트럼</h3>
+<pre><code>← 신뢰 최대                                                                신뢰 최소 →
+
+[Multi-Sig] → [Federated MPC] → [Optimistic] → [zkBridge] → [Native Light Client / IBC]
+   ↓               ↓                  ↓               ↓                  ↓
+Ronin         Wormhole          Nomad / Across   Polyhedra ZK      Cosmos IBC
+($625M 해킹)   ($325M 해킹)      ($190M 해킹)    Succinct          Polkadot</code></pre>
+
+  <h3>11.3 메시지 전달 추상화 (Generalized Messaging)</h3>
+  <p>
+    자산 이동을 넘어 <strong>임의의 호출 데이터(calldata)</strong>를 다른 체인에 전달하는 일반화된 인터체인 메시징.
+    LayerZero, Axelar, Wormhole, Chainlink CCIP가 대표적이며, 각자 서로 다른 보안 가정을 둔다.
+  </p>
+
+<pre><code>// LayerZero 스타일 OApp (Omnichain Application) 예시
+contract MyOApp is OAppSender, OAppReceiver {
+    function sendMessage(uint32 dstEid, string calldata message)
+        external payable
+    {
+        bytes memory payload = abi.encode(message);
+        _lzSend(
+            dstEid,                                    // 대상 endpoint ID
+            payload,
+            "",                                        // adapter params
+            MessagingFee(msg.value, 0),
+            payable(msg.sender)
+        );
+    }
+
+    function _lzReceive(
+        Origin calldata _origin,
+        bytes32 _guid,
+        bytes calldata _message,
+        address /*_executor*/,
+        bytes calldata /*_extraData*/
+    ) internal override {
+        string memory msg_ = abi.decode(_message, (string));
+        // 대상 체인에서 실행할 로직
+    }
+}</code></pre>
+
+  <h3>11.4 보안 관점: "브릿지는 가장 약한 고리"</h3>
+  <div class="note warn">
+    <strong>주요 해킹 사례 (참고용):</strong>
+    <ul style="margin: 8px 0;">
+      <li><strong>Ronin Bridge (2022.03)</strong>: 9개 검증자 중 5개 키 탈취 → 약 6.25억 달러</li>
+      <li><strong>Wormhole (2022.02)</strong>: Solana guardian 서명 검증 우회 → 약 3.25억 달러</li>
+      <li><strong>Nomad (2022.08)</strong>: Merkle root 초기화 버그 → 약 1.9억 달러 (대규모 카피 익스플로잇)</li>
+      <li><strong>Poly Network (2021.08)</strong>: keeper 권한 함수 오용 → 약 6.1억 달러 (대부분 반환)</li>
+      <li><strong>Multichain (2023.07)</strong>: CEO 키 단일 보관 → 약 1.3억 달러</li>
+    </ul>
+    공통 원인: <em>다자간 신뢰 모델의 키 관리 실패</em>와 <em>크로스체인 검증 로직의 미묘한 버그</em>.
+  </div>
+
+  <h3>11.5 차세대: zkBridge</h3>
+  <p>
+    소스 체인의 라이트클라이언트 검증을 ZK 회로로 압축해 대상 체인에서 단일 증명으로 검증하는 방식.
+    Polyhedra Network, Succinct Labs(SP1), Electron Labs 등이 구현 중. 신뢰가정 없는 보안과
+    온체인 검증 비용의 트레이드오프를 ZK 증명 압축으로 해결하려는 시도다.
+  </p>
+</section>
+
+<section id="cbdc">
+  <h2>12. CBDC 프로젝트: Agora & 한강</h2>
+  <p>
+    중앙은행 디지털화폐(Central Bank Digital Currency)는 분산원장 기술의 가장 큰 제도권 시험장이다.
+    여기서는 두 가지 주요 프로젝트를 다룬다: BIS 주도의 다자간 <strong>Project Agora</strong>,
+    그리고 한국은행이 추진 중인 <strong>한강(Hangang) 프로젝트</strong>.
+  </p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://www.bis.org/about/bisih/topics/fmis/agora.htm">BIS Innovation Hub: Project Agora</a> ·
+    <a href="https://www.bis.org/publ/othp83.htm">BIS Annual Economic Report 2023 (Unified Ledger)</a> ·
+    <a href="https://www.bok.or.kr/portal/main/contents.do?menuNo=200773">한국은행 CBDC 페이지</a> ·
+    <a href="https://www.bok.or.kr/portal/bbs/B0000338/list.do?menuNo=200761">한국은행 보도자료</a> ·
+    <a href="https://www.bis.org/publ/othp61.htm">BIS Project mBridge</a> ·
+    <a href="https://www.atlanticcouncil.org/cbdctracker/">Atlantic Council CBDC Tracker</a>
+  </p>
+
+  <h3>12.1 Project Agora (BIS Innovation Hub, 2024.04~)</h3>
+  <div class="card">
+    <p>
+      <strong>"통합원장(Unified Ledger)" 개념 검증을 위한 다자간 협력 프로젝트.</strong>
+      토큰화된 도매 CBDC(wholesale CBDC)와 토큰화된 상업은행 예금을 단일 프로그래머블 플랫폼에서
+      운영해 국경 간 결제의 비효율을 해소하는 것이 목표.
+    </p>
+    <table>
+      <tbody>
+        <tr><td><strong>주관</strong></td><td>BIS Innovation Hub + IIF (Institute of International Finance)</td></tr>
+        <tr><td><strong>참여 중앙은행</strong></td>
+            <td>Federal Reserve Bank of New York, Bank of England, Bank of Japan,
+                Bank of France (유로시스템 대표), <strong>한국은행</strong>,
+                Bank of Mexico, Swiss National Bank</td></tr>
+        <tr><td><strong>민간 참여</strong></td><td>40여 개 글로벌 금융기관 (IIF 통해 조정)</td></tr>
+        <tr><td><strong>핵심 개념</strong></td>
+            <td>2단 통화시스템(중앙은행 → 상업은행)의 토큰화된 버전을 단일 플랫폼으로 통합</td></tr>
+        <tr><td><strong>해결 대상</strong></td>
+            <td>국경간 결제의 다중 메시징, 환거래, 규제 차이, 시간대 차이, 운영 시간 분절</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Unified Ledger 아키텍처 개념</h4>
+<pre><code>┌────────────────────────────────────────────────────────────┐
+│              Programmable Unified Ledger                   │
+│  ┌────────────────┐  ┌──────────────────────────────┐      │
+│  │ Wholesale CBDC │  │  Tokenized Commercial Bank   │      │
+│  │  (도매 CBDC)   │  │   Deposits (예금토큰)         │      │
+│  └────────────────┘  └──────────────────────────────┘      │
+│  ┌──────────────────────────────────────────────────┐      │
+│  │  Smart Contracts: AML/KYC, FX, 결제 라우팅      │      │
+│  └──────────────────────────────────────────────────┘      │
+└────────────────────────────────────────────────────────────┘
+            ▲                                  ▲
+            │  PvP (Payment vs Payment)        │
+       BoK (KRW)  ◄────── 즉시 atomic ──────► Fed NY (USD)
+            │                                  │
+       국내 상업은행                       미국 상업은행
+</code></pre>
+
+  <p>
+    핵심 차별점은 <strong>다자간(multi-CBDC) + 다통화(multi-currency) + 다층(multi-tier)</strong>
+    구조를 단일 원장으로 통합한다는 점이다. mBridge, Project Mariana, Project Jura 등 이전 BIS 실험의 후속·통합 단계로 평가된다.
+  </p>
+
+  <h3>12.2 Project 한강 (Hangang) — 한국은행 CBDC 활용성 테스트</h3>
+  <div class="card">
+    <p>
+      <strong>한국은행이 2024년 발표하고 2025년 본격 진행한 CBDC 기반 예금토큰 실거래 테스트.</strong>
+      이전의 모의실험(2021~2022)과 달리, 실제 일반 이용자가 참여하는 <em>real-world utility test</em>로 설계되었다.
+    </p>
+    <table>
+      <tbody>
+        <tr><td><strong>주관</strong></td><td>한국은행 + 금융위원회 + 금융감독원</td></tr>
+        <tr><td><strong>참여 은행</strong></td><td>국내 7개 시중은행 (KB, 신한, 하나, 우리, NH농협, IBK기업, BNK부산 등)</td></tr>
+        <tr><td><strong>참여자 규모</strong></td><td>약 10만 명 일반 이용자 (공식 발표 기준)</td></tr>
+        <tr><td><strong>구조</strong></td>
+            <td>한국은행이 도매 CBDC를 상업은행에 발행 → 상업은행이 1:1 예금토큰을 발행 →
+                일반 이용자가 QR 결제 등에 사용</td></tr>
+        <tr><td><strong>활용 사례</strong></td>
+            <td>가맹점 QR 결제, 청소년 급식비·교육바우처 등 프로그래머블 머니 시범</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>한강의 2단 토큰 구조</h4>
+<pre><code>[ 한국은행 ]
+     │
+     │  ① Wholesale CBDC 발행 (은행 간 결제용)
+     ▼
+[ 상업은행 7개 (Permissioned Node) ]
+     │
+     │  ② 1:1 예금토큰(Deposit Token) 발행
+     │     → 기존 예금과 동일한 법적 지위, 부보 대상
+     ▼
+[ 일반 이용자 약 10만 명 ]
+     │
+     │  ③ QR 결제 / 프로그래머블 사용처 (급식비 등)
+     ▼
+[ 가맹점 / 사용처 ]</code></pre>
+
+  <p>특징적인 기술·정책 포인트:</p>
+  <ul>
+    <li><strong>퍼미션드 DLT</strong>: 일반 이용자는 지갑 없이 은행 앱을 통해 접근 (UX는 기존 모바일뱅킹과 유사)</li>
+    <li><strong>프로그래머블 머니</strong>: 청소년 바우처처럼 사용처·대상을 제약할 수 있는 조건부 결제</li>
+    <li><strong>예금토큰 모델</strong>: 일반 이용자가 직접 보유하는 것은 CBDC가 아닌 <em>상업은행 예금토큰</em> →
+        예금자보호 대상이며 기존 금융시스템과 정합성 유지</li>
+    <li><strong>오프라인 결제·프라이버시</strong>는 본 단계에서 제한적이며 후속 단계 검토 사항</li>
+  </ul>
+
+  <div class="note">
+    <strong>Agora ↔ 한강 연계 관점:</strong>
+    한국은행이 양 프로젝트에 모두 참여하므로, 한강에서 검증한 국내 예금토큰 모델을 Agora의
+    국경간 거래 컨텍스트로 확장하는 시나리오가 자연스러운 후속 연구 주제가 될 수 있다.
+    국내 도매 CBDC ↔ 국제 도매 CBDC 사이의 atomic PvP 구현이 핵심 기술 과제.
+  </div>
+</section>
+
+<section id="x402">
+  <h2>13. x402: HTTP 기반 결제 프로토콜</h2>
+  <p>
+    <strong>x402</strong>는 1997년 HTTP/1.1 명세에서 예약만 되어 있던 <code>HTTP 402 Payment Required</code>
+    상태 코드를 실제로 작동하게 만든 오픈 결제 프로토콜이다. 2025년 Coinbase가 공개했으며,
+    AI 에이전트와 머신 간 결제(machine-to-machine), API 종량 과금을 1차 타깃으로 한다.
+  </p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://www.x402.org/">x402.org 공식</a> ·
+    <a href="https://github.com/coinbase/x402">coinbase/x402 GitHub</a> ·
+    <a href="https://eips.ethereum.org/EIPS/eip-3009">EIP-3009 (transferWithAuthorization)</a> ·
+    <a href="https://eips.ethereum.org/EIPS/eip-712">EIP-712 (Typed Data)</a> ·
+    <a href="https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.2">RFC 7231 §6.5.2 (HTTP 402)</a> ·
+    <a href="https://www.circle.com/en/usdc">Circle USDC</a>
+  </p>
+
+  <h3>13.1 왜 지금인가?</h3>
+  <ul>
+    <li><strong>AI 에이전트 경제</strong>: 자율 에이전트가 API·콘텐츠·연산 자원을 마이크로결제로 소비하는 시나리오 증가</li>
+    <li><strong>스테이블코인의 정착</strong>: USDC 등 결제 적합성·결제 최종성·낮은 수수료를 갖춘 자산 등장</li>
+    <li><strong>전통 결제망의 한계</strong>: 신용카드 최소 결제 단위(보통 $0.30+α), KYC, 30~120일 지연 정산</li>
+    <li><strong>표준의 부재</strong>: API 키 + 청구서 모델이 에이전트 워크플로우에 부적합</li>
+  </ul>
+
+  <h3>13.2 프로토콜 흐름</h3>
+<pre><code>┌──────────┐                                         ┌──────────┐
+│  Client  │                                         │  Server  │
+│ (Agent)  │                                         │  (API)   │
+└────┬─────┘                                         └────┬─────┘
+     │                                                    │
+     │ ①  GET /premium-resource                           │
+     │ ───────────────────────────────────────────────►   │
+     │                                                    │
+     │     ②  HTTP/1.1 402 Payment Required               │
+     │     X-PAYMENT-REQUIRED: {                         │
+     │       "scheme": "exact",                          │
+     │       "amount": "0.001",                          │
+     │       "asset": "USDC",                            │
+     │       "network": "base-mainnet",                  │
+     │       "recipient": "0xabc...",                    │
+     │       "resource": "/premium-resource"             │
+     │     }                                             │
+     │ ◄───────────────────────────────────────────────  │
+     │                                                    │
+     │ ③ EIP-3009 transferWithAuthorization 서명          │
+     │   (가스리스 — 에이전트가 USDC 잔액만 있으면 됨)    │
+     │                                                    │
+     │ ④  GET /premium-resource                           │
+     │    X-PAYMENT: &lt;base64(signed authorization)&gt;       │
+     │ ───────────────────────────────────────────────►   │
+     │                                                    │
+     │                          ⑤ Facilitator에 검증 의뢰  │
+     │                             또는 자체 온체인 검증   │
+     │                                                    │
+     │      ⑥  HTTP/1.1 200 OK                            │
+     │          X-PAYMENT-RESPONSE: { txHash: 0x... }    │
+     │          (실제 리소스 본문 반환)                    │
+     │ ◄───────────────────────────────────────────────   │
+</code></pre>
+
+  <h3>13.3 EIP-3009: 가스리스 결제의 핵심</h3>
+  <p>
+    x402가 사용자 친화적인 이유는 <strong>EIP-3009 <code>transferWithAuthorization</code></strong>에 있다.
+    사용자(에이전트)는 USDC 자체만 보유하면 되고, ETH 가스비는 facilitator가 대납한다.
+    서명은 EIP-712 typed data로 만들어진다.
+  </p>
+
+<pre><code>// USDC 컨트랙트의 EIP-3009 인터페이스
+function transferWithAuthorization(
+    address from,
+    address to,
+    uint256 value,
+    uint256 validAfter,
+    uint256 validBefore,
+    bytes32 nonce,
+    uint8 v, bytes32 r, bytes32 s   // EIP-712 서명
+) external;
+
+// 클라이언트(에이전트) 측 의사 코드
+const auth = {
+  from: agentWallet.address,
+  to: serverPaymentAddress,
+  value: parseUnits("0.001", 6),     // USDC 6 decimals
+  validAfter: 0,
+  validBefore: now() + 600,          // 10분 유효
+  nonce: randomBytes32(),
+};
+const signature = await agentWallet.signTypedData(
+  USDC_DOMAIN, EIP3009_TYPES, auth
+);
+// → X-PAYMENT 헤더로 전송</code></pre>
+
+  <h3>13.4 facilitator 패턴</h3>
+  <p>
+    서버가 매 요청마다 직접 온체인 검증·정산을 하면 RPC 비용·지연이 발생하므로,
+    <strong>facilitator</strong>라는 중개자가 권장된다. 서버는 facilitator에 서명을 보내
+    검증과 정산을 위임받고, 응답을 받은 뒤 리소스를 반환한다.
+  </p>
+
+  <table>
+    <thead><tr><th>구성요소</th><th>역할</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Client / Agent</strong></td><td>지불 의사 결정 + EIP-3009 서명</td></tr>
+      <tr><td><strong>Resource Server</strong></td><td>402 응답으로 가격 통지 + 결제 후 자원 반환</td></tr>
+      <tr><td><strong>Facilitator</strong></td><td>서명 검증, 온체인 정산 대납, txHash 반환</td></tr>
+      <tr><td><strong>Settlement Network</strong></td><td>Base, Ethereum, Solana 등 결제 자산이 발행된 체인</td></tr>
+    </tbody>
+  </table>
+
+  <h3>13.5 시나리오: 에이전트가 자율적으로 API 결제</h3>
+<pre><code>// LLM 에이전트가 유료 검색 API를 호출하는 의사 코드
+async function callPaidAPI(url, agentWallet) {
+  let res = await fetch(url);
+
+  if (res.status === 402) {
+    const requirement = JSON.parse(res.headers.get('X-PAYMENT-REQUIRED'));
+
+    // 에이전트의 정책 (예산, 자산, 화이트리스트) 검사
+    if (!agentPolicy.canPay(requirement)) {
+      throw new Error("Payment policy rejected");
+    }
+
+    const payment = await signX402Payment(requirement, agentWallet);
+    res = await fetch(url, {
+      headers: { 'X-PAYMENT': payment }
+    });
+  }
+  return res.json();
+}</code></pre>
+
+  <h3>13.6 한계와 열린 과제</h3>
+  <div class="note warn">
+    <ul style="margin:8px 0;">
+      <li><strong>규제·세무 모호성</strong>: 자율 에이전트의 결제 주체는 누구인가? 한국은 가상자산이용자보호법 적용 검토 필요</li>
+      <li><strong>가격 발견 메커니즘 부재</strong>: 정적 가격 책정 → 동적 경매·번들링은 후속 표준 영역</li>
+      <li><strong>리플레이·재정산 공격</strong>: nonce + validBefore에 의존 → 클라이언트 구현 결함 시 이중지불 위험</li>
+      <li><strong>facilitator 신뢰</strong>: 단일 facilitator는 검열 위험, 다중화 시 비용 증가</li>
+      <li><strong>비-EVM 체인 확장</strong>: 현재 USDC on Base가 1차 타깃, Solana/L2 확장은 진행 중</li>
+      <li><strong>금융권 시각</strong>: CBDC·예금토큰을 결제 자산으로 사용할 수 있는가? 한강 모델과 결합 시 새로운 통화정책 함의 발생</li>
+    </ul>
+  </div>
+
+  <div class="note">
+    <strong>한국은행 관점의 함의:</strong>
+    x402가 가정하는 결제 자산은 현재 스테이블코인이지만, 프로토콜 자체는 자산 중립적이다.
+    한강 프로젝트의 <em>예금토큰</em>을 x402 결제 자산으로 사용하는 시나리오는,
+    M2M·에이전트 경제에서 <strong>은행화폐(commercial bank money)의 단위성 유지</strong>를
+    실험할 수 있는 흥미로운 정책 실험이 될 수 있다.
+  </div>
+</section>
+
+<section id="refs">
+  <h2>14. 참고자료 (References)</h2>
+  <p>본 문서에서 인용한 주요 1차 자료와 심층 학습 자료를 주제별로 정리.</p>
+
+  <h3>📘 백서·논문 (Whitepapers & Academic Papers)</h3>
+  <ul>
+    <li><a href="https://bitcoin.org/bitcoin.pdf">Bitcoin: A Peer-to-Peer Electronic Cash System</a> — Satoshi Nakamoto (2008)</li>
+    <li><a href="https://ethereum.org/en/whitepaper/">Ethereum Whitepaper</a> — Vitalik Buterin (2013)</li>
+    <li><a href="https://ethereum.github.io/yellowpaper/paper.pdf">Ethereum Yellow Paper</a> — Gavin Wood (formal EVM spec)</li>
+    <li><a href="https://lamport.azurewebsites.net/pubs/byz.pdf">The Byzantine Generals Problem</a> — Lamport, Shostak, Pease (1982)</li>
+    <li><a href="https://pmg.csail.mit.edu/papers/osdi99.pdf">Practical Byzantine Fault Tolerance (PBFT)</a> — Castro & Liskov (1999)</li>
+    <li><a href="https://www.ifca.ai/fc14/papers/fc14_submission_82.pdf">Majority is not Enough: Selfish Mining</a> — Eyal & Sirer (2014)</li>
+    <li><a href="https://eprint.iacr.org/2016/889.pdf">Ouroboros: Provably Secure PoS</a> — IOHK (Cardano)</li>
+  </ul>
+
+  <h3>🏛 표준 (Standards & EIPs)</h3>
+  <ul>
+    <li><a href="https://eips.ethereum.org/">EIPs Index — Ethereum Improvement Proposals</a></li>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-20">EIP-20 (ERC-20 토큰 표준)</a></li>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-721">EIP-721 (ERC-721 NFT)</a></li>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-712">EIP-712 (Typed Structured Data Signing)</a></li>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-3009">EIP-3009 (transferWithAuthorization — x402 핵심)</a></li>
+    <li><a href="https://eips.ethereum.org/EIPS/eip-4337">EIP-4337 (Account Abstraction)</a></li>
+    <li><a href="https://github.com/bitcoin/bips">BIPs — Bitcoin Improvement Proposals</a></li>
+    <li><a href="https://datatracker.ietf.org/doc/html/rfc7231">RFC 7231 — HTTP/1.1 Semantics (402 status)</a></li>
+    <li><a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf">NIST FIPS 180-4 — Secure Hash Standard</a></li>
+  </ul>
+
+  <h3>🏦 중앙은행·국제기구 자료 (Central Banking)</h3>
+  <ul>
+    <li><a href="https://www.bis.org/about/bisih/topics/fmis/agora.htm">BIS Innovation Hub — Project Agora</a></li>
+    <li><a href="https://www.bis.org/publ/othp83.htm">BIS — Blueprint for the future monetary system (Unified Ledger)</a></li>
+    <li><a href="https://www.bis.org/publ/othp61.htm">BIS — Project mBridge</a></li>
+    <li><a href="https://www.bis.org/publ/othp59.htm">BIS — Project Mariana (wholesale CBDC + AMM)</a></li>
+    <li><a href="https://www.bok.or.kr/portal/main/contents.do?menuNo=200773">한국은행 — CBDC 페이지</a></li>
+    <li><a href="https://www.bok.or.kr/portal/bbs/B0000338/list.do?menuNo=200761">한국은행 — 보도자료</a></li>
+    <li><a href="https://www.atlanticcouncil.org/cbdctracker/">Atlantic Council — CBDC Tracker</a></li>
+    <li><a href="https://www.imf.org/en/Topics/fintech">IMF — Fintech & CBDC</a></li>
+  </ul>
+
+  <h3>🌉 크로스체인 · 상호운용성</h3>
+  <ul>
+    <li><a href="https://vitalik.eth.limo/general/2022/01/07/sharding.html">Vitalik — Why cross-chain bridges are fundamentally limited</a></li>
+    <li><a href="https://www.ibcprotocol.dev/">IBC Protocol — Inter-Blockchain Communication</a></li>
+    <li><a href="https://layerzero.network/publications/LayerZero_Whitepaper_V2.0.pdf">LayerZero V2 백서</a></li>
+    <li><a href="https://chain.link/cross-chain">Chainlink CCIP</a></li>
+    <li><a href="https://www.axelar.network/whitepaper">Axelar Network 백서</a></li>
+    <li><a href="https://rekt.news/leaderboard/">rekt.news — 해킹 리더보드 (실제 사례 학습)</a></li>
+  </ul>
+
+  <h3>💳 x402 · 에이전트 결제</h3>
+  <ul>
+    <li><a href="https://www.x402.org/">x402.org — 공식 사이트</a></li>
+    <li><a href="https://github.com/coinbase/x402">coinbase/x402 — GitHub 리포지토리</a></li>
+    <li><a href="https://www.circle.com/en/usdc">Circle USDC — 결제 자산</a></li>
+    <li><a href="https://docs.cdp.coinbase.com/x402/welcome">Coinbase Developer Platform: x402</a></li>
+  </ul>
+
+  <h3>🛠 개발자 리소스</h3>
+  <ul>
+    <li><a href="https://ethereum.org/en/developers/">Ethereum.org 개발자 포털</a></li>
+    <li><a href="https://soliditylang.org/">Solidity 공식</a></li>
+    <li><a href="https://book.getfoundry.sh/">Foundry Book (Rust 기반 개발툴)</a></li>
+    <li><a href="https://hardhat.org/">Hardhat (JS 기반 개발툴)</a></li>
+    <li><a href="https://docs.openzeppelin.com/">OpenZeppelin — 안전한 표준 컨트랙트 라이브러리</a></li>
+    <li><a href="https://github.com/crytic/slither">Slither — Solidity 정적 분석</a></li>
+    <li><a href="https://swcregistry.io/">SWC Registry — 스마트 컨트랙트 약점 분류</a></li>
+    <li><a href="https://docs.solana.com/">Solana Docs</a></li>
+    <li><a href="https://docs.cosmos.network/">Cosmos SDK Docs</a></li>
+    <li><a href="https://move-language.github.io/move/">Move Book</a></li>
+  </ul>
+
+  <h3>📊 데이터·리서치</h3>
+  <ul>
+    <li><a href="https://l2beat.com/">L2BEAT — L2 보안·TVL 추적</a></li>
+    <li><a href="https://defillama.com/">DefiLlama — DeFi TVL 통계</a></li>
+    <li><a href="https://chainlist.org/">ChainList — EVM 체인 디렉토리</a></li>
+    <li><a href="https://etherscan.io/">Etherscan — Ethereum 익스플로러</a></li>
+    <li><a href="https://messari.io/research">Messari Research</a></li>
+    <li><a href="https://a16zcrypto.com/">a16z crypto</a></li>
+    <li><a href="https://research.paradigm.xyz/">Paradigm Research</a></li>
+  </ul>
+
+  <h3>📚 추천 도서 · 강의</h3>
+  <ul>
+    <li>"Mastering Bitcoin" — Andreas M. Antonopoulos (<a href="https://github.com/bitcoinbook/bitcoinbook">GitHub 무료 공개</a>)</li>
+    <li>"Mastering Ethereum" — Antonopoulos & Wood (<a href="https://github.com/ethereumbook/ethereumbook">GitHub 무료 공개</a>)</li>
+    <li><a href="https://www.coursera.org/learn/cryptocurrency">Princeton — Bitcoin and Cryptocurrency Technologies (Coursera)</a></li>
+    <li><a href="https://cryptozombies.io/">CryptoZombies — Solidity 인터랙티브 튜토리얼</a></li>
+    <li><a href="https://www.useweb3.xyz/">useWeb3 — 종합 학습 경로</a></li>
+  </ul>
+
+  <div class="note">
+    <strong>면책 조항:</strong> 본 문서의 링크와 통계는 작성 시점 기준이며, 블록체인 분야는 빠르게 변하므로
+    실제 의사결정에는 1차 자료(공식 백서, 중앙은행 보도자료, 공식 GitHub)를 항상 재확인하시기 바랍니다.
+    프로젝트별 진행 상황·참여 기관·수치는 각 기관의 최신 공식 발표를 우선 신뢰해야 합니다.
+  </div>
+</section>
+
+</main>
+
+<footer>
+  © 2026 Blockchain Technical Guide · 단일 HTML 파일로 빌드 도구 없이 동작
+</footer>
+
+<script>
+  // SHA-256 데모 (Web Crypto API 사용)
+  const input = document.getElementById('hashInput');
+  const output = document.getElementById('hashOutput');
+
+  async function sha256(text) {
+    const buf = new TextEncoder().encode(text);
+    const hash = await crypto.subtle.digest('SHA-256', buf);
+    return Array.from(new Uint8Array(hash))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  }
+
+  async function update() {
+    output.textContent = await sha256(input.value);
+  }
+
+  input.addEventListener('input', update);
+  update();
+
+  // 부드러운 스크롤
+  document.querySelectorAll('nav a').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
