@@ -94,7 +94,7 @@
         <dt>실행</dt><dd>Sealevel — 병렬 처리, SVM</dd>
         <dt>언어</dt><dd>Rust, C, Anchor</dd>
         <dt>블록 시간</dt><dd>약 400ms</dd>
-        <dt>실측 TPS</dt><dd>2,000~5,000</dd>
+        <dt>실측 TPS</dt><dd>2,000~5,000 (마케팅상 "65,000 이론치"는 학술 검증 미흡)</dd>
         <dt>특징</dt><dd>저수수료, 노드 요구사항 높음</dd>
       </dl>
       <div class="links">
@@ -152,12 +152,12 @@
 
     <div class="chain-card">
       <h4>Cardano (ADA)</h4>
-      <div class="tagline">학술 동료심사 기반 PoS</div>
+      <div class="tagline">동료심사 논문 기반 PoS</div>
       <dl>
-        <dt>합의</dt><dd>Ouroboros (수학적 보안 증명)</dd>
+        <dt>합의</dt><dd>Ouroboros (활발한 학술 분석)</dd>
         <dt>데이터 모델</dt><dd>EUTXO</dd>
         <dt>VM</dt><dd>Plutus (Haskell)</dd>
-        <dt>특징</dt><dd>형식 검증 친화적</dd>
+        <dt>특징</dt><dd>형식 검증 친화적, 개발 속도는 느린 편</dd>
       </dl>
       <div class="links">
         <a href="https://cardano.org/">cardano.org</a>
@@ -166,7 +166,7 @@
 
     <div class="chain-card">
       <h4>Sui · Aptos</h4>
-      <div class="tagline">Move 언어 · Facebook Diem 계보</div>
+      <div class="tagline">Move 언어 · Meta Diem(2022 폐기) 출신 팀</div>
       <dl>
         <dt>언어</dt><dd>Move — 자원(Resource) 중심, 선형 타입</dd>
         <dt>Sui</dt><dd>객체 중심, Narwhal+Bullshark</dd>
@@ -181,11 +181,12 @@
 
     <div class="chain-card">
       <h4>TON (The Open Network)</h4>
-      <div class="tagline">Telegram 통합 · 9억 사용자 잠재 지갑</div>
+      <div class="tagline">Telegram 통합 (잠재적 노출 ≈ 텔레그램 9억 사용자)</div>
       <dl>
         <dt>합의</dt><dd>PoS BFT, 무한 샤딩</dd>
         <dt>VM</dt><dd>TVM (FunC / Tact)</dd>
         <dt>특징</dt><dd>비동기 메시징, 낮은 수수료, 텔레그램 미니앱</dd>
+        <dt>참고</dt><dd>실제 활성 지갑 수는 수백만 수준 (텔레그램 전체 사용자와 다름)</dd>
       </dl>
       <div class="links">
         <a href="https://ton.org/">ton.org</a>
@@ -220,7 +221,7 @@
         <dt>방식</dt><dd>SNARK/STARK로 압축 증명</dd>
         <dt>장점</dt><dd>출금 지연 없음, 데이터 효율</dd>
         <dt>단점</dt><dd>증명 생성 비용·시간</dd>
-        <dt>분류</dt><dd>Type 1 (Eth Equivalent) → Type 4</dd>
+        <dt>분류</dt><dd>Type 1 ~ Type 4 (<a href="https://vitalik.eth.limo/general/2022/08/04/zkevm.html">Vitalik 분류</a>)</dd>
       </dl>
       <div class="links">
         <a href="https://zksync.io/">zkSync</a>
@@ -255,7 +256,7 @@
         <dt>합의</dt><dd>Pluggable (Raft, BFT-SMaRt)</dd>
         <dt>모델</dt><dd>채널 — 부분 참여자만 보는 프라이빗 원장</dd>
         <dt>체인코드</dt><dd>Go, Java, Node.js</dd>
-        <dt>적용</dt><dd>한국은행 모의실험(1단계), IBM Food Trust</dd>
+        <dt>적용</dt><dd>IBM Food Trust, 무역 플랫폼 (한국은행 모의실험 1단계 기술 스택은 공식 발표 확인 필요)</dd>
       </dl>
       <div class="links">
         <a href="https://www.hyperledger.org/projects/fabric">Fabric</a>
@@ -325,7 +326,7 @@
 
 </main>
 
-<footer>© 2026 Blockchain Technical Guide · PART 2/6</footer>
+<footer>© 2026 Blockchain Technical Guide · PART 2/7 · 최종 수정: 2026-06-01</footer>
 
 </body>
 </html>

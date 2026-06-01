@@ -82,9 +82,9 @@
     <tbody>
       <tr><td>Bitcoin</td><td>~7</td><td>10분/블록 ・ 4MB 블록 한계</td></tr>
       <tr><td>Ethereum L1</td><td>~15</td><td>가스 한도 ・ 12초 슬롯</td></tr>
-      <tr><td>Solana</td><td>2,000~5,000</td><td>이론치 65,000, 노드 요구사항 극히 높음</td></tr>
-      <tr><td>Ethereum L2 합산</td><td>10,000+</td><td>Rollup으로 분산</td></tr>
-      <tr><td><strong>Visa (참고)</strong></td><td><strong>24,000 평균 / 65,000 피크</strong></td><td><strong>중앙화 처리</strong></td></tr>
+      <tr><td>Solana</td><td>2,000~5,000</td><td>마케팅상 65,000 이론치 (학술 검증 미흡), 노드 요구사항 매우 높음</td></tr>
+      <tr><td>Ethereum L2 합산</td><td>10,000+ (이론적 합산)</td><td>실제 사용자는 단일 L2만 쓰므로 체감 TPS는 L2별 한도</td></tr>
+      <tr><td><strong>Visa (참고)</strong></td><td><strong>일평균 ≈24,000 / Visa 공식 처리 용량 65,000+</strong></td><td><strong>중앙화 처리, 블록체인 "실측 피크"와 직접 비교는 주의 필요</strong></td></tr>
       <tr><td><strong>국내 카드망 (참고)</strong></td><td><strong>피크 시 수만 TPS</strong></td><td><strong>중앙화 처리</strong></td></tr>
     </tbody>
   </table>
@@ -111,7 +111,7 @@
   <div class="note warn">
     <strong>"Not your keys, not your coins"</strong>는 양날의 검이다.
     <ul style="margin-top:8px;">
-      <li>개인키 분실 = 자산 영구 손실 (분실 BTC 추정 300~400만 개)</li>
+      <li>개인키 분실 = 자산 영구 손실 (Chainalysis 2020 기준 분실 BTC 추정 280~380만 개, 추정 시점·방법론에 따라 차이)</li>
       <li>피싱·악성 컨트랙트 approve로 인한 손실 일상화</li>
       <li>오프라인 백업·하드웨어 지갑·MPC·소셜 복구가 표준화 필요</li>
     </ul>
@@ -170,6 +170,24 @@
     Bitcoin Cash, Ethereum Classic, Solana Saga 등 사례.
     Code is Law 원칙이 항상 유지되지는 않으며, 사회적 합의가 결정적 변수.
   </p>
+
+  <h3>3.6 "검열 저항"의 현실적 약화</h3>
+  <div class="note warn">
+    <strong>블록체인의 핵심 가치로 자주 언급되는 "검열 저항"은 실제로는 점차 약화되고 있다.</strong>
+    <ul style="margin-top:8px;">
+      <li><strong>Tornado Cash 사례 (2022.08)</strong>: 미국 OFAC가 Ethereum 믹서 컨트랙트를 제재 목록에 추가.
+          Circle은 즉시 제재 주소의 USDC를 동결, GitHub은 개발자 계정을 삭제, 일부 검증자는 제재 트랜잭션 처리를 거부.</li>
+      <li><strong>Ethereum PoS 검열률</strong>: 2022~2023년 MEV-Boost relay들이 OFAC 제재 트랜잭션을 필터링.
+          한때 신규 블록의 70%+가 검열 가능한 relay를 거쳤다는 통계 (mevwatch.info).</li>
+      <li><strong>스테이블코인 동결</strong>: USDC·USDT 발행자가 법원 명령에 따라 특정 주소 자산을 즉시 동결 가능
+          (USDC 발행자 Circle은 정기적으로 수백 개 주소를 동결).</li>
+      <li><strong>거래소·온램프 차단</strong>: 결국 사용자가 fiat ↔ 암호자산으로 환전할 때 KYC를 거치므로
+          "검열 저항"의 실질적 한계.</li>
+    </ul>
+    <strong>시사점:</strong> 블록체인이 본질적으로 검열에 강한 것은 맞지만,
+    <em>실제 사용자 경험 측면에서는 중앙화된 진입점(거래소·스테이블코인 발행자·MEV 인프라)이 검열 압력에 노출</em>되어
+    "절대적 검열 저항"이라는 통념은 과장된 측면이 있다.
+  </div>
 </section>
 
 <section>
@@ -286,8 +304,8 @@ Q5. 자산이나 가치를 토큰으로 표현해야 하는가?
         <td>중앙 관리자가 있는 환경에 블록체인 강제 시 오버엔지니어링</td>
       </tr>
       <tr>
-        <td><strong>Australia ASX CHESS 교체 실패 (Digital Asset 활용)</strong></td>
-        <td>2022년 약 2.5억 호주달러 손실, 프로젝트 중단</td>
+        <td><strong>Australia ASX CHESS 교체 실패 (분산원장 기반 시스템, 벤더: Digital Asset)</strong></td>
+        <td>2022년 약 A$245M writedown, 프로젝트 중단</td>
         <td>레거시 인프라 교체는 기술 외 거버넌스·테스트가 더 중요</td>
       </tr>
       <tr>
@@ -310,7 +328,92 @@ Q5. 자산이나 가치를 토큰으로 표현해야 하는가?
 </section>
 
 <section>
-  <h2>7. 한국은행·금융권 관점의 종합 평가</h2>
+  <h2>7. 글로벌 규제 동향 (Regulatory Landscape)</h2>
+  <p>
+    블록체인·가상자산 규제는 빠르게 진화 중이다. 주요국의 입법 흐름을 정리한다.
+    실제 시점·세부 조항은 빈번히 변경되므로 공식 자료 재확인이 필수다.
+  </p>
+
+  <h3>7.1 주요국 규제 프레임워크</h3>
+  <table>
+    <thead><tr><th>국가/지역</th><th>법령</th><th>시행</th><th>핵심 내용</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>EU</strong></td>
+        <td><a href="https://eur-lex.europa.eu/eli/reg/2023/1114/oj">MiCA (Markets in Crypto-Assets)</a></td>
+        <td>2024.12 전면 발효</td>
+        <td>가상자산 발행자·서비스제공자 인가, 스테이블코인 발행 규제, 시장남용 금지</td>
+      </tr>
+      <tr>
+        <td><strong>미국</strong></td>
+        <td>FIT21 / CLARITY Act 등 추진</td>
+        <td>2024~2025 입법 진행</td>
+        <td>SEC·CFTC 권한 분담, 토큰 분류 기준, 스테이블코인 규제 (GENIUS Act 별도)</td>
+      </tr>
+      <tr>
+        <td><strong>한국</strong></td>
+        <td>가상자산이용자보호법</td>
+        <td>2024.07 시행</td>
+        <td>이용자 자산 분리 보관, 시세조종·미공개정보이용 금지, 이상거래 모니터링</td>
+      </tr>
+      <tr>
+        <td><strong>한국</strong></td>
+        <td>토큰증권(STO) 가이드라인</td>
+        <td>2023.02 발표</td>
+        <td>분산원장 기반 증권 발행 허용 검토, 전자증권법 개정 추진</td>
+      </tr>
+      <tr>
+        <td><strong>일본</strong></td>
+        <td>자금결제법 개정</td>
+        <td>2023~ 단계적</td>
+        <td>스테이블코인 발행 은행·신탁회사로 제한, 보유 한도</td>
+      </tr>
+      <tr>
+        <td><strong>싱가포르</strong></td>
+        <td>Payment Services Act</td>
+        <td>2020~ 단계 강화</td>
+        <td>VASP 라이선스 의무, 광고 제한 (2022~)</td>
+      </tr>
+      <tr>
+        <td><strong>FATF (국제)</strong></td>
+        <td>Travel Rule</td>
+        <td>회원국 단계적 적용</td>
+        <td>$1,000+ 가상자산 송수신 시 송신/수신자 정보 의무 교환</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>7.2 한국 가상자산이용자보호법 주요 조항</h3>
+  <ul>
+    <li><strong>고객 자산 분리 보관</strong>: 사업자 고유 재산과 이용자 자산 분리, 80% 이상 콜드월렛 보관</li>
+    <li><strong>예치금 보호</strong>: 이용자 예치금 = 별도 신탁 또는 보증보험 가입 의무</li>
+    <li><strong>시세조종·미공개정보 이용 금지</strong>: 자본시장법과 유사한 금지조항·형사처벌</li>
+    <li><strong>이상거래 상시 감시</strong>: 거래소가 자체 시스템 구축, 금감원 보고 의무</li>
+    <li><strong>예치 가상자산 이자 지급 제한</strong>: 거래소의 "스테이킹·이자 상품" 제약</li>
+  </ul>
+
+  <h3>7.3 규제 트렌드와 향후 전망</h3>
+  <table>
+    <thead><tr><th>트렌드</th><th>방향</th></tr></thead>
+    <tbody>
+      <tr><td>스테이블코인</td><td>은행·신탁사 발행 의무화 (일본·EU·미국 모두 유사 방향)</td></tr>
+      <tr><td>증권형 토큰(STO)</td><td>기존 증권법 체계로 편입 (한국·미국·EU 공통)</td></tr>
+      <tr><td>AML/CFT</td><td>FATF Travel Rule 전 세계 확산, 익명 결제 제약</td></tr>
+      <tr><td>DeFi</td><td>"누가 책임지는가" 논쟁 — 코드 개발자·프론트엔드 운영자에 대한 책임 부과 시도</td></tr>
+      <tr><td>CBDC</td><td>50+ 국가가 실증 단계, 도매 CBDC가 먼저 (한국 한강 포함)</td></tr>
+      <tr><td>환경(ESG)</td><td>PoW에 대한 에너지 보고 의무 (EU MiCA에 포함)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>금융권 관점:</strong> 규제 미정비를 "기회"로 보던 시기는 끝나가고 있다.
+    제도권 진입을 위해서는 <em>법적 정합성·자본 적정성·이용자 보호·시스템 회복력</em> 4가지가 점점 더 요구된다.
+    한국에서는 가상자산이용자보호법(2024.07)이 1차 규제 골격이며, <strong>2차 입법으로 발행·공시·DeFi 분야 확장이 예상</strong>된다.
+  </div>
+</section>
+
+<section>
+  <h2>8. 한국은행·금융권 관점의 종합 평가</h2>
   <div class="card">
     <p>중앙은행과 금융권의 의사결정 관점에서 본 블록체인의 위치:</p>
     <ul>
@@ -341,7 +444,7 @@ Q5. 자산이나 가치를 토큰으로 표현해야 하는가?
 
 </main>
 
-<footer>© 2026 Blockchain Technical Guide · PART 7/7</footer>
+<footer>© 2026 Blockchain Technical Guide · PART 7/7 · 최종 수정: 2026-06-01</footer>
 
 </body>
 </html>

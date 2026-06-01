@@ -417,7 +417,7 @@ interface IERC721Metadata {
     <div class="erc-header">
       <span class="erc-id">ERC-4626</span>
       <span class="erc-title">Tokenized Vault Standard</span>
-      <span class="erc-status final">Final (2022.04)</span>
+      <span class="erc-status final">Final (2022.03)</span>
     </div>
     <p>
       DeFi의 <strong>수익 발생 볼트(yield vault)</strong>를 표준화. Yearn, Aave 등에서 사용하는
@@ -483,13 +483,14 @@ function account(
   <div class="erc-card" id="erc-1400">
     <div class="erc-header">
       <span class="erc-id">ERC-1400</span>
-      <span class="erc-title">Security Token Standard</span>
-      <span class="erc-status draft">Draft</span>
+      <span class="erc-title">Security Token Standard (비공식)</span>
+      <span class="erc-status draft">정식 EIP 미채택</span>
     </div>
     <p>
-      <strong>규제 친화적 증권형 토큰</strong> 표준. 발행자가 KYC·AML 요건에 따라 이전을 제어할 수 있고,
+      <strong>규제 친화적 증권형 토큰</strong> 표준 제안. 발행자가 KYC·AML 요건에 따라 이전을 제어할 수 있고,
       문서 첨부, 강제 이전(법원 명령 등), 부분(partition) 단위 발행 등을 지원.
-      STO(Security Token Offering) 인프라의 기반.
+      <em>※ 다만 ERC-1400은 ethereum/EIPs에 정식 채택되지 않은 비공식 표준 묶음으로,
+      현장에서는 각 발행자가 일부 기능만 채택해 구현하는 경우가 많다.</em>
     </p>
     <ul>
       <li><strong>canTransfer()</strong>: 이전 사전 검증 (KYC 통과 여부, 락업 등)</li>
@@ -692,7 +693,12 @@ function account(
     </tbody>
   </table>
 
-  <h3>4.4 토큰화가 제공하는 새로운 가치</h3>
+  <h3>4.4 토큰화가 제공하는 새로운 가치 (잠재적)</h3>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    아래는 토큰화의 <em>잠재적 가치</em>이다. 실제 실현 여부는 규제·시장 수요·인프라 성숙도에 따라 달라진다.
+    예를 들어 "유동성 증대"는 토큰화한다고 자동으로 생기지 않고 충분한 수요가 필요하며,
+    "글로벌 접근"은 KYC·자본통제 등으로 제약된다.
+  </p>
   <ul>
     <li><strong>분할(Fractionalization)</strong>: 고가 자산을 작은 단위로 → 빌딩 1채 → 1만 토큰으로 1만 명이 공동 투자</li>
     <li><strong>유동성 증대</strong>: 비유동 자산(부동산·미술품·비상장주)을 거래 가능한 토큰으로</li>
@@ -749,8 +755,197 @@ function account(
   </div>
 </section>
 
+<section id="stablecoins">
+  <h2>5. 스테이블코인 심층 분석</h2>
+  <p>
+    스테이블코인은 블록체인 결제·DeFi의 핵심 인프라이며, CBDC·x402와도 직결된다.
+    세 가지 주요 모델과 각각의 구조적 차이를 정리한다.
+  </p>
+
+  <h3>5.1 세 가지 모델</h3>
+  <table>
+    <thead>
+      <tr><th>모델</th><th>가치 안정 방식</th><th>대표</th><th>장점</th><th>위험</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>법정통화 담보형</strong></td>
+        <td>1:1 미 달러 등 현금·국채 보유 후 토큰 발행</td>
+        <td>USDC (Circle), USDT (Tether), PYUSD (PayPal)</td>
+        <td>가장 안정적, 규제 정합성</td>
+        <td>발행자 신뢰·은행 의존, 자산 동결 가능</td>
+      </tr>
+      <tr>
+        <td><strong>암호자산 담보형</strong></td>
+        <td>ETH·BTC 등을 과담보(150%+)로 잠그고 토큰 발행</td>
+        <td>DAI (MakerDAO), LUSD (Liquity)</td>
+        <td>탈중앙화, 검열 저항</td>
+        <td>담보 변동성, 청산 위험, 자본 효율 낮음</td>
+      </tr>
+      <tr>
+        <td><strong>알고리즘형</strong></td>
+        <td>알고리즘·차익거래로 가치 유지 (담보 부족 또는 없음)</td>
+        <td>UST (Terra, 붕괴), FRAX (부분 알고리즘)</td>
+        <td>자본 효율 극대, 무한 확장 가능</td>
+        <td>"죽음의 나선" 위험, 신뢰 붕괴 시 0으로 수렴</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>5.2 주요 스테이블코인 비교</h3>
+  <table>
+    <thead>
+      <tr><th>토큰</th><th>발행자</th><th>담보</th><th>감사</th><th>특징</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>USDC</strong></td>
+        <td>Circle (미국)</td>
+        <td>100% 현금 + 단기 미국채 (BlackRock 운용)</td>
+        <td>Deloitte 월간 보고서</td>
+        <td>규제 친화, x402 기본 자산</td>
+      </tr>
+      <tr>
+        <td><strong>USDT</strong></td>
+        <td>Tether (홍콩·BVI)</td>
+        <td>현금 + 미국채 + 일부 다른 자산</td>
+        <td>BDO 분기 보고 (전체 감사 아님)</td>
+        <td>가장 큰 시총·유동성, 투명성 비판 존재</td>
+      </tr>
+      <tr>
+        <td><strong>DAI</strong></td>
+        <td>MakerDAO (탈중앙)</td>
+        <td>ETH·USDC·RWA 등 다중 담보 (과담보)</td>
+        <td>온체인 실시간</td>
+        <td>탈중앙 출발이었으나 USDC 의존도 증가 (역설)</td>
+      </tr>
+      <tr>
+        <td><strong>PYUSD</strong></td>
+        <td>PayPal + Paxos</td>
+        <td>1:1 현금·미국채</td>
+        <td>Paxos 월간 보고</td>
+        <td>전통 결제 기업의 진입</td>
+      </tr>
+      <tr>
+        <td><strong>FDUSD</strong></td>
+        <td>First Digital Trust (홍콩)</td>
+        <td>1:1 현금·단기채</td>
+        <td>Prescient Assurance</td>
+        <td>아시아권 거래소 우대</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>5.3 Terra/UST 붕괴 사례 — 알고리즘 스테이블코인의 한계</h3>
+  <div class="card">
+    <p><strong>2022년 5월, 시가총액 약 600억 달러의 Terra/LUNA 생태계가 1주일 만에 99% 붕괴했다.</strong></p>
+
+    <h4>구조</h4>
+    <ul>
+      <li><strong>UST</strong>: 알고리즘 스테이블코인 ($1 페그)</li>
+      <li><strong>LUNA</strong>: 가치 흡수·차익거래용 토큰</li>
+      <li>메커니즘: UST 가격이 $1 미만이면 → LUNA로 교환 가능 → 차익거래자가 UST 매수 → 가격 회복 (이론상)</li>
+    </ul>
+
+    <h4>붕괴 시나리오</h4>
+    <ol>
+      <li>대규모 UST 매도 발생 (2022.05.07)</li>
+      <li>UST → LUNA 교환 발생 → LUNA 발행량 폭증</li>
+      <li>LUNA 가격 하락 → 차익거래 매력 감소 → UST 추가 매도</li>
+      <li>피드백 루프 ("죽음의 나선")</li>
+      <li>1주일 만에 UST $0.10, LUNA 99% 손실</li>
+    </ol>
+
+    <h4>교훈</h4>
+    <ul>
+      <li>알고리즘 스테이블코인은 <strong>신뢰가 깨지는 순간 회복 불가능</strong></li>
+      <li>"무담보 가치 안정"은 게임이론적 가정에 의존, 극한 상황에서 무너짐</li>
+      <li>이후 EU MiCA·미국 규제는 알고리즘 스테이블코인을 사실상 금지·제한</li>
+    </ul>
+  </div>
+
+  <h3>5.4 한국과 스테이블코인</h3>
+  <ul>
+    <li><strong>원화 스테이블코인 부재</strong>: KRW 페그 스테이블코인은 거의 없음 (KRWO 등 일부 시도)</li>
+    <li><strong>가상자산이용자보호법(2024.07)</strong>은 스테이블코인 발행을 명시적으로 규율하지 않음, 추후 입법 예정</li>
+    <li><strong>한국은행 한강의 예금토큰</strong>은 사실상 KRW 스테이블코인의 대안 — 다만 발행 주체가 상업은행</li>
+    <li><strong>은행 발행 스테이블코인</strong>: 일본 자금결제법 모델 (은행·신탁사만 발행)이 한국에서도 논의 중</li>
+  </ul>
+
+  <div class="note">
+    <strong>왜 중요한가:</strong>
+    스테이블코인은 단순한 결제 도구가 아니라 <em>"디지털 형태의 화폐"</em>이며,
+    CBDC와 직접 경쟁·보완 관계에 있다. <a href="cbdc.html">한강 예금토큰</a>과 USDC·USDT의 본질적 차이는
+    "발행자가 누구인가 (상업은행 vs 민간 기업) + 어떤 자산을 담보로 하는가 (현금·국채)"이다.
+  </div>
+</section>
+
+<section id="dao">
+  <h2>6. DAO와 온체인 거버넌스</h2>
+  <p>
+    <strong>DAO(Decentralized Autonomous Organization)</strong>는 스마트 컨트랙트로 운영되는
+    의사결정·자금 관리 조직이다. 토큰 보유자가 투표로 의사결정에 참여한다.
+  </p>
+
+  <h3>6.1 DAO의 주요 유형</h3>
+  <table>
+    <thead><tr><th>유형</th><th>목적</th><th>대표 사례</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Protocol DAO</strong></td><td>DeFi 프로토콜 파라미터 의사결정</td><td>MakerDAO, Uniswap, Compound</td></tr>
+      <tr><td><strong>Investment DAO</strong></td><td>공동 투자 결정 (벤처·NFT)</td><td>The LAO, MetaCartel Ventures</td></tr>
+      <tr><td><strong>Grants DAO</strong></td><td>생태계 보조금 분배</td><td>Gitcoin, Optimism Citizens House</td></tr>
+      <tr><td><strong>Service DAO</strong></td><td>전문가 조합 (개발·디자인)</td><td>RaidGuild, DeveloperDAO</td></tr>
+      <tr><td><strong>Social DAO</strong></td><td>커뮤니티 운영</td><td>Friends With Benefits, Bored Ape</td></tr>
+      <tr><td><strong>Single-Purpose DAO</strong></td><td>특정 목표 달성 후 해산</td><td>ConstitutionDAO (미 헌법 경매 입찰, 실패 후 환불)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>6.2 거버넌스 토큰의 작동 방식</h3>
+<pre><code>// 단순화된 거버넌스 컨트랙트
+contract Governor {
+    mapping(address =&gt; uint256) public votingPower;
+    mapping(uint256 =&gt; Proposal) public proposals;
+
+    function propose(bytes calldata calldata_, string calldata description)
+        external returns (uint256 proposalId);
+
+    function castVote(uint256 proposalId, uint8 support) external;
+    // support: 0=Against, 1=For, 2=Abstain
+
+    function execute(uint256 proposalId) external;
+    // 정족수 + 찬성 다수 충족 시 컨트랙트가 자동 실행
+}</code></pre>
+
+  <h3>6.3 DAO의 한계와 비판</h3>
+  <div class="note warn">
+    <strong>온체인 거버넌스의 현실적 문제점:</strong>
+    <ul style="margin:8px 0;">
+      <li><strong>낮은 참여율</strong>: 대부분의 DAO 투표 참여율 5~15% (전체 토큰 보유자 기준)</li>
+      <li><strong>고래(Whale) 지배</strong>: 상위 10개 주소가 의결권의 50%+ 보유하는 경우 흔함</li>
+      <li><strong>대리투표(Delegation) 집중</strong>: a16z·재단 등 대규모 위임 받은 소수가 사실상 결정</li>
+      <li><strong>투표 매수·뇌물</strong>: Convex·Aura처럼 vote-as-a-service 시장 형성</li>
+      <li><strong>의사결정 속도</strong>: 토론·투표·실행에 수일~수주 → 위기 대응 어려움</li>
+      <li><strong>법적 책임 불명확</strong>: DAO 구성원의 법적 책임 (Wyoming주 DAO LLC 등 일부 입법 시도)</li>
+    </ul>
+  </div>
+
+  <h3>6.4 주요 사고·교훈</h3>
+  <ul>
+    <li><strong>The DAO 해킹 (2016)</strong>: Reentrancy로 360만 ETH 탈취 → Ethereum 하드포크 → ETH/ETC 분리</li>
+    <li><strong>Beanstalk 거버넌스 공격 (2022)</strong>: 플래시론으로 의결권 확보 → 자금 탈취 (1.8억 달러)</li>
+    <li><strong>Mango Markets (2022)</strong>: 가격 조작 + 거버넌스 투표로 본인 행위 합법화 시도</li>
+    <li><strong>Compound 7% 사고 (2021)</strong>: 거버넌스 제안의 코드 버그로 8천만 달러 잘못 분배</li>
+  </ul>
+
+  <div class="note">
+    <strong>시사점:</strong> DAO는 "탈중앙 의사결정"의 이상적 모델로 제시되지만,
+    실제로는 <em>중앙화된 영향력자 + 낮은 참여 + 보안 취약</em>이라는 현실적 문제를 안고 있다.
+    완전한 탈중앙 거버넌스보다 <strong>"투명한 의사결정 도구"</strong> 수준으로 평가하는 것이 객관적이다.
+  </div>
+</section>
+
 <section id="patterns">
-  <h2>5. 컨트랙트 디자인 패턴</h2>
+  <h2>7. 컨트랙트 디자인 패턴</h2>
 
   <h3>4.1 Proxy Upgrade Pattern</h3>
   <p>
@@ -796,7 +991,7 @@ address computed = address(uint160(uint256(keccak256(abi.encodePacked(
 </section>
 
 <section id="security">
-  <h2>6. 보안 함정 심층</h2>
+  <h2>8. 보안 함정 심층</h2>
   <p style="font-size:0.9rem; color:var(--fg-dim);">
     📚 참고:
     <a href="https://swcregistry.io/">SWC Registry</a> ·
@@ -809,7 +1004,7 @@ address computed = address(uint160(uint256(keccak256(abi.encodePacked(
     <tbody>
       <tr>
         <td><strong>Reentrancy</strong></td>
-        <td>외부 호출이 다시 같은 함수로 돌아와 상태 조작 (DAO 해킹, 약 6천만 달러)</td>
+        <td>외부 호출이 다시 같은 함수로 돌아와 상태 조작 (2016년 DAO 해킹, 당시 시가 약 5천만 달러 / 360만 ETH 탈취)</td>
         <td>CEI 패턴, ReentrancyGuard</td>
       </tr>
       <tr>
@@ -900,7 +1095,7 @@ address computed = address(uint160(uint256(keccak256(abi.encodePacked(
 
 </main>
 
-<footer>© 2026 Blockchain Technical Guide · PART 3/6</footer>
+<footer>© 2026 Blockchain Technical Guide · PART 3/7 · 최종 수정: 2026-06-01</footer>
 
 </body>
 </html>

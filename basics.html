@@ -517,6 +517,34 @@ while (sha256d(blockHeader) > target) {
     <strong>주의:</strong> 51% 공격은 이론적 임계점일 뿐, 실제로는 25~33%의 해시파워만으로도
     셀피시 마이닝(<a href="https://www.ifca.ai/fc14/papers/fc14_submission_82.pdf">Eyal & Sirer, 2014</a>)이 가능하다.
   </div>
+
+  <h3>PoW vs PoS — 흔한 오해와 균형 잡힌 시각</h3>
+  <div class="note">
+    PoW는 단순히 "환경에 나쁜 구식 기술"이 아니다. 양자의 트레이드오프를 정확히 이해해야 한다.
+
+    <h4 style="margin-top:12px;">PoW의 장점 (자주 간과됨)</h4>
+    <ul>
+      <li><strong>물리적 보안 비용</strong>: 공격하려면 실제 에너지·하드웨어 투입이 필요 → 비용 명확</li>
+      <li><strong>잉여·재생에너지 흡수</strong>: 일부 채굴은 송전 불가 지역 잉여 전력·천연가스 플레어를 활용
+          (Cambridge CCAF 2022 추정 PoW 채굴의 50%+가 재생/저탄소 에너지)</li>
+      <li><strong>"무관여 발행" (Permissionless 발행)</strong>: 누구나 채굴 진입 가능, 토큰 사전 분배 불필요</li>
+      <li><strong>오랜 검증 기간</strong>: 15년 이상 메인넷 운영으로 보안 모델 입증</li>
+    </ul>
+
+    <h4>PoS의 단점 (자주 간과됨)</h4>
+    <ul>
+      <li><strong>부의 집중 → 권력 집중</strong>: "많이 가진 자가 더 많이 결정" — 토큰 분배의 공정성이 핵심 변수</li>
+      <li><strong>스테이킹 풀 과점</strong>: Lido·Coinbase·Binance 등 상위 5개 스테이커가 Ethereum 검증의 50%+ 차지</li>
+      <li><strong>슬래싱·운영 복잡성</strong>: 검증자 운영 실수로 자산 손실 위험</li>
+      <li><strong>"무관여 발행" 불가</strong>: 초기 토큰 분배가 정의되어야 시작 가능</li>
+      <li><strong>Long-Range Attack</strong>: 과거 키 누출 시 대안 체인 생성 가능 (Weak Subjectivity 필요)</li>
+    </ul>
+
+    <h4>결론</h4>
+    "PoS가 우월" 또는 "PoW가 우월"이라는 단순 진술은 부정확하다.
+    <em>다른 보안 가정·다른 거버넌스 트레이드오프</em>를 가진 두 모델로 보는 것이 정확하다.
+    Bitcoin이 PoW를 유지하고 Ethereum이 PoS로 전환한 것은 각자의 가치 우선순위(보안 정통성 vs 환경·확장성)가 다르기 때문이다.
+  </div>
 </section>
 
 <section id="types">
@@ -820,7 +848,7 @@ while (sha256d(blockHeader) > target) {
 
 </main>
 
-<footer>© 2026 Blockchain Technical Guide · PART 1/6</footer>
+<footer>© 2026 Blockchain Technical Guide · PART 1/7 · 최종 수정: 2026-06-01</footer>
 
 <script>
   const input = document.getElementById('hashInput');

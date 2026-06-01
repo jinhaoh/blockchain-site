@@ -1,18 +1,18 @@
 #requires -Version 5.1
 <#
 .SYNOPSIS
-  GitHub Pages 자동 배포 스크립트
+  GitHub Pages auto-deploy script.
 
 .DESCRIPTION
-  blockchain-site 저장소의 변경사항을 GitHub에 커밋·푸시하여
-  GitHub Pages를 자동 재배포합니다.
+  Commits and pushes changes in the blockchain-site repository
+  so that GitHub Pages automatically rebuilds the site.
 
 .PARAMETER Message
-  커밋 메시지. 생략하면 현재 시각으로 자동 생성.
+  Commit message. If omitted, current timestamp is used.
 
 .EXAMPLE
   .\deploy.ps1
-  .\deploy.ps1 "x402 섹션 보강"
+  .\deploy.ps1 "Update x402 section"
 #>
 
 param(
@@ -22,67 +22,91 @@ param(
 $ErrorActionPreference = "Stop"
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
-# 스크립트가 있는 디렉토리로 이동
+# Move to the script's directory
 $repoDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $repoDir
 
 Write-Host ""
-Write-Host "===== GitHub Pages 배포 =====" -ForegroundColor Cyan
-Write-Host "저장소: $repoDir" -ForegroundColor Gray
+Write-Host "===== GitHub Pages Deploy =====" -ForegroundColor Cyan
+Write-Host "Repository: $repoDir" -ForegroundColor Gray
 Write-Host ""
 
-# Git 사용 가능 여부
+# Check git availability
 try { git --version | Out-Null } catch {
-    Write-Host "[오류] git이 설치되어 있지 않습니다." -ForegroundColor Red
-    Read-Host "Enter 키로 종료"
+    Write-Host "[ERROR] git is not installed or not in PATH." -ForegroundColor Red
+    Read-Host "Press Enter to exit"
     exit 1
 }
 
-# 변경사항 확인
+# Check for changes
 $status = git status --porcelain
 if (-not $status) {
-    Write-Host "[정보] 변경사항이 없습니다. 배포 생략." -ForegroundColor Yellow
-    Read-Host "Enter 키로 종료"
+    Write-Host "[INFO] No changes detected. Skipping deploy." -ForegroundColor Yellow
+    Read-Host "Press Enter to exit"
     exit 0
 }
 
-Write-Host "변경된 파일:" -ForegroundColor Green
+Write-Host "Changed files:" -ForegroundColor Green
 git status --short
 Write-Host ""
 
-# 커밋 메시지 결정
+# Determine commit message
 if (-not $Message) {
     $Message = "Update: $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
 }
-Write-Host "커밋 메시지: $Message" -ForegroundColor Green
+Write-Host "Commit message: $Message" -ForegroundColor Green
 Write-Host ""
 
-$confirm = Read-Host "배포하시겠습니까? (Y/n)"
+$confirm = Read-Host "Proceed with deploy? (Y/n)"
 if ($confirm -match '^[nN]') {
-    Write-Host "취소되었습니다." -ForegroundColor Yellow
-    Read-Host "Enter 키로 종료"
+    Write-Host "Cancelled." -ForegroundColor Yellow
+    Read-Host "Press Enter to exit"
     exit 0
 }
+
+# Workaround for corporate security software (e.g., BOK environment):
+# disable git features that create rapid file access patterns
+git config --local core.fscache false 2>$null
+git config --local core.preloadindex false 2>$null
+git config --local gc.auto 0 2>$null
 
 Write-Host ""
 Write-Host "[1/3] git add ..." -ForegroundColor Cyan
 git add -A
-if ($LASTEXITCODE -ne 0) { Write-Host "[실패] git add" -ForegroundColor Red; Read-Host; exit 1 }
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "[FAIL] git add" -ForegroundColor Red
+    Read-Host "Press Enter to exit"
+    exit 1
+}
 
+# git commit: retry up to 3 times in case security SW transiently locks .git/objects
 Write-Host "[2/3] git commit ..." -ForegroundColor Cyan
-git commit -m $Message
-if ($LASTEXITCODE -ne 0) { Write-Host "[실패] git commit" -ForegroundColor Red; Read-Host; exit 1 }
+$commitOk = $false
+for ($i = 1; $i -le 3; $i++) {
+    git commit -m $Message
+    if ($LASTEXITCODE -eq 0) { $commitOk = $true; break }
+    if ($i -lt 3) {
+        Write-Host "  -> Transient failure (likely security SW). Retrying in $($i*2)s ($i/3)..." -ForegroundColor Yellow
+        Start-Sleep -Seconds ($i * 2)
+    }
+}
+if (-not $commitOk) {
+    Write-Host "[FAIL] git commit (after 3 retries)" -ForegroundColor Red
+    Write-Host "  -> Try committing via GitHub Desktop, or request IT to whitelist this .git folder." -ForegroundColor Yellow
+    Read-Host "Press Enter to exit"
+    exit 1
+}
 
 Write-Host "[3/3] git push ..." -ForegroundColor Cyan
 git push
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "[실패] git push" -ForegroundColor Red
-    Write-Host "인증 오류라면 GitHub Desktop에서 한 번 로그인 후 다시 시도하세요." -ForegroundColor Yellow
-    Read-Host "Enter 키로 종료"
+    Write-Host "[FAIL] git push" -ForegroundColor Red
+    Write-Host "If this is an auth error, sign in once via GitHub Desktop and retry." -ForegroundColor Yellow
+    Read-Host "Press Enter to exit"
     exit 1
 }
 
-# 사이트 URL 계산
+# Resolve site URL
 $remoteUrl = git config --get remote.origin.url
 $siteUrl = ""
 if ($remoteUrl -match "github.com[:/]([^/]+)/([^/.]+)") {
@@ -92,15 +116,15 @@ if ($remoteUrl -match "github.com[:/]([^/]+)/([^/.]+)") {
 }
 
 Write-Host ""
-Write-Host "===== 배포 완료 =====" -ForegroundColor Green
+Write-Host "===== Deploy Complete =====" -ForegroundColor Green
 if ($siteUrl) {
-    Write-Host "사이트 URL: $siteUrl" -ForegroundColor Cyan
-    Write-Host "(GitHub Pages 빌드에 보통 30초~2분 소요)" -ForegroundColor Gray
+    Write-Host "Site URL: $siteUrl" -ForegroundColor Cyan
+    Write-Host "(GitHub Pages build usually takes 30s - 2min)" -ForegroundColor Gray
     Write-Host ""
-    $open = Read-Host "브라우저에서 열어볼까요? (Y/n)"
+    $open = Read-Host "Open in browser? (Y/n)"
     if ($open -notmatch '^[nN]') {
         Start-Process $siteUrl
     }
 }
 Write-Host ""
-Read-Host "Enter 키로 종료"
+Read-Host "Press Enter to exit"
