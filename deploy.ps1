@@ -72,9 +72,19 @@ git config --local gc.auto 0 2>$null
 
 Write-Host ""
 Write-Host "[1/3] git add ..." -ForegroundColor Cyan
-git add -A
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "[FAIL] git add" -ForegroundColor Red
+# git add: retry up to 5 times in case security SW transiently locks .git/objects
+$addOk = $false
+for ($i = 1; $i -le 5; $i++) {
+    git add -A
+    if ($LASTEXITCODE -eq 0) { $addOk = $true; break }
+    if ($i -lt 5) {
+        Write-Host "  -> Transient failure. Retrying in $($i*2)s ($i/5)..." -ForegroundColor Yellow
+        Start-Sleep -Seconds ($i * 2)
+    }
+}
+if (-not $addOk) {
+    Write-Host "[FAIL] git add (after 5 retries)" -ForegroundColor Red
+    Write-Host "  -> Try committing via GitHub Desktop, or request IT to whitelist this .git folder." -ForegroundColor Yellow
     Read-Host "Press Enter to exit"
     exit 1
 }
