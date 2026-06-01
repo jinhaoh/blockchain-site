@@ -545,6 +545,323 @@ while (sha256d(blockHeader) > target) {
     <em>다른 보안 가정·다른 거버넌스 트레이드오프</em>를 가진 두 모델로 보는 것이 정확하다.
     Bitcoin이 PoW를 유지하고 Ethereum이 PoS로 전환한 것은 각자의 가치 우선순위(보안 정통성 vs 환경·확장성)가 다르기 때문이다.
   </div>
+
+  <h3>BFT 알고리즘 패밀리 심층 — PBFT부터 QBFT까지</h3>
+  <p>
+    <strong>BFT(Byzantine Fault Tolerance)</strong>는 비잔틴 장군 문제를 해결하는 합의 알고리즘 가족 이름이다.
+    PoW·PoS와 달리 토큰 없이도 작동하며, <em>알려진 검증자(known validators)</em>가 메시지를 주고받아 합의에 이른다.
+    퍼미션드·컨소시엄 블록체인의 사실상 표준이자, Cosmos·BNB Chain 같은 일부 퍼블릭 체인도 채택한다.
+  </p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://pmg.csail.mit.edu/papers/osdi99.pdf">PBFT 원논문 (Castro & Liskov, 1999)</a> ·
+    <a href="https://arxiv.org/abs/1803.05069">HotStuff 논문</a> ·
+    <a href="https://docs.tendermint.com/">Tendermint Docs</a> ·
+    <a href="https://besu.hyperledger.org/private-networks/how-to/configure/consensus/qbft">Besu QBFT 문서</a>
+  </p>
+
+  <h4>BFT 공통 특성</h4>
+  <ul>
+    <li><strong>비잔틴 내성</strong>: 검증자 중 1/3 미만이 악의적이어도 안전</li>
+    <li><strong>결정적 최종성</strong>: 합의되는 즉시 최종 (PoW의 "확률적 최종성"과 대비)</li>
+    <li><strong>메시지 복잡도</strong>: 통상 O(N²) — 검증자 수가 늘수록 통신량 폭증 → 보통 4~100명 수준</li>
+    <li><strong>네트워크 가정</strong>: 부분 동기(partial synchrony) 모델이 일반적</li>
+    <li><strong>리더 기반 (대부분)</strong>: 라운드마다 리더가 블록 제안 → 검증자들이 투표</li>
+  </ul>
+
+  <h4>BFT 합의의 기본 흐름 (3-phase)</h4>
+<pre><code>┌────────────────────────────────────────────────────────────┐
+│  Round R · Leader = Validator[(R mod N)]                   │
+└────────────────────────────────────────────────────────────┘
+
+  ① Pre-Prepare    Leader → All        "이 블록 어때?"
+                                       (블록 제안)
+
+  ② Prepare        All → All           "나는 이걸 봤어"
+                                       (2/3+ 모이면 "lock")
+
+  ③ Commit         All → All           "나는 이걸 확정해"
+                                       (2/3+ 모이면 최종성 달성)
+
+  → 다음 블록 (Round R+1)으로 진행
+  → 리더가 응답 없으면 View Change → 새 리더</code></pre>
+
+  <h4>주요 BFT 변종 비교</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>알고리즘</th><th>발표</th><th>핵심 특징</th><th>대표 채택</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>PBFT</strong><br>(Practical BFT)</td>
+        <td>1999<br>Castro & Liskov</td>
+        <td>최초의 실용적 BFT, 3-phase 프로토콜의 원형</td>
+        <td>학술적 기준선</td>
+      </tr>
+      <tr>
+        <td><strong>BFT-SMaRt</strong></td>
+        <td>2014</td>
+        <td>Java 구현, 모듈화, state machine replication</td>
+        <td>Hyperledger Fabric (선택지)</td>
+      </tr>
+      <tr>
+        <td><strong>Tendermint BFT</strong></td>
+        <td>2014<br>Buchman</td>
+        <td>라운드 기반, gossip 통신, 즉시 최종성</td>
+        <td>Cosmos Hub, BNB Chain, Celestia, dYdX v4</td>
+      </tr>
+      <tr>
+        <td><strong>HotStuff</strong></td>
+        <td>2018<br>VMware/Facebook</td>
+        <td>파이프라인 합의, 선형 view-change (O(N))</td>
+        <td>Aptos (AptosBFT), 이전 Diem</td>
+      </tr>
+      <tr>
+        <td><strong>IBFT</strong><br>(Istanbul BFT)</td>
+        <td>2017<br>AMIS</td>
+        <td>EVM 호환, Quorum 초기 합의</td>
+        <td>Quorum (구), 일부 사이드체인</td>
+      </tr>
+      <tr>
+        <td><strong>IBFT 2.0</strong></td>
+        <td>2019<br>PegaSys</td>
+        <td>IBFT의 liveness 결함 수정</td>
+        <td>Hyperledger Besu (이전 기본)</td>
+      </tr>
+      <tr>
+        <td><strong>QBFT</strong><br>(Quorum BFT)</td>
+        <td>2021<br>ConsenSys</td>
+        <td>IBFT 2.0의 안전성 강화, 검증자 동적 관리</td>
+        <td><strong>Besu, Quorum (현재 기본)</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>QBFT 심층 — 엔터프라이즈 표준</h4>
+  <div class="card">
+    <p>
+      <strong>QBFT</strong>는 ConsenSys가 IBFT 2.0의 결함을 보완해 만든 합의 알고리즘으로,
+      현재 <strong>Hyperledger Besu</strong>와 <strong>ConsenSys Quorum</strong>의 <em>기본 합의</em>이며,
+      금융·기업 컨소시엄에서 가장 널리 쓰이는 BFT 변종 중 하나다.
+    </p>
+
+    <h4 style="margin-top:16px;">QBFT의 핵심 특성</h4>
+    <ul>
+      <li><strong>EVM 100% 호환</strong>: 이더리움 스마트 컨트랙트·도구·지갑 그대로 사용</li>
+      <li><strong>즉시 결정적 최종성</strong>: 블록이 확정되면 절대 되돌릴 수 없음 (포크 없음)</li>
+      <li><strong>1/3 비잔틴 내성</strong>: 검증자 N명 중 (N-1)/3 까지 악의적이어도 안전</li>
+      <li><strong>1~2초 블록 시간</strong>: 결제·거래 시스템에 적합한 응답성</li>
+      <li><strong>동적 검증자 관리</strong>: 블록 보팅 또는 컨트랙트로 검증자 추가·제거</li>
+      <li><strong>가스비 0 설정 가능</strong>: 퍼미션드 환경에서 가스 메커니즘 비활성화 옵션</li>
+    </ul>
+
+    <h4>IBFT 2.0 vs QBFT 비교</h4>
+    <table>
+      <thead><tr><th>측면</th><th>IBFT 2.0</th><th>QBFT</th></tr></thead>
+      <tbody>
+        <tr><td>메시지 인증</td><td>제안자 서명만 검증</td><td>모든 단계 메시지 서명 검증</td></tr>
+        <tr><td>검증자 변경</td><td>블록 보팅만</td><td>블록 보팅 + 컨트랙트 기반 가능</td></tr>
+        <tr><td>round number</td><td>제한적 안전성 검증</td><td>엄격한 round/sequence 검증</td></tr>
+        <tr><td>구현체</td><td>Besu (이전 기본)</td><td>Besu, Quorum (현재 기본)</td></tr>
+        <tr><td>이더리움 표준화</td><td>EIP-650 (Draft)</td><td>EEA QBFT 1.0 사양</td></tr>
+      </tbody>
+    </table>
+
+    <h4>QBFT 합의 단계 (간략)</h4>
+<pre><code>Round R 시작
+   ↓
+[Proposer 선출]  validator[R mod N]이 블록 제안
+   ↓
+[Pre-Prepare]    제안자 → All: 블록 + 서명
+   ↓
+[Prepare]        All → All: "이 블록을 보았다"
+                  (2f+1 수집 시 Prepared 상태)
+   ↓
+[Commit]         All → All: "이 블록을 확정한다"
+                  (2f+1 수집 시 Committed = 최종)
+   ↓
+[Block Finalized] 다음 라운드(R+1)로 진행
+
+* f = (N-1)/3 (최대 비잔틴 검증자 수)
+* 타임아웃 시 Round Change → 새 Proposer</code></pre>
+
+    <h4>QBFT 동작 방식 시각화</h4>
+    <div class="diagram">
+      <svg viewBox="0 0 880 580" xmlns="http://www.w3.org/2000/svg">
+        <!-- Title -->
+        <text x="440" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="#79c0ff">QBFT 합의 흐름 — 4 검증자 (Round R)</text>
+        <text x="440" y="42" text-anchor="middle" font-size="11" fill="#8b949e">N = 4 · 최대 비잔틴 f = 1 · 정족수 2f+1 = 3</text>
+
+        <!-- ===== Phase 1: Pre-Prepare ===== -->
+        <rect x="20" y="65" width="270" height="270" rx="10" fill="#1a2332" stroke="#7ee787" stroke-width="2"/>
+        <text x="155" y="88" text-anchor="middle" font-size="13" font-weight="700" fill="#7ee787">Phase 1 · Pre-Prepare</text>
+        <text x="155" y="105" text-anchor="middle" font-size="10" fill="#8b949e">제안자가 블록 배포</text>
+
+        <!-- V1 Proposer at top -->
+        <rect x="110" y="120" width="90" height="46" rx="6" fill="#0a0e15" stroke="#ffa657" stroke-width="2"/>
+        <text x="155" y="138" text-anchor="middle" font-size="14">👑</text>
+        <text x="155" y="155" text-anchor="middle" font-size="10" font-weight="700" fill="#ffa657">V1 (Proposer)</text>
+
+        <!-- Block proposal icon -->
+        <rect x="125" y="178" width="60" height="22" rx="3" fill="#1a2332" stroke="#79c0ff"/>
+        <text x="155" y="194" text-anchor="middle" font-size="10" fill="#79c0ff">📦 Block B</text>
+
+        <!-- V2, V3, V4 at bottom -->
+        <circle cx="60" cy="250" r="22" fill="#0a0e15" stroke="#7ee787" stroke-width="2"/>
+        <text x="60" y="255" text-anchor="middle" font-size="11" fill="#e6edf3">V2</text>
+        <circle cx="155" cy="250" r="22" fill="#0a0e15" stroke="#7ee787" stroke-width="2"/>
+        <text x="155" y="255" text-anchor="middle" font-size="11" fill="#e6edf3">V3</text>
+        <circle cx="250" cy="250" r="22" fill="#0a0e15" stroke="#7ee787" stroke-width="2"/>
+        <text x="250" y="255" text-anchor="middle" font-size="11" fill="#e6edf3">V4</text>
+
+        <!-- Arrows from V1 to V2, V3, V4 -->
+        <line x1="130" y1="200" x2="75" y2="232" stroke="#ffa657" stroke-width="2" marker-end="url(#arrPP)"/>
+        <line x1="155" y1="202" x2="155" y2="226" stroke="#ffa657" stroke-width="2" marker-end="url(#arrPP)"/>
+        <line x1="180" y1="200" x2="235" y2="232" stroke="#ffa657" stroke-width="2" marker-end="url(#arrPP)"/>
+
+        <!-- Description -->
+        <rect x="35" y="290" width="240" height="36" rx="4" fill="#0a0e15" stroke="#ffa657"/>
+        <text x="155" y="307" text-anchor="middle" font-size="10" fill="#ffa657">📨 Pre-Prepare(Block B)</text>
+        <text x="155" y="320" text-anchor="middle" font-size="9" fill="#8b949e">"이 블록 어때?" — 1 → 3 (브로드캐스트)</text>
+
+        <!-- ===== Phase 2: Prepare ===== -->
+        <rect x="305" y="65" width="270" height="270" rx="10" fill="#1a2332" stroke="#79c0ff" stroke-width="2"/>
+        <text x="440" y="88" text-anchor="middle" font-size="13" font-weight="700" fill="#79c0ff">Phase 2 · Prepare</text>
+        <text x="440" y="105" text-anchor="middle" font-size="10" fill="#8b949e">모두 → 모두 (Prepare 메시지)</text>
+
+        <!-- 4 validators in 2x2 -->
+        <circle cx="375" cy="155" r="22" fill="#0a0e15" stroke="#79c0ff" stroke-width="2"/>
+        <text x="375" y="160" text-anchor="middle" font-size="11" fill="#e6edf3">V1</text>
+        <circle cx="505" cy="155" r="22" fill="#0a0e15" stroke="#79c0ff" stroke-width="2"/>
+        <text x="505" y="160" text-anchor="middle" font-size="11" fill="#e6edf3">V2</text>
+        <circle cx="375" cy="240" r="22" fill="#0a0e15" stroke="#79c0ff" stroke-width="2"/>
+        <text x="375" y="245" text-anchor="middle" font-size="11" fill="#e6edf3">V3</text>
+        <circle cx="505" cy="240" r="22" fill="#0a0e15" stroke="#79c0ff" stroke-width="2"/>
+        <text x="505" y="245" text-anchor="middle" font-size="11" fill="#e6edf3">V4</text>
+
+        <!-- All-to-all bidirectional lines (6 lines for 4 nodes) -->
+        <line x1="397" y1="155" x2="483" y2="155" stroke="#79c0ff" stroke-width="1.5" opacity="0.6"/>
+        <line x1="375" y1="177" x2="375" y2="218" stroke="#79c0ff" stroke-width="1.5" opacity="0.6"/>
+        <line x1="505" y1="177" x2="505" y2="218" stroke="#79c0ff" stroke-width="1.5" opacity="0.6"/>
+        <line x1="397" y1="240" x2="483" y2="240" stroke="#79c0ff" stroke-width="1.5" opacity="0.6"/>
+        <line x1="393" y1="172" x2="487" y2="223" stroke="#79c0ff" stroke-width="1.5" opacity="0.6"/>
+        <line x1="487" y1="172" x2="393" y2="223" stroke="#79c0ff" stroke-width="1.5" opacity="0.6"/>
+
+        <!-- Quorum indicator -->
+        <text x="440" y="194" text-anchor="middle" font-size="10" fill="#7ee787">⇄ 메시지 교환</text>
+
+        <!-- Status box -->
+        <rect x="320" y="280" width="240" height="46" rx="4" fill="#0a0e15" stroke="#7ee787" stroke-width="1.5"/>
+        <text x="440" y="298" text-anchor="middle" font-size="11" font-weight="700" fill="#7ee787">✓ 3개 이상 Prepare 수집</text>
+        <text x="440" y="314" text-anchor="middle" font-size="9" fill="#8b949e">→ "LOCKED" 상태 ("나는 블록 B를 본다")</text>
+
+        <!-- ===== Phase 3: Commit ===== -->
+        <rect x="590" y="65" width="270" height="270" rx="10" fill="#1a2332" stroke="#7ee787" stroke-width="2"/>
+        <text x="725" y="88" text-anchor="middle" font-size="13" font-weight="700" fill="#7ee787">Phase 3 · Commit</text>
+        <text x="725" y="105" text-anchor="middle" font-size="10" fill="#8b949e">모두 → 모두 (Commit 메시지)</text>
+
+        <circle cx="660" cy="155" r="22" fill="#0a0e15" stroke="#7ee787" stroke-width="2"/>
+        <text x="660" y="160" text-anchor="middle" font-size="11" fill="#e6edf3">V1</text>
+        <circle cx="790" cy="155" r="22" fill="#0a0e15" stroke="#7ee787" stroke-width="2"/>
+        <text x="790" y="160" text-anchor="middle" font-size="11" fill="#e6edf3">V2</text>
+        <circle cx="660" cy="240" r="22" fill="#0a0e15" stroke="#7ee787" stroke-width="2"/>
+        <text x="660" y="245" text-anchor="middle" font-size="11" fill="#e6edf3">V3</text>
+        <circle cx="790" cy="240" r="22" fill="#0a0e15" stroke="#7ee787" stroke-width="2"/>
+        <text x="790" y="245" text-anchor="middle" font-size="11" fill="#e6edf3">V4</text>
+
+        <line x1="682" y1="155" x2="768" y2="155" stroke="#7ee787" stroke-width="1.5" opacity="0.7"/>
+        <line x1="660" y1="177" x2="660" y2="218" stroke="#7ee787" stroke-width="1.5" opacity="0.7"/>
+        <line x1="790" y1="177" x2="790" y2="218" stroke="#7ee787" stroke-width="1.5" opacity="0.7"/>
+        <line x1="682" y1="240" x2="768" y2="240" stroke="#7ee787" stroke-width="1.5" opacity="0.7"/>
+        <line x1="678" y1="172" x2="772" y2="223" stroke="#7ee787" stroke-width="1.5" opacity="0.7"/>
+        <line x1="772" y1="172" x2="678" y2="223" stroke="#7ee787" stroke-width="1.5" opacity="0.7"/>
+
+        <text x="725" y="194" text-anchor="middle" font-size="10" fill="#ffa657">⇄ 메시지 교환</text>
+
+        <rect x="605" y="280" width="240" height="46" rx="4" fill="#0a0e15" stroke="#7ee787" stroke-width="1.5"/>
+        <text x="725" y="298" text-anchor="middle" font-size="11" font-weight="700" fill="#7ee787">✓ 3개 이상 Commit 수집</text>
+        <text x="725" y="314" text-anchor="middle" font-size="9" fill="#8b949e">→ "FINALIZED" ("나는 블록 B를 확정")</text>
+
+        <!-- Connecting arrows between phases -->
+        <path d="M 290 200 L 305 200" stroke="#e6edf3" stroke-width="3" marker-end="url(#arrBig)"/>
+        <path d="M 575 200 L 590 200" stroke="#e6edf3" stroke-width="3" marker-end="url(#arrBig)"/>
+
+        <!-- ===== Final Result ===== -->
+        <rect x="180" y="370" width="520" height="80" rx="12" fill="#0a0e15" stroke="#7ee787" stroke-width="3"/>
+        <text x="440" y="397" text-anchor="middle" font-size="15" font-weight="700" fill="#7ee787">✅ Block B 최종성 달성 (Immutable)</text>
+        <text x="440" y="418" text-anchor="middle" font-size="11" fill="#e6edf3">체인에 영구 추가 · 절대 되돌릴 수 없음 · 포크 발생 불가</text>
+        <text x="440" y="436" text-anchor="middle" font-size="10" fill="#8b949e">→ Round R+1로 진행 · 다음 Proposer = V2 (round-robin)</text>
+
+        <!-- Arrow to final box -->
+        <path d="M 725 335 Q 600 365 500 370" stroke="#7ee787" stroke-width="2" stroke-dasharray="4 3" fill="none" marker-end="url(#arrFinal)"/>
+
+        <!-- View Change note -->
+        <rect x="100" y="475" width="680" height="80" rx="8" fill="#1a2332" stroke="#ffa657" stroke-width="1.5"/>
+        <text x="440" y="497" text-anchor="middle" font-size="12" font-weight="700" fill="#ffa657">⚠️ 어느 단계든 타임아웃·악의적 Proposer 시 → View Change</text>
+        <text x="440" y="516" text-anchor="middle" font-size="10" fill="#e6edf3">Proposer 응답 없거나 잘못된 블록 제안 → 검증자들이 Round Change 메시지 교환</text>
+        <text x="440" y="532" text-anchor="middle" font-size="10" fill="#e6edf3">→ 새 Proposer (validator[(R+1) mod N])로 라운드 재시작</text>
+        <text x="440" y="548" text-anchor="middle" font-size="9" fill="#8b949e">덕분에 단일 검증자 장애·악의가 전체 합의를 막을 수 없음 (최대 f개 검증자까지 견딤)</text>
+
+        <!-- Markers -->
+        <defs>
+          <marker id="arrPP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffa657"/>
+          </marker>
+          <marker id="arrBig" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#e6edf3"/>
+          </marker>
+          <marker id="arrFinal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#7ee787"/>
+          </marker>
+        </defs>
+      </svg>
+      <div class="caption">QBFT 한 라운드 동작 흐름 — Pre-Prepare(1→3) · Prepare(All↔All) · Commit(All↔All) → Finalized</div>
+    </div>
+
+    <h4>합의에 필요한 메시지 수 (4 검증자 기준)</h4>
+    <table>
+      <thead><tr><th>단계</th><th>메시지 수</th><th>패턴</th><th>의미</th></tr></thead>
+      <tbody>
+        <tr><td>Pre-Prepare</td><td>3 (= N-1)</td><td>1 → All</td><td>제안자가 블록 배포</td></tr>
+        <tr><td>Prepare</td><td>12 (= N × (N-1))</td><td>All → All</td><td>각자 본 것을 공유</td></tr>
+        <tr><td>Commit</td><td>12 (= N × (N-1))</td><td>All → All</td><td>각자 확정 의사 공유</td></tr>
+        <tr><td><strong>합계</strong></td><td><strong>27 메시지</strong></td><td>—</td><td>1 블록 합의 비용</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:0.9rem; color:var(--fg-dim);">
+      ※ 100 검증자라면 단계당 약 10,000 메시지 → O(N²) 복잡도가 BFT의 본질적 확장성 한계.
+      그래서 QBFT 등 BFT 변종은 보통 <strong>4~30명 수준의 컨소시엄</strong>에 적합하다.
+    </p>
+
+    <h4>금융권에서의 채택 이유</h4>
+    <ul>
+      <li><strong>법적 효력 확실</strong>: 결정적 최종성 → "결제 완료" 시점이 명확</li>
+      <li><strong>규제 친화</strong>: 검증자 = 알려진 기관 → KYC·감사 가능</li>
+      <li><strong>이더리움 생태계 활용</strong>: 개발자·도구·표준(<a href="contracts.html#erc">ERC-20/3525</a>) 그대로</li>
+      <li><strong>성능</strong>: 수십~수백 TPS, 결제 시스템 요구 충족</li>
+    </ul>
+
+    <p>
+      <strong>한국은행·금융권 시사점:</strong>
+      한강 같은 컨소시엄 CBDC 인프라에서 QBFT는 유력한 합의 후보다.
+      검증자가 7개 시중은행 + 한국은행이라면 비잔틴 내성 모델상 최대 2개 기관까지 악의·장애 발생해도 안전하다.
+      EVM 호환성으로 <a href="contracts.html#erc-3525">ERC-3525(SFT)</a>를 그대로 채택해 예금토큰·증권 토큰을 표현할 수 있다.
+    </p>
+  </div>
+
+  <h4>BFT 패밀리의 한계 — 균형 잡힌 시각</h4>
+  <div class="note warn">
+    BFT가 만능은 아니다. 다음 한계를 이해해야 한다:
+    <ul style="margin-top:8px;">
+      <li><strong>검증자 수 제약</strong>: O(N²) 메시지 복잡도로 100명을 넘으면 성능 급락 → 진정한 "글로벌 탈중앙화" 어려움</li>
+      <li><strong>리더 의존</strong>: 리더가 악의적이거나 느리면 View Change 필요 → 일시적 정지</li>
+      <li><strong>알려진 검증자 가정</strong>: Sybil 공격 방어를 위해 검증자 신원·자격 사전 검증 필요 (퍼미션드)</li>
+      <li><strong>네트워크 분할 시</strong>: 안전성 우선 → 가용성 희생 (FLP 임포시블리티)</li>
+      <li><strong>1/3 임계 이상 비잔틴 시</strong>: 안전성·생존성 모두 깨질 수 있음 (단순 51% 시 다수결로 회복하는 PoW와 다름)</li>
+    </ul>
+  </div>
 </section>
 
 <section id="types">

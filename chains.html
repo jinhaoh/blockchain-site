@@ -280,15 +280,20 @@
 
     <div class="chain-card">
       <h4>Quorum / Besu</h4>
-      <div class="tagline">기관용 Ethereum 포크</div>
+      <div class="tagline">기관용 Ethereum 포크 · <a href="basics.html#types">QBFT</a> 표준</div>
       <dl>
-        <dt>합의</dt><dd>IBFT, QBFT, Raft</dd>
-        <dt>특징</dt><dd>EVM 호환, 프라이빗 트랜잭션</dd>
-        <dt>운영</dt><dd>Besu: Hyperledger 산하</dd>
+        <dt>합의</dt><dd><strong>QBFT</strong> (기본) · IBFT 2.0 · Clique (PoA) · Raft</dd>
+        <dt>최종성</dt><dd>즉시 결정적 (1~2초)</dd>
+        <dt>특징</dt><dd>EVM 호환 (Solidity 그대로), 프라이빗 트랜잭션 (Tessera)</dd>
+        <dt>가스</dt><dd>0으로 설정 가능 (퍼미션드 환경)</dd>
+        <dt>비잔틴 내성</dt><dd>(N-1)/3 검증자까지</dd>
+        <dt>운영</dt><dd>Besu: Hyperledger 산하 / Quorum: ConsenSys → 현재 OSS</dd>
+        <dt>금융 적용</dt><dd>JP Morgan Onyx, 다수 은행 컨소시엄·CBDC 시범</dd>
       </dl>
       <div class="links">
         <a href="https://www.hyperledger.org/projects/besu">Besu</a>
         <a href="https://docs.goquorum.consensys.io/">Quorum</a>
+        <a href="https://besu.hyperledger.org/private-networks/how-to/configure/consensus/qbft">QBFT 문서</a>
       </div>
     </div>
   </div>
