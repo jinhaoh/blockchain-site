@@ -568,7 +568,26 @@
     </dd>
 
     <dt>x402</dt>
-    <dd>2025년 Coinbase 공개. HTTP 402 + EIP-3009 기반 결제 프로토콜. AI 에이전트·API 종량 과금.</dd>
+    <dd>2025.05 Coinbase 공개. HTTP 402 + EIP-3009 기반 결제 실행 프로토콜. AI 에이전트·API 종량 과금. 주로 USDC.</dd>
+
+    <dt>AP2 <span class="en">(Agent Payments Protocol)</span></dt>
+    <dd>2025.09 Google 공개. AI 에이전트 commerce의 권한·위임·라우팅 표준. 3종 Mandate(Intent·Cart·Payment) 체계.
+      카드·은행·크립토(x402 포함)·CBDC 등 다양한 결제 수단 통합. 60+ 파트너(Mastercard·Visa·PayPal·Coinbase 등).
+      <span class="related">관련: <a href="x402.html#ap2">AP2 상세</a></span>
+    </dd>
+
+    <dt>Mandate (AP2)</dt>
+    <dd>AP2의 핵심 — 암호학적으로 서명된 위임장. <strong>Intent Mandate</strong>(사용자→에이전트, 의도 위임),
+      <strong>Cart Mandate</strong>(에이전트↔판매자, 거래 합의), <strong>Payment Mandate</strong>(에이전트→결제 인프라, 실행 권한).</dd>
+
+    <dt>A2A <span class="en">(Agent-to-Agent Protocol)</span></dt>
+    <dd>2025년 Google 공개. AI 에이전트 간 상호운용·통신 표준. AP2가 이 위에서 결제 기능을 담당.</dd>
+
+    <dt>DID <span class="en">(Decentralized Identifier)</span></dt>
+    <dd>W3C 표준 분산 신원확인자. 중앙기관 없이 발급·검증 가능. AP2에서 사용자·에이전트·판매자 식별에 활용.</dd>
+
+    <dt>Verifiable Credentials (VC)</dt>
+    <dd>W3C 표준 검증 가능 신원·자격 증명. 발급자 서명으로 진위 검증. AP2 Mandate의 기반 기술.</dd>
 
     <dt>Lightning Network</dt>
     <dd>Bitcoin L2. State Channel 기반 마이크로페이먼트. 초당 정산, sat 단위 거래.</dd>

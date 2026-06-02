@@ -9,8 +9,8 @@
 <body>
 
 <header class="site">
-  <h1>PART 6 · x402: HTTP 기반 결제 프로토콜</h1>
-  <p>AI 에이전트 경제를 위한 머신 간 결제 표준 · EIP-3009 가스리스 결제</p>
+  <h1>PART 6 · x402 & AP2: 에이전트 결제 표준</h1>
+  <p>AI 에이전트 경제를 위한 머신 간 결제 표준 · EIP-3009 가스리스 · AP2 Mandate 기반 위임</p>
   <div class="breadcrumb"><a href="index.html">홈</a> › x402</div>
 </header>
 
@@ -372,6 +372,258 @@ async function callPaidAPI(url, agentWallet) {
     한강 프로젝트의 <em>예금토큰</em>을 x402 결제 자산으로 사용하는 시나리오는,
     M2M·에이전트 경제에서 <strong>은행화폐(commercial bank money)의 단위성 유지</strong>를
     실험할 수 있는 흥미로운 정책 실험이 될 수 있다.
+  </div>
+</section>
+
+<section id="ap2">
+  <h2>8. AP2 (Agent Payments Protocol) — 에이전트 commerce의 상위 표준</h2>
+  <p>
+    x402가 <em>"결제 실행 계층"</em>이라면, <strong>AP2</strong>는 그 위의 <em>"권한·위임·라우팅 계층"</em>이다.
+    Google이 2025년 9월 공개한 오픈 프로토콜로, AI 에이전트가 사용자를 대신해 안전하게 상거래를 수행할 수 있도록
+    표준화된 <strong>Mandate(위임) 체계</strong>를 정의한다.
+  </p>
+  <p style="font-size:0.9rem; color:var(--fg-dim);">
+    📚 참고:
+    <a href="https://github.com/google-agentic-commerce/AP2">google-agentic-commerce/AP2 GitHub</a> ·
+    <a href="https://cloud.google.com/blog/products/ai-machine-learning/announcing-agents-payments-protocol-ap2">Google 발표</a> ·
+    <a href="https://github.com/google-agentic-commerce/AP2/tree/main/specifications/v0.1/specs">AP2 v0.1 명세</a>
+  </p>
+
+  <h3>8.1 왜 AP2인가? — x402만으로는 부족한 부분</h3>
+  <p>x402는 강력한 마이크로결제 인프라이지만, 다음과 같은 질문에 답하지 않는다:</p>
+  <ul>
+    <li>사용자가 에이전트에게 <strong>어디까지 권한을 위임</strong>했는가?</li>
+    <li>에이전트가 구매하려는 상품이 사용자 의도와 <strong>일치하는가</strong>?</li>
+    <li>여러 결제수단(카드·은행·크립토) 중 <strong>어떤 것을 쓸지</strong> 누가 결정하는가?</li>
+    <li>분쟁 발생 시 <strong>책임 추적</strong>이 가능한가?</li>
+  </ul>
+  <p>AP2는 이 질문들에 답하는 <strong>"에이전트 commerce 거버넌스 표준"</strong>이다.</p>
+
+  <h3>8.2 핵심 개념 — 3종 Mandate</h3>
+  <p>AP2의 핵심은 <strong>암호학적으로 서명된 위임장(Mandate)</strong> 체계다. 사용자 → 에이전트 → 판매자 → 결제 인프라로 전달되며, 각 단계의 권한과 책임을 명확히 분리한다.</p>
+
+  <div class="chain-grid">
+    <div class="chain-card">
+      <h4>📝 Intent Mandate (의도 위임장)</h4>
+      <div class="tagline">사용자 → 에이전트</div>
+      <dl>
+        <dt>의미</dt><dd>"나를 대신해 X를 해줘"라는 사용자 권한 위임</dd>
+        <dt>예시</dt><dd>"50만원 이하 항공권 검색·예약" / "월 10만원까지 API 호출 가능"</dd>
+        <dt>서명</dt><dd>사용자의 디지털 서명</dd>
+        <dt>제약</dt><dd>예산·기간·카테고리·블랙리스트 등</dd>
+      </dl>
+    </div>
+
+    <div class="chain-card">
+      <h4>🛒 Cart Mandate (장바구니 위임장)</h4>
+      <div class="tagline">에이전트 → 판매자</div>
+      <dl>
+        <dt>의미</dt><dd>"이 상품을 이 가격에 사겠다" 구체적 거래 의향 확정</dd>
+        <dt>예시</dt><dd>"OpenAI API 1000회 호출 = $10 결제"</dd>
+        <dt>서명</dt><dd>에이전트 + 판매자 양측 서명</dd>
+        <dt>역할</dt><dd>가격·수량·조건 합의의 증거</dd>
+      </dl>
+    </div>
+
+    <div class="chain-card">
+      <h4>💳 Payment Mandate (결제 위임장)</h4>
+      <div class="tagline">에이전트 → 결제 인프라</div>
+      <dl>
+        <dt>의미</dt><dd>"이 결제수단으로 지불하라" 결제 권한 위임</dd>
+        <dt>예시</dt><dd>USDC 10$ / 신한카드 ××××-1234</dd>
+        <dt>라우팅</dt><dd>x402(크립토), Visa, PayPal, 은행 등</dd>
+        <dt>검증</dt><dd>각 결제 인프라가 Mandate 서명 검증 후 실행</dd>
+      </dl>
+    </div>
+  </div>
+
+  <h3>8.3 AP2 + x402 + CBDC 스택 구조</h3>
+  <div class="diagram">
+    <svg viewBox="0 0 880 540" xmlns="http://www.w3.org/2000/svg">
+      <!-- Title -->
+      <text x="440" y="25" text-anchor="middle" font-size="14" font-weight="700" fill="#79c0ff">AP2 + x402 + CBDC: 에이전트 결제 스택</text>
+      <text x="440" y="44" text-anchor="middle" font-size="11" fill="#8b949e">상위 계층은 권한·의도, 하위 계층은 실제 자산 이전</text>
+
+      <!-- User -->
+      <rect x="340" y="65" width="200" height="55" rx="8" fill="#0a0e15" stroke="#7ee787" stroke-width="2"/>
+      <text x="440" y="89" text-anchor="middle" font-size="13" font-weight="700" fill="#7ee787">👤 사용자 (User)</text>
+      <text x="440" y="109" text-anchor="middle" font-size="10" fill="#8b949e">의도 표현: "이거 사줘" · 예산·범위 설정</text>
+
+      <!-- Arrow with mandate -->
+      <path d="M 440 122 L 440 160" stroke="#7ee787" stroke-width="2" marker-end="url(#ap2arr)"/>
+      <text x="455" y="146" font-size="10" fill="#7ee787">① Intent Mandate (의도 위임)</text>
+
+      <!-- AI Agent -->
+      <rect x="310" y="165" width="260" height="55" rx="8" fill="#0a0e15" stroke="#ffa657" stroke-width="2"/>
+      <text x="440" y="189" text-anchor="middle" font-size="13" font-weight="700" fill="#ffa657">🤖 AI 에이전트 (LLM Agent)</text>
+      <text x="440" y="209" text-anchor="middle" font-size="10" fill="#8b949e">의사결정 → 판매자 탐색 → 거래 협상</text>
+
+      <!-- Arrow -->
+      <path d="M 440 222 L 440 260" stroke="#ffa657" stroke-width="2" marker-end="url(#ap2arr2)"/>
+      <text x="455" y="246" font-size="10" fill="#ffa657">② Cart Mandate + ③ Payment Mandate</text>
+
+      <!-- AP2 Layer -->
+      <rect x="80" y="265" width="720" height="80" rx="10" fill="#1a2332" stroke="#79c0ff" stroke-width="2.5"/>
+      <text x="440" y="290" text-anchor="middle" font-size="14" font-weight="700" fill="#79c0ff">📜 AP2 Protocol (Google, 2025.09) — 권한·검증·라우팅 계층</text>
+      <text x="440" y="312" text-anchor="middle" font-size="11" fill="#e6edf3">W3C Verifiable Credentials · Mandate 서명 검증 · 분쟁 추적 · 결제수단 선택</text>
+      <text x="440" y="330" text-anchor="middle" font-size="10" fill="#8b949e">60+ 파트너: Mastercard · Visa · American Express · PayPal · JPMorgan · Coinbase 등</text>
+
+      <!-- Routing arrows -->
+      <path d="M 200 345 L 160 380" stroke="#8b949e" stroke-width="1.5" marker-end="url(#ap2arr3)"/>
+      <path d="M 360 345 L 360 380" stroke="#8b949e" stroke-width="1.5" marker-end="url(#ap2arr3)"/>
+      <path d="M 520 345 L 520 380" stroke="#8b949e" stroke-width="1.5" marker-end="url(#ap2arr3)"/>
+      <path d="M 680 345 L 720 380" stroke="#8b949e" stroke-width="1.5" marker-end="url(#ap2arr3)"/>
+
+      <text x="440" y="370" text-anchor="middle" font-size="10" fill="#8b949e">↓ 결제 수단별 라우팅 ↓</text>
+
+      <!-- Payment Rails -->
+      <rect x="40" y="385" width="170" height="80" rx="8" fill="#1a2332" stroke="#f85149" stroke-width="2"/>
+      <text x="125" y="405" text-anchor="middle" font-size="12" font-weight="700" fill="#f85149">💳 카드</text>
+      <text x="125" y="423" text-anchor="middle" font-size="10" fill="#e6edf3">Visa, Mastercard, AmEx</text>
+      <text x="125" y="440" text-anchor="middle" font-size="9" fill="#8b949e">전통 결제망</text>
+      <text x="125" y="456" text-anchor="middle" font-size="9" fill="#8b949e">최소 $0.30 + 2~3%</text>
+
+      <rect x="225" y="385" width="170" height="80" rx="8" fill="#1a2332" stroke="#f85149" stroke-width="2"/>
+      <text x="310" y="405" text-anchor="middle" font-size="12" font-weight="700" fill="#f85149">🏦 은행 송금</text>
+      <text x="310" y="423" text-anchor="middle" font-size="10" fill="#e6edf3">SWIFT, 계좌이체</text>
+      <text x="310" y="440" text-anchor="middle" font-size="9" fill="#8b949e">PayPal 등 PSP</text>
+      <text x="310" y="456" text-anchor="middle" font-size="9" fill="#8b949e">1~5 영업일</text>
+
+      <rect x="410" y="385" width="170" height="80" rx="8" fill="#1a2332" stroke="#7ee787" stroke-width="2.5"/>
+      <text x="495" y="405" text-anchor="middle" font-size="12" font-weight="700" fill="#7ee787">⚡ x402 (블록체인)</text>
+      <text x="495" y="423" text-anchor="middle" font-size="10" fill="#e6edf3">USDC, 스테이블코인</text>
+      <text x="495" y="440" text-anchor="middle" font-size="9" fill="#8b949e">HTTP 402 + EIP-3009</text>
+      <text x="495" y="456" text-anchor="middle" font-size="9" fill="#8b949e">수초, $0.001 가능</text>
+
+      <rect x="595" y="385" width="170" height="80" rx="8" fill="#1a2332" stroke="#79c0ff" stroke-width="2.5" stroke-dasharray="4 3"/>
+      <text x="680" y="405" text-anchor="middle" font-size="12" font-weight="700" fill="#79c0ff">🏛️ CBDC (한강)</text>
+      <text x="680" y="423" text-anchor="middle" font-size="10" fill="#e6edf3">예금토큰 (KRW)</text>
+      <text x="680" y="440" text-anchor="middle" font-size="9" fill="#8b949e">중앙은행 화폐</text>
+      <text x="680" y="456" text-anchor="middle" font-size="9" fill="#8b949e">미래 옵션</text>
+
+      <!-- Bottom -->
+      <rect x="180" y="490" width="520" height="40" rx="8" fill="#0a0e15" stroke="#7ee787" stroke-width="2"/>
+      <text x="440" y="514" text-anchor="middle" font-size="11" font-weight="700" fill="#7ee787">✅ 각 결제 인프라가 Mandate 서명 검증 후 자산 이전 실행</text>
+
+      <defs>
+        <marker id="ap2arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#7ee787"/>
+        </marker>
+        <marker id="ap2arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffa657"/>
+        </marker>
+        <marker id="ap2arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#8b949e"/>
+        </marker>
+      </defs>
+    </svg>
+    <div class="caption">AP2 = 상위 권한·라우팅 계층, x402·카드·은행·CBDC = 하위 결제 실행 계층</div>
+  </div>
+
+  <h3>8.4 AP2 vs x402 — 정확한 관계</h3>
+  <p>두 프로토콜은 <strong>경쟁이 아니라 보완 관계</strong>다. 계층이 다르다.</p>
+
+  <table>
+    <thead>
+      <tr><th>측면</th><th>x402</th><th>AP2</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>계층</strong></td><td>HTTP 결제 실행</td><td>에이전트 의도·위임·라우팅</td></tr>
+      <tr><td><strong>발표</strong></td><td>2025.05 Coinbase</td><td>2025.09 Google</td></tr>
+      <tr><td><strong>핵심 메커니즘</strong></td><td>EIP-3009 가스리스 결제</td><td>3종 Mandate 서명 체계</td></tr>
+      <tr><td><strong>결제 자산</strong></td><td>주로 USDC (스테이블코인)</td><td>자산 중립 (카드·은행·크립토·CBDC 가능)</td></tr>
+      <tr><td><strong>네트워크</strong></td><td>Base·Ethereum L2 중심</td><td>HTTP 기반 + 다양한 결제 인프라</td></tr>
+      <tr><td><strong>주요 파트너</strong></td><td>Coinbase, Anthropic, AI 스타트업</td><td>Mastercard, Visa, PayPal, 60+ 금융기관</td></tr>
+      <tr><td><strong>주 활용</strong></td><td>API 호출당 마이크로결제</td><td>일반 commerce (쇼핑·예약·구독)</td></tr>
+      <tr><td><strong>표준화 단계</strong></td><td>오픈소스 명세 (Coinbase 주도)</td><td>오픈 거버넌스 진행 중 (60+ 파트너)</td></tr>
+      <tr><td><strong>관계</strong></td><td colspan="2" style="text-align:center;"><strong>AP2의 결제 수단 중 하나로 x402 통합 (AP2-x402 사양)</strong></td></tr>
+    </tbody>
+  </table>
+
+  <h3>8.5 Mandate 흐름 예시 — "에이전트가 항공권 예약"</h3>
+<pre><code>시나리오: 사용자가 LLM 에이전트에게 "다음달 출장 항공권 50만원 이하로 예약해줘"
+
+① Intent Mandate (사용자 → 에이전트)
+   {
+     "agent": "did:web:travel-agent.example",
+     "scope": "airline_booking",
+     "constraints": {
+       "max_amount": "500000 KRW",
+       "date_range": "2026-07-01 to 2026-07-15",
+       "category": "domestic_flight"
+     },
+     "expires_at": "2026-07-30T00:00:00Z",
+     "signature": "0xabc...(user signature)"
+   }
+
+② Agent가 항공권 검색·선택 후 → Cart Mandate (에이전트 ↔ 판매자)
+   {
+     "merchant": "did:web:korean-air.example",
+     "items": [{
+       "flight": "KE1234 ICN→PUS 2026-07-05",
+       "price": "85000 KRW"
+     }],
+     "agent_signature": "0xdef...",
+     "merchant_signature": "0x123..."
+   }
+
+③ Payment Mandate (에이전트 → 결제 인프라)
+   {
+     "payment_method": "x402",        // 또는 "card", "bank", "cbdc"
+     "asset": "USDC",
+     "amount": "65 USDC",             // 85,000 KRW 환산
+     "recipient": "0xairline...",
+     "user_authorization": "ref to Intent Mandate",
+     "signature": "0x789..."
+   }
+
+④ x402가 실제 결제 실행 → 항공권 발행 → 사용자에게 알림</code></pre>
+
+  <h3>8.6 AP2의 핵심 기술 요소</h3>
+  <ul>
+    <li><strong>W3C Verifiable Credentials</strong>: 디지털 신원·자격증 검증 표준 활용</li>
+    <li><strong>DIDs (Decentralized Identifiers)</strong>: 사용자·에이전트·판매자 식별</li>
+    <li><strong>JSON-LD</strong>: Mandate 데이터 표현 형식</li>
+    <li><strong>Cryptographic Signatures</strong>: ECDSA·EdDSA 등으로 각 Mandate 서명</li>
+    <li><strong>Audit Trail</strong>: Mandate 체인이 분쟁 시 책임 추적 증거</li>
+  </ul>
+
+  <h3>8.7 한국은행·금융권 시사점</h3>
+  <div class="card">
+    <p><strong>AP2 + x402 + 한강 예금토큰의 결합 시나리오:</strong></p>
+    <ol>
+      <li><strong>AI 에이전트의 자율 결제</strong>가 표준화된 권한 위임(AP2)으로 안전하게 가능해지면,
+          한국 일반 사용자가 한강 예금토큰을 결제 수단으로 채택하는 자연스러운 경로 형성</li>
+      <li><strong>중앙은행 화폐(예금토큰) → AP2 결제 수단으로 등록</strong> →
+          AI 에이전트 경제에서 <em>"은행화폐 단위성"</em> 유지 가능</li>
+      <li><strong>규제 친화적</strong>: AP2의 Mandate 체계는 KYC·AML·소비자 보호 요건과 자연스럽게 결합</li>
+      <li><strong>BIS Agora와의 연계</strong>: AP2를 통한 국경간 에이전트 결제에서 Agora 통합원장이 정산 백엔드로 활용 가능</li>
+    </ol>
+
+    <p style="margin-top:12px;">
+      <strong>정책 함의:</strong> 한국은행이 한강 예금토큰을 AP2 결제 수단으로 등록·표준화하는 작업은,
+      향후 AI 에이전트 commerce 시대에서 <em>스테이블코인이 결제 인프라를 독점하는 것을 방지</em>하는
+      예방적 정책 옵션이 될 수 있다.
+    </p>
+  </div>
+
+  <h3>8.8 한계와 열린 과제 (AP2 자체)</h3>
+  <div class="note warn">
+    <ul style="margin:8px 0;">
+      <li><strong>표준화 초기</strong>: 2025.09 공개 후 진화 중, 사양 변경 가능성</li>
+      <li><strong>Google 주도 거버넌스</strong>: 진정한 다자 표준이 될지 시간 필요</li>
+      <li><strong>경쟁 표준 가능성</strong>: Apple·Amazon·Microsoft 등의 별도 표준 등장 가능</li>
+      <li><strong>법적 책임 미정비</strong>: 에이전트의 잘못된 거래에 대한 책임 분담 (사용자·에이전트·플랫폼) 법적 정리 필요</li>
+      <li><strong>프라이버시</strong>: Mandate 체인이 거래 이력을 노출 → 선택적 공개 메커니즘 필요</li>
+      <li><strong>실제 채택률</strong>: 명세 발표와 실제 보급 사이의 격차 (어떤 기업이 먼저 채택할 것인가)</li>
+    </ul>
+  </div>
+
+  <div class="note">
+    <strong>요약:</strong>
+    AP2는 "에이전트 commerce의 거버넌스 표준", x402는 "블록체인 결제 실행 인프라"로 역할 분리.
+    두 표준이 결합되면 AI 에이전트가 <em>안전하고 규제 친화적인</em> 자율 commerce를 수행할 수 있게 된다.
+    한국은행은 한강 예금토큰을 이 스택의 결제 수단으로 자리매김하는 옵션을 검토할 만한 시기.
   </div>
 </section>
 
