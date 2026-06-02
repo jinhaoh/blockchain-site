@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>블록체인 용어집 — 블록체인 가이드</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site">
+  <h1>블록체인 용어집 (Glossary)</h1>
+  <p>블록체인 업계에서 자주 쓰이는 100+ 용어를 15개 카테고리로 정리</p>
+  <div class="breadcrumb"><a href="index.html">홈</a> › 용어집</div>
+</header>
+
+<nav class="top">
+  <ul>
+    <li><a href="index.html">홈</a></li>
+    <li><a href="basics.html">기초</a></li>
+    <li><a href="chains.html">체인별 특징</a></li>
+    <li><a href="contracts.html">스마트 컨트랙트</a></li>
+    <li><a href="bridges.html">브릿지</a></li>
+    <li><a href="cbdc.html">CBDC</a></li>
+    <li><a href="x402.html">x402</a></li>
+    <li><a href="limits.html">한계와 비교</a></li>
+    <li><a href="glossary.html" class="active">용어집</a></li>
+    <li><a href="references.html">참고자료</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<div class="glossary-toc">
+  <h3>📑 카테고리</h3>
+  <ul>
+    <li><a href="#basic">A. 기초 개념</a></li>
+    <li><a href="#crypto">B. 암호학</a></li>
+    <li><a href="#consensus">C. 합의 알고리즘</a></li>
+    <li><a href="#chain-types">D. 체인 분류</a></li>
+    <li><a href="#smartcontract">E. 스마트 컨트랙트 & EVM</a></li>
+    <li><a href="#token">F. 토큰 표준</a></li>
+    <li><a href="#defi">G. DeFi</a></li>
+    <li><a href="#governance">H. 거버넌스</a></li>
+    <li><a href="#scaling">I. 확장성</a></li>
+    <li><a href="#interop">J. 상호운용</a></li>
+    <li><a href="#cbdc">K. CBDC & 금융 인프라</a></li>
+    <li><a href="#payment">L. 결제 & 마이크로페이먼트</a></li>
+    <li><a href="#security">M. 보안 & 공격</a></li>
+    <li><a href="#wallet">N. 지갑 & 인프라</a></li>
+    <li><a href="#culture">O. 생태계 & 문화 용어</a></li>
+  </ul>
+</div>
+
+<!-- ============= A. 기초 개념 ============= -->
+<section class="glossary-section" id="basic">
+  <h2>A. 기초 개념</h2>
+  <dl>
+    <dt>블록체인 <span class="en">(Blockchain)</span></dt>
+    <dd>거래(트랜잭션) 묶음을 블록 단위로 만들고, 이전 블록의 해시를 다음 블록에 포함시켜 사슬처럼 연결한 분산 자료구조. 모든 노드가 동일한 사본을 보유한다.
+      <span class="related">관련: <a href="basics.html">기초 페이지</a></span>
+    </dd>
+
+    <dt>분산원장 <span class="en">(DLT, Distributed Ledger Technology)</span></dt>
+    <dd>중앙 관리자 없이 다수의 노드가 동일한 거래 장부를 공유·동기화하는 기술. 블록체인은 DLT의 한 형태.</dd>
+
+    <dt>노드 <span class="en">(Node)</span></dt>
+    <dd>블록체인 네트워크 참여자 컴퓨터. 풀노드(전체 데이터 보유)·라이트노드(헤더만)·아카이브노드(과거 상태 포함)로 구분.</dd>
+
+    <dt>검증자 <span class="en">(Validator)</span></dt>
+    <dd>PoS·BFT 체인에서 트랜잭션·블록을 검증하고 합의에 참여하는 노드. PoS는 토큰 스테이킹, 퍼미션드는 사전 승인 필요.</dd>
+
+    <dt>채굴자 <span class="en">(Miner)</span></dt>
+    <dd>PoW 체인에서 해시 퍼즐을 풀어 새 블록을 생성하는 노드 운영자. 보상으로 코인 + 수수료 획득.</dd>
+
+    <dt>트랜잭션 <span class="en">(Transaction, Tx)</span></dt>
+    <dd>블록체인 상태를 변경하는 단위. 송신자 서명을 포함하며 mempool을 거쳐 블록에 포함된다.</dd>
+
+    <dt>블록 <span class="en">(Block)</span></dt>
+    <dd>다수의 트랜잭션을 묶은 단위. 헤더(메타데이터) + 바디(트랜잭션 목록)로 구성.</dd>
+
+    <dt>블록 헤더 <span class="en">(Block Header)</span></dt>
+    <dd>블록 메타데이터: 이전 블록 해시, 머클 루트, 타임스탬프, 논스 등. 비트코인 80바이트.</dd>
+
+    <dt>머클 트리 <span class="en">(Merkle Tree)</span></dt>
+    <dd>다수의 데이터를 이진 해시 트리로 구성. 루트 하나로 전체 무결성 검증 가능.
+      <span class="related">관련: <a href="basics.html#merkle">머클 트리</a></span>
+    </dd>
+
+    <dt>머클 루트 <span class="en">(Merkle Root)</span></dt>
+    <dd>머클 트리의 최상위 해시. 블록 헤더에 포함되어 트랜잭션 변조를 막는다.</dd>
+
+    <dt>머클 증명 <span class="en">(Merkle Proof)</span></dt>
+    <dd>특정 트랜잭션이 블록에 포함되었음을 O(log n) 크기로 증명하는 해시 묶음. SPV의 기반.</dd>
+
+    <dt>해시 <span class="en">(Hash)</span></dt>
+    <dd>임의 길이 입력을 고정 길이 출력으로 변환하는 단방향 함수의 결과값. 블록체인에서는 SHA-256·Keccak-256 등 사용.</dd>
+
+    <dt>논스 <span class="en">(Nonce)</span></dt>
+    <dd>PoW에서 채굴자가 변경하며 해시 퍼즐을 푸는 값. 트랜잭션 컨텍스트에서는 계정 트랜잭션 순서를 의미 (replay 방지).</dd>
+
+    <dt>난이도 <span class="en">(Difficulty)</span></dt>
+    <dd>PoW에서 채굴 난이도 — 해시 결과가 만족해야 할 임계값. 평균 블록 시간 유지를 위해 자동 조정.</dd>
+
+    <dt>포크 <span class="en">(Fork)</span></dt>
+    <dd>체인이 둘 이상으로 분기되는 현상. 하드포크(호환 불가능 업그레이드)와 소프트포크(하위 호환)로 구분.</dd>
+
+    <dt>최종성 <span class="en">(Finality)</span></dt>
+    <dd>블록이 영구히 확정되어 더 이상 되돌릴 수 없는 상태. PoW는 확률적(probabilistic), BFT는 결정적(deterministic).</dd>
+
+    <dt>제네시스 블록 <span class="en">(Genesis Block)</span></dt>
+    <dd>블록체인의 첫 번째 블록 (블록 #0). 이전 해시가 모두 0.</dd>
+
+    <dt>이중지불 <span class="en">(Double Spend)</span></dt>
+    <dd>같은 코인을 두 번 지불하려는 공격. 블록체인 합의가 방지하는 핵심 문제.</dd>
+
+    <dt>비잔틴 장군 문제 <span class="en">(Byzantine Generals Problem)</span></dt>
+    <dd>일부 참여자가 악의적인 분산 환경에서 합의에 도달하는 문제. Lamport 등(1982)이 정의.</dd>
+  </dl>
+</section>
+
+<!-- ============= B. 암호학 ============= -->
+<section class="glossary-section" id="crypto">
+  <h2>B. 암호학</h2>
+  <dl>
+    <dt>개인키 <span class="en">(Private Key)</span></dt>
+    <dd>비밀로 보관해야 하는 키. 블록체인에서는 자산 소유권을 증명하는 유일한 수단. 분실 = 자산 영구 손실.</dd>
+
+    <dt>공개키 <span class="en">(Public Key)</span></dt>
+    <dd>개인키로부터 파생되며 공개해도 안전한 키. 주소 생성·서명 검증에 사용.</dd>
+
+    <dt>디지털 서명 <span class="en">(Digital Signature)</span></dt>
+    <dd>메시지를 개인키로 서명해 인증·부인방지·무결성을 보장. 블록체인 트랜잭션 인증의 기본.</dd>
+
+    <dt>ECDSA</dt>
+    <dd>Elliptic Curve Digital Signature Algorithm. 타원곡선 기반 디지털 서명. Bitcoin·Ethereum이 secp256k1 곡선 사용.</dd>
+
+    <dt>EdDSA</dt>
+    <dd>Edwards-curve DSA. ECDSA보다 빠르고 안전한 변종. Solana·Cardano 등이 Ed25519 채택.</dd>
+
+    <dt>SHA-256</dt>
+    <dd>NIST 표준 해시 함수. 256-bit 출력. 비트코인의 PoW·블록 해시에 사용 (이중 적용 = SHA256d).</dd>
+
+    <dt>Keccak-256</dt>
+    <dd>SHA-3 계열 해시 함수. Ethereum이 채택 (NIST SHA-3 표준화 전 버전).</dd>
+
+    <dt>ZK-SNARK</dt>
+    <dd>Zero-Knowledge Succinct Non-interactive Argument of Knowledge. 짧고 빠른 영지식 증명. 신뢰셋업 필요. Zcash, zkSync 등.</dd>
+
+    <dt>ZK-STARK</dt>
+    <dd>Scalable Transparent Argument of Knowledge. 신뢰셋업 불필요, 양자내성, 증명 크기는 더 큼. Starknet 등.</dd>
+
+    <dt>MPC <span class="en">(Multi-Party Computation)</span></dt>
+    <dd>여러 당사자가 자기 비밀을 노출하지 않고 공동 계산. 분산 키 관리·임계 서명 등에 활용.</dd>
+
+    <dt>임계 서명 <span class="en">(Threshold Signature)</span></dt>
+    <dd>N명 중 t명 이상이 서명에 참여해야 유효. 멀티시그보다 효율적·프라이버시 우수.</dd>
+
+    <dt>니모닉 <span class="en">(Mnemonic, Seed Phrase)</span></dt>
+    <dd>지갑 복구용 12·24개 영어 단어 시퀀스. BIP-39 표준. 개인키의 인간 친화적 표현.</dd>
+
+    <dt>HD 지갑 <span class="en">(Hierarchical Deterministic Wallet)</span></dt>
+    <dd>BIP-32 기반 — 하나의 시드에서 무한히 많은 주소 파생 가능. 백업 단순화.</dd>
+  </dl>
+</section>
+
+<!-- ============= C. 합의 알고리즘 ============= -->
+<section class="glossary-section" id="consensus">
+  <h2>C. 합의 알고리즘</h2>
+  <dl>
+    <dt>PoW <span class="en">(Proof of Work)</span></dt>
+    <dd>해시 퍼즐 풀이로 블록 생성 권한 획득. Bitcoin이 대표. 에너지 소비 큼, 검열저항성 우수.</dd>
+
+    <dt>PoS <span class="en">(Proof of Stake)</span></dt>
+    <dd>토큰 스테이킹 양에 비례해 검증 권한 부여. Ethereum 2022.09 머지 후 채택.</dd>
+
+    <dt>DPoS <span class="en">(Delegated Proof of Stake)</span></dt>
+    <dd>토큰 보유자가 소수의 대표 검증자를 선출. EOS, TRON 등. 효율적이나 탈중앙화 약함.</dd>
+
+    <dt>PoA <span class="en">(Proof of Authority)</span></dt>
+    <dd>사전 인증된 검증자가 블록 생성. 퍼미션드 환경에 적합. Quorum의 IBFT 등.</dd>
+
+    <dt>PoH <span class="en">(Proof of History)</span></dt>
+    <dd>Solana의 시간 증명 — VDF로 시간 순서를 사전 계산하여 합의 효율화.</dd>
+
+    <dt>BFT <span class="en">(Byzantine Fault Tolerance)</span></dt>
+    <dd>비잔틴 노드(악의 포함)가 1/3 미만일 때 합의 가능한 알고리즘 가족.</dd>
+
+    <dt>PBFT <span class="en">(Practical BFT)</span></dt>
+    <dd>Castro & Liskov(1999)의 실용적 BFT. 3-phase(Pre-Prepare·Prepare·Commit) 프로토콜.</dd>
+
+    <dt>Tendermint BFT</dt>
+    <dd>Cosmos가 채택한 BFT. 즉시 결정적 최종성. BNB Chain, Celestia 등 다수 채택.</dd>
+
+    <dt>HotStuff</dt>
+    <dd>Facebook(2018) 제안. 파이프라인 합의·선형 view-change. Aptos·이전 Diem 채택.</dd>
+
+    <dt>IBFT <span class="en">(Istanbul BFT)</span></dt>
+    <dd>EVM 호환 BFT. 2017년 AMIS 개발. Quorum 초기 합의.</dd>
+
+    <dt>QBFT <span class="en">(Quorum BFT)</span></dt>
+    <dd>IBFT 2.0의 안전성 강화 버전. 현재 Hyperledger Besu·Quorum의 기본 합의.
+      <span class="related">관련: <a href="basics.html#consensus">QBFT 동작 방식</a></span>
+    </dd>
+
+    <dt>Raft</dt>
+    <dd>비잔틴 내성이 없는 합의 알고리즘 (단순 장애만 견딤). 퍼미션드 환경에서 빠르고 단순.</dd>
+
+    <dt>슬래싱 <span class="en">(Slashing)</span></dt>
+    <dd>PoS에서 악의적·잘못된 검증자의 스테이크 일부를 소각하는 처벌 메커니즘.</dd>
+
+    <dt>정족수 <span class="en">(Quorum)</span></dt>
+    <dd>합의에 필요한 최소 노드 수. BFT에서 2f+1 (N=3f+1일 때).</dd>
+
+    <dt>셀피시 마이닝 <span class="en">(Selfish Mining)</span></dt>
+    <dd>채굴자가 발견한 블록을 즉시 발표하지 않고 비밀리에 더 채굴해 부당 이득을 취하는 공격 (Eyal & Sirer, 2014).</dd>
+
+    <dt>Nothing-at-Stake</dt>
+    <dd>PoS의 이론적 약점 — 검증자가 여러 포크에 동시 서명해도 비용이 없어 합의가 약화될 수 있다. 슬래싱으로 완화.</dd>
+  </dl>
+</section>
+
+<!-- ============= D. 체인 분류 ============= -->
+<section class="glossary-section" id="chain-types">
+  <h2>D. 체인 분류</h2>
+  <dl>
+    <dt>L0 / Layer 0</dt>
+    <dd>여러 L1을 연결·보안 제공하는 상호운용 인프라. Polkadot Relay Chain, Cosmos Hub 등.</dd>
+
+    <dt>L1 / Layer 1</dt>
+    <dd>독자 합의를 가진 메인 블록체인. Bitcoin, Ethereum, Solana 등.</dd>
+
+    <dt>L2 / Layer 2</dt>
+    <dd>L1 위에서 처리하고 결과만 L1에 게시하는 확장 레이어. Arbitrum, Optimism, zkSync 등.</dd>
+
+    <dt>L3 / Layer 3</dt>
+    <dd>L2 위에 구축된 앱 특화 체인. Arbitrum Orbit, OP Stack 기반 등.</dd>
+
+    <dt>Mainnet / Testnet / Devnet</dt>
+    <dd>실제 운영 / 테스트용 / 개발용 네트워크. Testnet 토큰은 가치 없음 (Goerli·Sepolia 등).</dd>
+
+    <dt>Permissionless</dt>
+    <dd>누구나 참여 가능한 퍼블릭 블록체인. Bitcoin, Ethereum.</dd>
+
+    <dt>Permissioned</dt>
+    <dd>사전 승인된 참여자만 가능한 프라이빗 체인. Hyperledger Fabric, R3 Corda.</dd>
+
+    <dt>Consortium</dt>
+    <dd>다수 기관이 공동 운영하는 부분 허가형. BIS mBridge, 한국은행 한강 등.</dd>
+
+    <dt>사이드체인 <span class="en">(Sidechain)</span></dt>
+    <dd>독립 합의를 가지며 메인체인과 양방향 자산 이동 가능한 별도 체인. Polygon PoS, Gnosis Chain.</dd>
+
+    <dt>앱체인 <span class="en">(Appchain)</span></dt>
+    <dd>특정 애플리케이션 전용 블록체인. dYdX v4(Cosmos), Polkadot Parachain 등.</dd>
+
+    <dt>모듈러 블록체인 <span class="en">(Modular Blockchain)</span></dt>
+    <dd>실행·합의·DA·결제를 분리해 다른 체인에 위임하는 아키텍처. Celestia 등.</dd>
+  </dl>
+</section>
+
+<!-- ============= E. 스마트 컨트랙트 & EVM ============= -->
+<section class="glossary-section" id="smartcontract">
+  <h2>E. 스마트 컨트랙트 & EVM</h2>
+  <dl>
+    <dt>스마트 컨트랙트 <span class="en">(Smart Contract)</span></dt>
+    <dd>블록체인 위에서 실행되는 결정론적 프로그램. 한번 배포되면 코드가 자동 실행됨.</dd>
+
+    <dt>EVM <span class="en">(Ethereum Virtual Machine)</span></dt>
+    <dd>이더리움 스마트 컨트랙트 실행 환경. 스택 기반, 256-bit 워드, 가스 모델.</dd>
+
+    <dt>SVM <span class="en">(Solana Virtual Machine, Sealevel)</span></dt>
+    <dd>Solana 실행 환경. 트랜잭션 병렬 처리 지원. BPF 기반.</dd>
+
+    <dt>가스 <span class="en">(Gas)</span></dt>
+    <dd>EVM 연산 비용 단위. 가스 = 가스량 × 가스 가격(gwei). DoS 방지·우선순위 시장.</dd>
+
+    <dt>Gwei</dt>
+    <dd>가스 가격 단위. 1 gwei = 10⁻⁹ ETH = 1 nanoETH.</dd>
+
+    <dt>바이트코드 <span class="en">(Bytecode)</span></dt>
+    <dd>Solidity·Vyper 등 고급 언어를 컴파일한 EVM 실행 가능 코드.</dd>
+
+    <dt>옵코드 <span class="en">(Opcode)</span></dt>
+    <dd>EVM 명령어 단위 (ADD, SSTORE, CALL 등). 각 옵코드에 가스 비용 책정.</dd>
+
+    <dt>ABI <span class="en">(Application Binary Interface)</span></dt>
+    <dd>컨트랙트 함수 시그니처·파라미터 인코딩 규약. 외부에서 컨트랙트 호출 시 필요.</dd>
+
+    <dt>Solidity</dt>
+    <dd>이더리움의 주력 스마트 컨트랙트 언어. C++·JavaScript 스타일.</dd>
+
+    <dt>Vyper</dt>
+    <dd>Python 스타일 EVM 언어. Solidity보다 단순·안전 지향.</dd>
+
+    <dt>Storage / Memory / Calldata</dt>
+    <dd>EVM의 3가지 데이터 영역. Storage(영구, 가장 비쌈), Memory(트랜잭션 동안), Calldata(읽기 전용 입력).</dd>
+
+    <dt>이벤트 <span class="en">(Event, Log)</span></dt>
+    <dd>스마트 컨트랙트가 외부에 알리는 로그. 인덱싱·UI 갱신에 활용 (storage보다 저렴).</dd>
+
+    <dt>modifier</dt>
+    <dd>Solidity의 함수 데코레이터. <code>onlyOwner</code> 같은 접근 제어에 자주 사용.</dd>
+
+    <dt>DELEGATECALL</dt>
+    <dd>다른 컨트랙트의 코드를 자신의 컨텍스트(storage)에서 실행. Proxy 패턴의 핵심.</dd>
+
+    <dt>CREATE2</dt>
+    <dd>주소를 결정론적으로 계산해 컨트랙트 배포. 카운터팩추얼 배포·메타-트랜잭션에 활용.</dd>
+  </dl>
+</section>
+
+<!-- ============= F. 토큰 표준 ============= -->
+<section class="glossary-section" id="token">
+  <h2>F. 토큰 표준</h2>
+  <dl>
+    <dt>네이티브 토큰 <span class="en">(Native Token)</span></dt>
+    <dd>블록체인의 기본 통화. ETH, SOL, BTC 등.</dd>
+
+    <dt>Wrapped Token</dt>
+    <dd>다른 자산을 토큰화한 것. WBTC(비트코인 → ERC-20), WETH(ETH → ERC-20).</dd>
+
+    <dt>ERC-20</dt>
+    <dd>대체가능 토큰(Fungible Token) 표준. USDC·USDT·DAI 등. transfer/approve/balanceOf.
+      <span class="related">관련: <a href="contracts.html#erc-20">ERC-20 상세</a></span>
+    </dd>
+
+    <dt>ERC-721</dt>
+    <dd>NFT(Non-Fungible Token) 표준. tokenId가 고유. CryptoPunks, BAYC 등.</dd>
+
+    <dt>ERC-1155</dt>
+    <dd>다중 토큰 표준. 단일 컨트랙트로 FT·NFT 모두 관리. 배치 전송 지원. Enjin 게임 등.</dd>
+
+    <dt>ERC-3525</dt>
+    <dd>Semi-Fungible Token(SFT). tokenId + slot + value의 3차원 구조. 금융 자산 토큰화에 적합.
+      <span class="related">관련: <a href="contracts.html#erc-3525">ERC-3525 상세</a></span>
+    </dd>
+
+    <dt>ERC-4337</dt>
+    <dd>Account Abstraction 표준. 스마트 컨트랙트가 지갑 역할 — 가스리스·소셜 로그인·세션 키 등.</dd>
+
+    <dt>ERC-4626</dt>
+    <dd>토큰화 볼트(Vault) 표준. DeFi yield 상품의 공통 인터페이스. Yearn·Aave 등.</dd>
+
+    <dt>ERC-6551</dt>
+    <dd>Token Bound Accounts. NFT가 자체 지갑 주소를 가지고 다른 자산을 보유할 수 있다.</dd>
+
+    <dt>ERC-1400</dt>
+    <dd>증권형 토큰(Security Token) 표준 묶음 (정식 EIP 미채택). 이전 제약·강제 회수·문서 첨부 등.</dd>
+
+    <dt>SBT <span class="en">(Soulbound Token, EIP-5192)</span></dt>
+    <dd>이전 불가능한 NFT. 자격증·신원·평판 등에 활용. 양도하면 의미 상실.</dd>
+
+    <dt>Stablecoin</dt>
+    <dd>법정통화에 페그된 토큰. USDC·USDT(현금 담보) / DAI(암호자산 담보) / 알고리즘형(UST 붕괴).
+      <span class="related">관련: <a href="contracts.html#stablecoins">스테이블코인 심층</a></span>
+    </dd>
+
+    <dt>Mint / Burn</dt>
+    <dd>토큰 신규 발행(mint) / 영구 소각(burn). 토큰 발행량 조정에 사용.</dd>
+
+    <dt>Allowance / Approve</dt>
+    <dd>ERC-20에서 타인이 내 잔액 일부를 옮길 수 있도록 허용하는 메커니즘. DEX·DeFi 사용 전 필수.</dd>
+  </dl>
+</section>
+
+<!-- ============= G. DeFi ============= -->
+<section class="glossary-section" id="defi">
+  <h2>G. DeFi</h2>
+  <dl>
+    <dt>DeFi <span class="en">(Decentralized Finance)</span></dt>
+    <dd>탈중앙화 금융 — 스마트 컨트랙트로 운영되는 금융 서비스 (대출, 거래, 파생 등). Uniswap, Aave, Compound 등.</dd>
+
+    <dt>DEX <span class="en">(Decentralized Exchange)</span></dt>
+    <dd>중앙 운영자 없이 스마트 컨트랙트로 토큰을 교환. Uniswap, Curve, PancakeSwap.</dd>
+
+    <dt>CEX <span class="en">(Centralized Exchange)</span></dt>
+    <dd>중앙 운영자가 관리하는 거래소. Binance, Coinbase, 업비트, 빗썸 등.</dd>
+
+    <dt>AMM <span class="en">(Automated Market Maker)</span></dt>
+    <dd>오더북 없이 가격 공식(x·y=k 등)으로 자동 가격 형성. Uniswap이 대표.</dd>
+
+    <dt>LP <span class="en">(Liquidity Provider)</span></dt>
+    <dd>유동성을 풀에 공급하는 사람. 거래 수수료의 일부를 보상으로 받음.</dd>
+
+    <dt>유동성 풀 <span class="en">(Liquidity Pool)</span></dt>
+    <dd>AMM에 토큰 페어를 예치한 풀. 거래자가 풀에서 직접 스왑.</dd>
+
+    <dt>TVL <span class="en">(Total Value Locked)</span></dt>
+    <dd>DeFi 프로토콜에 예치된 총 자산 가치. 프로토콜 규모 지표.</dd>
+
+    <dt>Yield Farming</dt>
+    <dd>여러 DeFi 프로토콜을 조합해 수익률을 극대화하는 전략. 위험·복잡도 증가.</dd>
+
+    <dt>Impermanent Loss</dt>
+    <dd>LP가 단순 보유 대비 입는 손실. 토큰 가격 변동으로 풀 비율이 바뀔 때 발생.</dd>
+
+    <dt>슬리피지 <span class="en">(Slippage)</span></dt>
+    <dd>예상 가격과 실제 체결 가격의 차이. 큰 거래·낮은 유동성에서 커짐.</dd>
+
+    <dt>오라클 <span class="en">(Oracle)</span></dt>
+    <dd>off-chain 데이터(가격·환율·이벤트)를 on-chain에 가져오는 중개자. Chainlink, Pyth, Band.</dd>
+
+    <dt>Flashloan</dt>
+    <dd>담보 없이 빌렸다가 같은 트랜잭션 안에 반드시 반환해야 하는 무담보 대출. 차익거래·청산에 활용, 공격에도 악용.</dd>
+
+    <dt>MEV <span class="en">(Maximal Extractable Value)</span></dt>
+    <dd>검증자·채굴자가 트랜잭션 순서를 조작해 얻는 이익. 샌드위치·청산 가로채기 등.</dd>
+
+    <dt>Restaking</dt>
+    <dd>이미 스테이킹된 자산을 다른 프로토콜의 보안에 재활용. EigenLayer가 대표.</dd>
+
+    <dt>LST <span class="en">(Liquid Staking Token)</span></dt>
+    <dd>스테이킹된 자산을 유동화한 토큰. stETH(Lido), rETH(RocketPool) 등.</dd>
+  </dl>
+</section>
+
+<!-- ============= H. 거버넌스 ============= -->
+<section class="glossary-section" id="governance">
+  <h2>H. 거버넌스</h2>
+  <dl>
+    <dt>DAO <span class="en">(Decentralized Autonomous Organization)</span></dt>
+    <dd>스마트 컨트랙트로 운영되는 의사결정 조직. 토큰 보유자가 투표로 결정.
+      <span class="related">관련: <a href="contracts.html#dao">DAO 상세</a></span>
+    </dd>
+
+    <dt>거버넌스 토큰 <span class="en">(Governance Token)</span></dt>
+    <dd>의결권을 부여하는 토큰. UNI(Uniswap), AAVE(Aave) 등.</dd>
+
+    <dt>Quorum (거버넌스 맥락)</dt>
+    <dd>제안 통과에 필요한 최소 투표 참여율. 낮으면 소수가 결정 좌우.</dd>
+
+    <dt>Delegation (위임)</dt>
+    <dd>의결권을 다른 주소에게 위임. a16z·재단 등 대규모 위임 받은 주체가 사실상 결정자.</dd>
+
+    <dt>멀티시그 <span class="en">(Multisig)</span></dt>
+    <dd>다수 서명이 필요한 지갑. M-of-N 모델 (예: 3-of-5). Gnosis Safe가 대표.</dd>
+
+    <dt>Timelock</dt>
+    <dd>제안 통과 후 실행까지 지연 시간. 악의적 변경에 대응할 시간 제공.</dd>
+  </dl>
+</section>
+
+<!-- ============= I. 확장성 ============= -->
+<section class="glossary-section" id="scaling">
+  <h2>I. 확장성</h2>
+  <dl>
+    <dt>확장성 트릴레마 <span class="en">(Scalability Trilemma)</span></dt>
+    <dd>탈중앙화·보안·확장성 셋 중 둘만 동시에 달성 가능. Vitalik이 제시.</dd>
+
+    <dt>롤업 <span class="en">(Rollup)</span></dt>
+    <dd>L2에서 트랜잭션을 묶어 처리하고 결과만 L1에 게시. Optimistic / ZK 두 유형.</dd>
+
+    <dt>Optimistic Rollup</dt>
+    <dd>일단 신뢰하고, 부정 증명(Fraud Proof) 발생 시 도전 가능 (7일 challenge window). Arbitrum, Optimism, Base.</dd>
+
+    <dt>ZK Rollup</dt>
+    <dd>영지식 증명(Validity Proof)으로 즉시 검증. zkSync, Scroll, Linea, Starknet.</dd>
+
+    <dt>Fraud Proof / Validity Proof</dt>
+    <dd>Optimistic의 부정 증명 (사후 반박) vs ZK의 유효성 증명 (사전 보장).</dd>
+
+    <dt>샤딩 <span class="en">(Sharding)</span></dt>
+    <dd>네트워크 상태를 여러 샤드로 분할해 병렬 처리. Ethereum Danksharding 진행 중.</dd>
+
+    <dt>Data Availability (DA)</dt>
+    <dd>롤업이 L1에 데이터를 올려서 누구나 접근 가능하게 하는 속성. Celestia 같은 전용 DA 계층 등장.</dd>
+
+    <dt>State Channel</dt>
+    <dd>두 당사자가 오프체인에서 자유 거래하고 마지막에만 정산. Lightning Network 등.</dd>
+
+    <dt>Validium</dt>
+    <dd>ZK Rollup + 오프체인 DA. 더 저렴하지만 신뢰 가정 추가. Immutable X, dYdX v3.</dd>
+
+    <dt>Plasma (역사적)</dt>
+    <dd>초기 L2 시도. 데이터 가용성 문제로 사실상 쇠퇴, ZK Rollup·Validium에 자리 내줌.</dd>
+  </dl>
+</section>
+
+<!-- ============= J. 상호운용 ============= -->
+<section class="glossary-section" id="interop">
+  <h2>J. 상호운용 (Interoperability)</h2>
+  <dl>
+    <dt>브릿지 <span class="en">(Bridge)</span></dt>
+    <dd>서로 다른 블록체인 간 자산·메시지 이전. 신뢰 모델별 분류 다양. 해킹 누적 25억$+.
+      <span class="related">관련: <a href="bridges.html">크로스체인 브릿지</a></span>
+    </dd>
+
+    <dt>Lock & Mint</dt>
+    <dd>원본 체인에 잠그고 대상 체인에서 wrapped 토큰 발행. 가장 흔한 방식.</dd>
+
+    <dt>Burn & Mint</dt>
+    <dd>원본 체인에서 소각하고 대상 체인에서 새로 발행. Circle CCTP (USDC).</dd>
+
+    <dt>Atomic Swap (HTLC)</dt>
+    <dd>해시락+타임락으로 양쪽 체인 거래를 원자적으로 진행. trustless이나 UX 복잡.</dd>
+
+    <dt>IBC <span class="en">(Inter-Blockchain Communication)</span></dt>
+    <dd>Cosmos의 네이티브 크로스체인 프로토콜. 라이트클라이언트 검증으로 가장 trustless.</dd>
+
+    <dt>XCM (Cross-Consensus Messaging)</dt>
+    <dd>Polkadot의 파라체인 간 메시지 표준.</dd>
+
+    <dt>LayerZero / Wormhole / Axelar / CCIP</dt>
+    <dd>주요 일반화 메시징 프로토콜. 다양한 신뢰 모델 (relayer·oracle·MPC 등).</dd>
+
+    <dt>zkBridge</dt>
+    <dd>영지식 증명으로 라이트클라이언트 검증을 압축. Polyhedra, Succinct(SP1) 등.</dd>
+  </dl>
+</section>
+
+<!-- ============= K. CBDC & 금융 인프라 ============= -->
+<section class="glossary-section" id="cbdc">
+  <h2>K. CBDC & 금융 인프라</h2>
+  <dl>
+    <dt>CBDC <span class="en">(Central Bank Digital Currency)</span></dt>
+    <dd>중앙은행이 발행하는 디지털 화폐. 도매(wholesale, 은행간)와 소매(retail, 일반)로 구분.
+      <span class="related">관련: <a href="cbdc.html">CBDC 페이지</a></span>
+    </dd>
+
+    <dt>Wholesale CBDC</dt>
+    <dd>은행·금융기관 간 결제용 도매 CBDC. 한국 한강 프로젝트의 1단계 토큰.</dd>
+
+    <dt>Retail CBDC</dt>
+    <dd>일반 대중이 직접 사용하는 소매 CBDC. e-CNY(중국)가 대표적 시도.</dd>
+
+    <dt>예금토큰 <span class="en">(Deposit Token)</span></dt>
+    <dd>상업은행이 발행하는 토큰화된 예금. 한강 프로젝트의 일반 이용자 사용 토큰. 예금자보호 대상.</dd>
+
+    <dt>BIS <span class="en">(Bank for International Settlements)</span></dt>
+    <dd>국제결제은행. 각국 중앙은행의 협력 플랫폼. Innovation Hub가 CBDC 다자간 실험 주도.</dd>
+
+    <dt>Project Agora</dt>
+    <dd>BIS 주도 다자간 Unified Ledger 프로젝트. 7개 중앙은행 + 40여 민간기관 참여 (2024.04~).</dd>
+
+    <dt>Project mBridge</dt>
+    <dd>BIS 주도 다자 도매 CBDC 결제 플랫폼. 중국·홍콩·태국·UAE·사우디 등 참여.</dd>
+
+    <dt>한강 프로젝트 <span class="en">(Project Hangang)</span></dt>
+    <dd>한국은행 CBDC 활용성 테스트. 도매 CBDC + 상업은행 예금토큰 + 일반 이용자 QR결제.</dd>
+
+    <dt>BOK-Wire+</dt>
+    <dd>한국은행 금융망. 도매 결제 실시간 시스템 (RTGS).</dd>
+
+    <dt>DvP / PvP</dt>
+    <dd>Delivery vs Payment (증권-결제 동시이행) / Payment vs Payment (통화-통화 동시이행). 결제 실패 위험 0.</dd>
+
+    <dt>RWA <span class="en">(Real World Asset)</span></dt>
+    <dd>실물 자산을 토큰화한 것. 부동산·채권·미술품 등. 2024~2025년 빠른 성장.</dd>
+
+    <dt>STO <span class="en">(Security Token Offering)</span></dt>
+    <dd>증권형 토큰 발행. 한국 금융위 2023.02 가이드라인 발표.</dd>
+
+    <dt>Tokenization vs Digitalization</dt>
+    <dd>토큰화(블록체인 위 토큰) vs 디지털화(중앙 DB의 전자 기록). 보관 주체·이전 메커니즘이 본질적으로 다름.
+      <span class="related">관련: <a href="contracts.html#tokenization">자산 토큰화 분석</a></span>
+    </dd>
+  </dl>
+</section>
+
+<!-- ============= L. 결제 & 마이크로페이먼트 ============= -->
+<section class="glossary-section" id="payment">
+  <h2>L. 결제 & 마이크로페이먼트</h2>
+  <dl>
+    <dt>Micropayment / Nanopayment</dt>
+    <dd>마이크로페이먼트($0.01~$1) / 나노페이먼트($0.001 미만). 전통 결제망에서 불가능했던 영역.
+      <span class="related">관련: <a href="x402.html#micropayments">마이크로페이먼트</a></span>
+    </dd>
+
+    <dt>x402</dt>
+    <dd>2025년 Coinbase 공개. HTTP 402 + EIP-3009 기반 결제 프로토콜. AI 에이전트·API 종량 과금.</dd>
+
+    <dt>Lightning Network</dt>
+    <dd>Bitcoin L2. State Channel 기반 마이크로페이먼트. 초당 정산, sat 단위 거래.</dd>
+
+    <dt>EIP-3009 (transferWithAuthorization)</dt>
+    <dd>USDC 등의 가스리스 송금. 사용자는 서명만, 가스는 facilitator가 대납.</dd>
+
+    <dt>EIP-2612 (Permit)</dt>
+    <dd>ERC-20 approve를 오프체인 서명으로 대체. DAI가 처음 도입.</dd>
+
+    <dt>EIP-712 (Typed Structured Data)</dt>
+    <dd>구조화된 메시지 서명 표준. Permit·x402·MetaMask sign typed data에 필수.</dd>
+
+    <dt>가스리스 트랜잭션 <span class="en">(Gasless Transaction)</span></dt>
+    <dd>사용자가 가스(ETH)를 보유하지 않아도 토큰 결제 가능. 메타-트랜잭션·AA로 구현.</dd>
+
+    <dt>메타-트랜잭션 <span class="en">(Meta-transaction)</span></dt>
+    <dd>사용자가 서명만 만들고 제3자가 트랜잭션을 대신 발신. 가스 대납의 일반화.</dd>
+
+    <dt>Account Abstraction (AA, ERC-4337)</dt>
+    <dd>지갑 자체를 스마트 컨트랙트로 만들어 가스 대납·소셜 로그인·세션키 등 가능.</dd>
+
+    <dt>Paymaster / Bundler</dt>
+    <dd>AA에서 가스 대납자(Paymaster) / UserOp을 묶어 EntryPoint에 제출하는 노드(Bundler).</dd>
+  </dl>
+</section>
+
+<!-- ============= M. 보안 & 공격 ============= -->
+<section class="glossary-section" id="security">
+  <h2>M. 보안 & 공격</h2>
+  <dl>
+    <dt>51% 공격 <span class="en">(51% Attack)</span></dt>
+    <dd>해시파워의 50%+를 장악해 이중지불·체인 재구성 시도. 실제론 25~33%로도 셀피시 마이닝 가능.</dd>
+
+    <dt>Reentrancy 공격</dt>
+    <dd>외부 호출이 다시 같은 함수로 돌아와 상태 조작. The DAO 해킹 (2016) 사례.</dd>
+
+    <dt>Flash Loan Attack</dt>
+    <dd>플래시론으로 거대한 자금 일시 확보 → 가격 조작·청산 가로채기. Cream, bZx 등 다수 사례.</dd>
+
+    <dt>Sandwich Attack</dt>
+    <dd>피해자 트랜잭션 앞뒤로 자기 거래를 끼워 넣어 가격 차익을 챙기는 MEV 공격.</dd>
+
+    <dt>Front-running</dt>
+    <dd>mempool의 트랜잭션을 보고 더 높은 가스로 새치기. 일반화된 MEV.</dd>
+
+    <dt>Sybil 공격</dt>
+    <dd>한 사람이 다수의 가짜 신원을 만들어 시스템을 조작. PoW·PoS는 자원 요구로 방어.</dd>
+
+    <dt>Eclipse 공격</dt>
+    <dd>특정 노드를 네트워크에서 격리시켜 거짓 정보만 전달. P2P 토폴로지 공격.</dd>
+
+    <dt>Long-Range Attack</dt>
+    <dd>PoS에서 과거 키 누출 시 대안 체인 생성 가능. Weak Subjectivity 가정으로 완화.</dd>
+
+    <dt>Rug Pull (러그풀)</dt>
+    <dd>프로젝트 운영자가 갑자기 유동성·자금을 빼서 도주. NFT·DeFi 사기의 대표.</dd>
+
+    <dt>Honeypot (허니팟)</dt>
+    <dd>매수만 되고 매도가 안 되는 사기 토큰. 컨트랙트에 숨겨진 조건.</dd>
+
+    <dt>Phishing</dt>
+    <dd>가짜 사이트·메시지로 사용자에게 악성 서명을 유도. unlimited approve가 흔한 함정.</dd>
+  </dl>
+</section>
+
+<!-- ============= N. 지갑 & 인프라 ============= -->
+<section class="glossary-section" id="wallet">
+  <h2>N. 지갑 & 인프라</h2>
+  <dl>
+    <dt>지갑 <span class="en">(Wallet)</span></dt>
+    <dd>개인키 관리·트랜잭션 서명 도구. 핫(온라인) / 콜드(오프라인) / 하드웨어 / 커스터디 / 비커스터디로 분류.</dd>
+
+    <dt>EOA <span class="en">(Externally Owned Account)</span></dt>
+    <dd>개인키로 통제되는 이더리움 일반 계정. 스마트 컨트랙트가 아닌 사용자 계정.</dd>
+
+    <dt>Smart Account / Contract Account</dt>
+    <dd>스마트 컨트랙트로 운영되는 계정. AA·세션키·소셜 복구 등 가능.</dd>
+
+    <dt>Custodial / Non-Custodial</dt>
+    <dd>커스터디(거래소·서비스가 키 보관) / 비커스터디(사용자가 직접 키 보관, "Not your keys, not your coins").</dd>
+
+    <dt>MetaMask / Phantom / Rainbow</dt>
+    <dd>주요 브라우저 지갑. MetaMask(EVM), Phantom(Solana), Rainbow(EVM·UX 친화).</dd>
+
+    <dt>Ledger / Trezor</dt>
+    <dd>대표적 하드웨어 지갑. 개인키가 디바이스를 떠나지 않음.</dd>
+
+    <dt>RPC <span class="en">(Remote Procedure Call)</span></dt>
+    <dd>지갑·앱이 블록체인 노드와 통신하는 인터페이스. Infura·Alchemy·QuickNode가 RPC 서비스 제공.</dd>
+
+    <dt>Sequencer</dt>
+    <dd>L2에서 트랜잭션 순서를 결정하는 노드. 현재 대부분 중앙화 운영 (탈중앙화 진행 중).</dd>
+
+    <dt>Relayer</dt>
+    <dd>사용자 서명을 받아 트랜잭션을 대신 발신·가스 대납. 메타-트랜잭션·AA·브릿지에 활용.</dd>
+
+    <dt>Indexer / The Graph</dt>
+    <dd>온체인 데이터를 GraphQL로 쿼리할 수 있게 인덱싱. The Graph가 표준.</dd>
+
+    <dt>Mempool</dt>
+    <dd>아직 블록에 포함되지 않은 대기 트랜잭션 풀. MEV 추출의 대상.</dd>
+  </dl>
+</section>
+
+<!-- ============= O. 생태계 & 문화 용어 ============= -->
+<section class="glossary-section" id="culture">
+  <h2>O. 생태계 & 문화 용어</h2>
+  <dl>
+    <dt>Web3</dt>
+    <dd>블록체인·암호화폐 기반의 차세대 인터넷 비전. Web1(읽기)·Web2(읽기+쓰기) 다음 단계로 "소유 가능한 인터넷".</dd>
+
+    <dt>ICO / IDO / IEO / STO / ITO</dt>
+    <dd>Initial Coin Offering(2017 광풍) / DEX Offering / Exchange Offering / Security Token Offering / Token Offering. 토큰 발행 방식 분류.</dd>
+
+    <dt>TGE <span class="en">(Token Generation Event)</span></dt>
+    <dd>토큰을 실제 발행하는 시점. 통상 메인넷 출시 또는 ICO 이벤트와 함께.</dd>
+
+    <dt>에어드랍 <span class="en">(Airdrop)</span></dt>
+    <dd>프로젝트가 토큰을 무료 배포하는 마케팅. 사용 이력·홀딩 조건 등으로 자격 판단.</dd>
+
+    <dt>베스팅 / Cliff</dt>
+    <dd>토큰 분배 시 일정 기간 후 점진적 잠금 해제(vesting). Cliff = 잠금 해제 시작 전 대기 기간.</dd>
+
+    <dt>Whale / Shrimp</dt>
+    <dd>고래(많이 보유한 큰손) / 새우(소액 보유자). 시장에 미치는 영향력 비교.</dd>
+
+    <dt>Halving (반감기)</dt>
+    <dd>비트코인 채굴 보상이 절반으로 줄어드는 이벤트. 약 4년마다 (2024.04이 4차).</dd>
+
+    <dt>Bull Market / Bear Market</dt>
+    <dd>강세장(상승) / 약세장(하락). Crypto Winter는 장기 약세장을 의미.</dd>
+
+    <dt>HODL</dt>
+    <dd>"Hold"의 오타에서 유래. 가격 변동에 휘둘리지 않고 장기 보유하는 전략.</dd>
+
+    <dt>FOMO / FUD</dt>
+    <dd>Fear of Missing Out(놓칠까 봐 추격 매수) / Fear, Uncertainty, Doubt(불안 조성).</dd>
+
+    <dt>DYOR</dt>
+    <dd>"Do Your Own Research". 투자 전 직접 조사하라는 면책성 조언.</dd>
+
+    <dt>WAGMI / NGMI</dt>
+    <dd>"We're All Gonna Make It" (낙관) / "Not Gonna Make It" (비관). 커뮤니티 슬랭.</dd>
+
+    <dt>GM / GN</dt>
+    <dd>"Good Morning" / "Good Night". 크립토 트위터 일상 인사.</dd>
+
+    <dt>Degen (디젠)</dt>
+    <dd>"Degenerate"의 약자. 고위험 DeFi·NFT에 공격적으로 투자하는 사람.</dd>
+
+    <dt>Diamond Hands / Paper Hands</dt>
+    <dd>다이아몬드 손(장기 보유) / 종이 손(쉽게 매도). 보유 의지의 은유.</dd>
+
+    <dt>Rekt / Rugged</dt>
+    <dd>Rekt = "wrecked"(파산) / Rugged = 러그풀 피해. 손실 상황을 표현하는 슬랭.</dd>
+
+    <dt>PFP (NFT)</dt>
+    <dd>Profile Picture NFT. CryptoPunks·BAYC처럼 SNS 프로필용 NFT 컬렉션.</dd>
+
+    <dt>Generative Art</dt>
+    <dd>알고리즘으로 자동 생성된 NFT 아트. Art Blocks가 선구자.</dd>
+
+    <dt>Crypto Winter</dt>
+    <dd>장기 시장 침체기. 2018~2019, 2022~2023이 대표적.</dd>
+
+    <dt>To the moon (TTM)</dt>
+    <dd>가격이 폭등하길 바라는 표현. "달까지 간다"는 의미의 밈.</dd>
+
+    <dt>Mainnet 출시 / Genesis</dt>
+    <dd>테스트넷에서 메인 네트워크로 전환. 제네시스 블록 발생 시점.</dd>
+  </dl>
+</section>
+
+<div class="page-nav">
+  <a class="prev" href="limits.html">
+    <div class="dir">← 이전</div>
+    <div class="ttl">PART 7 · 한계와 비교</div>
+  </a>
+  <a class="next" href="references.html">
+    <div class="dir">다음 →</div>
+    <div class="ttl">참고자료</div>
+  </a>
+</div>
+
+</main>
+
+<footer>© 2026 Blockchain Technical Guide · 용어집 · 최종 수정: 2026-06-01</footer>
+
+</body>
+</html>

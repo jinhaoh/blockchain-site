@@ -454,3 +454,83 @@ footer {
 }
 .erc-card .erc-status.final { background: rgba(126, 231, 135, 0.2); color: var(--accent); }
 .erc-card .erc-status.draft { background: rgba(255, 166, 87, 0.2); color: var(--accent-3); }
+
+/* ===== Glossary ===== */
+.glossary-toc {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 32px;
+}
+.glossary-toc h3 {
+  margin-top: 0;
+  color: var(--accent);
+}
+.glossary-toc ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px 16px;
+  margin: 0;
+}
+.glossary-toc a {
+  color: var(--accent-2);
+  text-decoration: none;
+  font-size: 0.92rem;
+  padding: 4px 0;
+  border-bottom: none !important;
+}
+.glossary-toc a:hover { color: var(--accent); }
+.glossary-toc a::before {
+  content: "▸ ";
+  color: var(--fg-dim);
+}
+
+.glossary-section {
+  margin-bottom: 48px;
+  scroll-margin-top: 80px;
+}
+.glossary-section h2 {
+  font-size: 1.5rem;
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 8px;
+  margin-bottom: 20px;
+}
+.glossary-section dl {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin: 0;
+}
+.glossary-section dt {
+  font-weight: 700;
+  color: var(--accent-2);
+  font-size: 1.05rem;
+  margin-bottom: 4px;
+}
+.glossary-section dt .en {
+  color: var(--fg-dim);
+  font-weight: 400;
+  font-size: 0.9rem;
+  margin-left: 6px;
+}
+.glossary-section dd {
+  margin: 0 0 0 0;
+  color: var(--fg);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  padding-left: 12px;
+  border-left: 2px solid var(--border);
+}
+.glossary-section dd .related {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: var(--fg-dim);
+}
+.glossary-section dd .related a {
+  color: var(--accent-3);
+  border-bottom: 1px dotted var(--accent-3) !important;
+}

@@ -24,6 +24,7 @@
     <li><a href="cbdc.html">CBDC</a></li>
     <li><a href="x402.html">x402</a></li>
     <li><a href="limits.html">한계와 비교</a></li>
+    <li><a href="glossary.html">용어집</a></li>
     <li><a href="references.html">참고자료</a></li>
   </ul>
 </nav>
@@ -938,12 +939,129 @@ Q3. 다른 서비스와의 조합(Composability)이 핵심 가치인가?
     </p>
   </div>
 
+  <h4>4.9.7 "그렇다면 어디서 더 효율적인가?" — 다자간 조율 비용 절감 6가지</h4>
+  <p>
+    퍼미션드 체인의 <strong>본질적 unique함은 적지만, "다자간 조율(multi-party coordination) 비용"에서는 명백히 더 효율적</strong>이다.
+    이것이 도입 정당화의 진짜 근거다.
+  </p>
+
   <div class="note">
-    <strong>핵심 정리:</strong>
+    <strong>핵심 원칙:</strong> 단일 조직 내부에서는 블록체인이 비효율적이지만, <strong>다수 독립 기관이 협력하는 환경에서는 진짜 효율적</strong>이다.
+    기존 시스템의 비용은 "다수 당사자가 같은 데이터를 같은 시점에 보고 합의하기 위한 조율 비용"에서 발생하며, 퍼미션드 블록체인이 이를 구조적으로 줄인다.
+  </div>
+
+  <h5 style="color:var(--accent-2); margin-top:24px;">① Reconciliation(대사) 비용 제거</h5>
+<pre><code>기존: A은행 DB ──┐
+      B은행 DB ──┼─→ 매일 야간 reconciliation
+      C은행 DB ──┤   → 불일치 발견 → 수동 조정
+      D은행 DB ──┘   → 백오피스 인력·시간 비용
+
+블록체인: 모든 노드가 항상 동일 상태 → reconciliation 자체 불필요</code></pre>
+  <ul>
+    <li>한국 은행권 일별·월별 대사 업무 = 백오피스 인력의 큰 비중</li>
+    <li>SWIFT 메시지 reconciliation 오류 = 글로벌 연 수십억 달러 비용 추산</li>
+    <li><strong>가장 큰 효율 영역</strong> — 한강·Agora의 핵심 매력 포인트</li>
+  </ul>
+
+  <h5 style="color:var(--accent-2); margin-top:24px;">② 신뢰 설정 비용 감소</h5>
+  <ul>
+    <li><strong>기존:</strong> A 기관이 B 기관 데이터를 신뢰하려면 별도 검증·계약·중재자 필요. N개 기관 = N×(N-1)/2개 양자 협정 (7개 은행 = 21개)</li>
+    <li><strong>블록체인:</strong> 단일 합의 표준으로 신뢰 설정. 신규 기관 합류 시 한 번의 거버넌스 결정으로 종료</li>
+  </ul>
+
+  <h5 style="color:var(--accent-2); margin-top:24px;">③ 다자 거버넌스 자동화</h5>
+  <ul>
+    <li><strong>기존:</strong> 검증자 추가·정책 변경 = 위원회 → 안건 → 합의 → 문서화 → 시스템 반영 (수주~수개월)</li>
+    <li><strong>블록체인:</strong> 온체인 보팅 + 스마트 컨트랙트로 수분~수시간에 자동화</li>
+  </ul>
+  <p style="color:var(--fg-dim); font-size:0.9rem;">
+    한강 사례: 향후 참여 은행 확대 시 거버넌스 비용 차이가 큼
+  </p>
+
+  <h5 style="color:var(--accent-2); margin-top:24px;">④ 다자 트랜잭션의 원자성(Atomicity)</h5>
+  <p><strong>기존:</strong> 2-Phase Commit·Saga 패턴 등으로 가능하나 복잡·취약. 부분 실패 시 보상 트랜잭션 필요.</p>
+  <p><strong>블록체인:</strong> 한 트랜잭션이 모든 참여자 상태를 동시 갱신. DvP·PvP가 native 작동.</p>
+
+<pre><code>시나리오: 채권 토큰 + 예금토큰 동시 이전 (DvP)
+
+기존: A 증권사 채권 → B 이전 → 별도 메시지 → B 은행이 A 은행에 송금
+      → 양쪽 실패 시 reversal 복잡, T+2 결제일
+
+블록체인: 단일 트랜잭션으로 채권 + 예금토큰 동시 이전
+      → 둘 다 성공 or 둘 다 실패 (Atomic), T+0 즉시 결제</code></pre>
+
+  <h5 style="color:var(--accent-2); margin-top:24px;">⑤ 외부 생태계 표준 호환</h5>
+  <ul>
+    <li><strong>기존:</strong> 새 자산·외부 시스템 연계 시 자체 인터페이스 구축. 토큰증권·CBDC·국제 결제망 연계 = 매번 별도 통합 개발</li>
+    <li><strong>블록체인 (EVM 호환):</strong> ERC-20·721·3525 등 검증된 표준 즉시 활용. Agora·다른 컨소시엄과 표준 인터페이스로 연결. 외부 개발 도구(Foundry·OpenZeppelin) 그대로 사용</li>
+  </ul>
+  <p style="color:var(--fg-dim); font-size:0.9rem;">
+    이건 <strong>현재가 아닌 미래 옵션 가치</strong>가 큼 — RWA·STO·CBDC 생태계가 성숙할수록 효익 증가
+  </p>
+
+  <h5 style="color:var(--accent-2); margin-top:24px;">⑥ 감사·규제 대응 비용 절감</h5>
+  <ul>
+    <li><strong>기존:</strong> 각 기관 감사인이 각자 데이터 검증 → 데이터 정합성 추가 검증. 규제기관 보고: 각 기관이 별도 형식으로 제출 → 통합·교차 검증 비용</li>
+    <li><strong>블록체인:</strong> 모든 노드가 동일 데이터·동일 검증 → 단일 진실 자동 보장. 규제기관이 노드 1개만 보면 모든 거래 검증 가능. 사후 위변조 사실상 불가능</li>
+  </ul>
+
+  <h4>4.9.8 정량적 효율 비교 (개략적 추정)</h4>
+  <table>
+    <thead>
+      <tr><th>영역</th><th>기존 시스템 비용</th><th>퍼미션드 블록체인</th><th>절감 효과</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>일별 reconciliation</td><td>백오피스 인력 ↑↑</td><td>0 (불필요)</td><td><strong>매우 큼</strong></td></tr>
+      <tr><td>신규 기관 합류 통합</td><td>수개월·고비용</td><td>수일·표준화</td><td><strong>큼</strong></td></tr>
+      <tr><td>거버넌스 변경</td><td>수주~수개월</td><td>수분~수시간</td><td><strong>큼</strong></td></tr>
+      <tr><td>다자 트랜잭션 실패 처리</td><td>복잡한 보상 로직</td><td>Atomic 자동 처리</td><td>중간</td></tr>
+      <tr><td>외부 시스템 연계</td><td>매번 자체 구축</td><td>표준 인터페이스</td><td><strong>중장기 큼</strong></td></tr>
+      <tr><td>감사·규제 대응</td><td>데이터 정합성 검증</td><td>자동 보장</td><td>중간</td></tr>
+      <tr style="color:var(--danger);"><td><strong>단순 처리 성능 (TPS)</strong></td><td>빠름 (10,000+)</td><td>느림 (BFT 100~수천)</td><td><strong>블록체인 열위</strong></td></tr>
+      <tr style="color:var(--danger);"><td><strong>저장 효율</strong></td><td>단일 사본</td><td>모든 노드 사본</td><td><strong>블록체인 열위</strong></td></tr>
+    </tbody>
+  </table>
+
+  <h4>4.9.9 효율적이지 <em>않은</em> 영역 (균형)</h4>
+  <div class="note warn">
+    퍼미션드 블록체인이 <strong>더 비효율적인 영역</strong>도 분명히 있다:
+    <ul style="margin-top:8px;">
+      <li>❌ <strong>단순 처리 성능</strong>: 중앙 DB가 10~100배 빠름</li>
+      <li>❌ <strong>저장 효율</strong>: 모든 노드가 동일 데이터 → 저장 비용 N배</li>
+      <li>❌ <strong>단일 조직 내부 처리</strong>: 분산 자체가 오버헤드</li>
+      <li>❌ <strong>고도 프라이버시</strong>: 채널·ZK 등 복잡 설계 필요</li>
+      <li>❌ <strong>빠른 정책 변경</strong>: 한 기관이 단독으로 못 바꿈 (장점이자 단점)</li>
+      <li>❌ <strong>고객 응대 SLA</strong>: 합의 지연이 영향</li>
+    </ul>
+  </div>
+
+  <h4>4.9.10 한국은행·금융권 시사점</h4>
+  <div class="card">
+    <p>한강·Agora 같은 컨소시엄 환경에서 진짜 효율 가치:</p>
+    <table>
+      <thead><tr><th>효율 영역</th><th>한강·Agora에서의 의미</th></tr></thead>
+      <tbody>
+        <tr><td>Reconciliation 제거</td><td><strong>7개 시중은행 일별 대사 업무 큰 감소</strong> (가장 큰 효익)</td></tr>
+        <tr><td>다자 거버넌스 자동화</td><td>신규 은행 추가·정책 변경 비용 큰 절감</td></tr>
+        <tr><td>Atomic 다자 거래</td><td>DvP·PvP 즉시 결제 (T+0 가능)</td></tr>
+        <tr><td>외부 표준 호환</td><td>향후 STO·국경간 결제(Agora) 연계 옵션</td></tr>
+        <tr><td>감사·규제 대응</td><td>금감원·BIS 보고 자동화</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:12px;">
+      <strong>핵심:</strong> 한강 도입의 정당화는 <em>"새로운 기능"</em>이 아니라
+      <em>"다자간 운영 비용 절감 + 미래 옵션 가치"</em>에 있다.
+    </p>
+  </div>
+
+  <div class="note">
+    <strong>최종 정리:</strong>
     <ul style="margin-top:8px;">
       <li>토큰화의 8가지 가치 중 <strong>독점적인 것은 3가지(무허가 혁신·자기 보관·조합 가능성)</strong>뿐</li>
       <li>퍼미션드 체인은 이 3가지마저 대부분 잃음 → 남는 가치는 <strong>"다자간 신뢰 + 비잔틴 내성"</strong>으로 좁아짐</li>
-      <li>그렇다면 "왜 분산 DB가 아닌가?" 질문에 답할 수 있어야 도입 정당화 가능</li>
+      <li>그러나 <strong>다자간 조율 비용(Reconciliation·신뢰설정·거버넌스·Atomic 거래·외부 표준 호환·감사)에서는 진짜 효율적</strong></li>
+      <li>도입 정당화는 "새로운 기능"이 아니라 <em>"운영 비용 절감 + 미래 옵션 가치"</em>로 평가해야 정직</li>
+      <li>"왜 분산 DB가 아닌가?"에 대한 답 = <strong>"비잔틴 내성 + 표준 토큰 인프라 + 외부 생태계 호환"</strong></li>
       <li>한강 같은 컨소시엄 CBDC는 <em>현재 효익보다 미래 토큰화 인프라 옵션 가치</em>로 평가하는 게 정직함</li>
     </ul>
   </div>
